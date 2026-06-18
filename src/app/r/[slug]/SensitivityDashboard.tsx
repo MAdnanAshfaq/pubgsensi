@@ -507,100 +507,32 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
       </div>
 
       {/* Recoil Shooting Range Simulator (Interactive Animations) */}
-      <div className="bg-surface-card border border-border-tactical/20 rounded-2xl p-5 space-y-4">
+      {/* Recoil Shooting Range Simulator (Coming Soon Placeholder) */}
+      <div className="bg-surface-card border border-border-tactical/20 rounded-2xl p-5 space-y-4 relative overflow-hidden">
         <div className="flex justify-between items-center border-b border-border-tactical/20 pb-2">
           <h3 className="font-headline text-lg font-bold text-foreground uppercase tracking-wide flex items-center gap-2">
             <Target className="w-5 h-5 text-primary-yellow animate-pulse" />
             SHOOTING RANGE SIMULATOR
           </h3>
-          <button
-            onClick={resetSimulator}
-            className="text-[10px] font-technical text-text-muted hover:text-primary-yellow flex items-center gap-1 border border-border-tactical/40 px-2 py-0.5 rounded cursor-pointer"
-          >
-            <Trash2 className="w-3 h-3" />
-            CLEAR
-          </button>
+          <span className="font-technical text-[9px] bg-primary-yellow/15 text-primary-yellow border border-primary-yellow/30 px-2.5 py-0.5 rounded tracking-widest font-black">
+            COMING SOON
+          </span>
         </div>
 
-        <p className="text-xs text-text-muted leading-relaxed">
-          Test how your **ADS** and **Gyro** sensitivity affect vertical spray control. Select an optic and drag down inside the radar scope while firing.
-        </p>
-
-        {/* Simulator controls */}
-        <div className="flex items-center gap-3">
-          <label className="font-headline text-xs font-bold text-text-muted uppercase">SCOPE TEST:</label>
-          <select
-            value={activeSimScope}
-            onChange={(e) => setActiveSimScope(e.target.value)}
-            className="bg-surface-hover text-foreground font-technical text-xs border border-border-tactical/40 px-3 py-1.5 rounded-lg focus:outline-none focus:border-primary-yellow cursor-pointer"
-          >
-            {Object.keys(scopeLabels).map((key) => (
-              <option key={key} value={key}>
-                {key.replace('scope_', '').replace('no_scope', 'No Scope').toUpperCase()}
-              </option>
-            ))}
-          </select>
-
-          {accuracy !== null && (
-            <div className="flex-1 flex justify-end items-center gap-2">
-              <span className="text-[10px] font-technical text-text-muted uppercase">ACCURACY:</span>
-              <span className={`font-headline text-xl font-black ${accuracy >= 70 ? 'text-primary-yellow animate-bounce' : accuracy >= 40 ? 'text-foreground' : 'text-red-500'}`}>
-                {accuracy}% {accuracy >= 80 ? 'SSS' : accuracy >= 65 ? 'S' : accuracy >= 50 ? 'A' : 'B'}
-              </span>
+        <div className="relative border border-border-tactical/15 rounded-xl bg-background/40 p-8 text-center flex flex-col items-center justify-center min-h-[220px] overflow-hidden">
+          {/* Tactical grid background effect */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#ffd700_1px,transparent_1px),linear-gradient(to_bottom,#ffd700_1px,transparent_1px)] bg-[size:15px_15px]" />
+          
+          <div className="relative z-10 space-y-3 max-w-sm">
+            <div className="mx-auto w-12 h-12 rounded-full border border-primary-yellow/20 bg-primary-yellow/5 flex items-center justify-center text-primary-yellow mb-2 animate-pulse">
+              <Target className="w-6 h-6" />
             </div>
-          )}
-        </div>
-
-        {/* Canvas & Controls Container */}
-        <div className="relative border border-border-tactical/30 rounded-xl overflow-hidden shadow-inner flex flex-col items-center">
-          <canvas
-            ref={canvasRef}
-            width={340}
-            height={280}
-            onMouseMove={handleCanvasMouseMove}
-            onTouchMove={handleCanvasTouchMove}
-            className="cursor-crosshair w-full"
-          />
-
-          {/* Touch / Mouse Click trigger firing button */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-48 z-10">
-            <button
-              onMouseDown={() => setIsFiring(true)}
-              onMouseUp={() => setIsFiring(false)}
-              onMouseLeave={() => setIsFiring(false)}
-              onTouchStart={(e) => {
-                e.preventDefault();
-                setIsFiring(true);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                setIsFiring(false);
-              }}
-              className={`w-full py-3.5 rounded-xl font-headline font-bold text-sm tracking-widest border transition-all select-none shadow-lg active:scale-95 cursor-pointer ${
-                isFiring
-                  ? 'bg-red-500 text-white border-red-500 shadow-red-500/20'
-                  : 'bg-primary-yellow text-background border-primary-yellow shadow-primary-yellow/20'
-              }`}
-            >
-              {isFiring ? 'FIRING SPRAY...' : 'TAP & HOLD TO FIRE'}
-            </button>
+            <h4 className="font-headline text-sm font-extrabold text-foreground tracking-wider uppercase">PHYSICS ENGINE CALIBRATION</h4>
+            <p className="text-xs text-text-muted leading-relaxed">
+              Our interactive 3D weapon recoil simulator is currently undergoing server-side physics engine calibration. Check back soon to test your sensitivity configurations.
+            </p>
           </div>
-
-          {/* Pull instruction HUD */}
-          {isFiring && (
-            <div className="absolute top-4 right-4 bg-background/80 border border-red-500/30 px-3 py-1 rounded text-[10px] font-technical text-red-500 animate-pulse uppercase">
-              DRAG DOWN TO STABILIZE
-            </div>
-          )}
         </div>
-        
-        {/* AimSync assist note */}
-        {result.inputs.primaryProblem === 'recoil' && (
-          <div className="flex items-center gap-2 bg-olive/10 border border-primary-yellow/20 p-2.5 rounded-lg text-[10px] text-primary-yellow">
-            <Zap className="w-3.5 h-3.5 text-primary-yellow flex-shrink-0 animate-pulse" />
-            AimSync Recoil tuning applied: +15% recoil compensation factor active in current sensitivity setup.
-          </div>
-        )}
       </div>
     </div>
   );
