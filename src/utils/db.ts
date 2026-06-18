@@ -23,6 +23,11 @@ const getSql = () => {
   return neon(DATABASE_URL);
 };
 
+export function isDatabaseConfigured(): boolean {
+  return !!DATABASE_URL;
+}
+
+
 // PostgreSQL Table definition auto-creation
 let isTableInitialized = false;
 async function ensurePostgresTable() {
