@@ -29,6 +29,8 @@ export function getFallbackExplanations(
     ads = `ADS sensitivity has been adjusted to help with pull-down mechanics. Since recoil is your primary obstacle, these values give your thumb enough leverage to easily pull down the firing button and stabilize vertical muzzle climb.`;
   } else if (primaryProblem === 'transfer') {
     ads = `ADS sensitivity is slightly dampened. This prevents your crosshair from skipping when you transition or "spray transfer" from one target to another, ensuring a smoother horizontal sweep.`;
+  } else if (primaryProblem === 'all') {
+    ads = `ADS sensitivity combines vertical recoil pull-down leverage with slightly dampened mid-scopes for maximum spray transfer stability across all scopes.`;
   } else {
     ads = `ADS sensitivity is tuned to match your firing swipe speed. It maintains control while spraying with mid-range optics, aligning with your ${playstyle} playstyle.`;
   }
@@ -38,6 +40,8 @@ export function getFallbackExplanations(
     gyro = `Gyroscope values are scaled up on mid-tier scopes (3x and 4x) by 15%. This allows you to tilt your device slightly to counter rapid vertical recoil, taking the strain off your screen-swiping finger.`;
   } else if (primaryProblem === 'close') {
     gyro = `Gyroscope sensitivity is elevated for close-quarters tracking. This ensures you can pivot your device rapidly to keep up with fast-moving targets without running out of screen space.`;
+  } else if (primaryProblem === 'all') {
+    gyro = `Gyroscope sensitivity is fully calibrated: boosted mid-scopes (+15%) for recoil control, while retaining elevated look speeds for close-quarters pivoting and tracking.`;
   } else {
     gyro = `Gyroscope settings are adjusted for reactive wrist tilts. They are optimized to match your device tier and give you fine-grained crosshair control without excessive jitter.`;
   }
@@ -45,6 +49,8 @@ export function getFallbackExplanations(
   // ADS Gyro explanation
   if (primaryProblem === 'recoil') {
     ads_gyro = `ADS-Gyroscope values are set high. This ensures that when you press the fire button and tilt your phone simultaneously, the vertical compensation kicks in immediately to laser-focus your bullet grouping.`;
+  } else if (primaryProblem === 'all') {
+    ads_gyro = `ADS-Gyroscope sensitivity is fully maximized for vertical compensation, helping you lock onto targets and transfer sprays seamlessly.`;
   } else {
     ads_gyro = `ADS-Gyroscope sensitivity is mirrored to your standard Gyroscope settings. This provides visual muscle-memory consistency when transitioning between scouting and full-auto spraying.`;
   }

@@ -11,7 +11,7 @@ export type FpsSelection = 40 | 60 | 90 | 120;
 export type GyroMode = 'always_on' | 'scope_on' | 'off';
 export type DeviceTier = 'budget' | 'mid' | 'flagship';
 export type Playstyle = 'rusher' | 'sniper' | 'assaulter' | 'balanced';
-export type PrimaryProblem = 'recoil' | 'aim' | 'transfer' | 'close' | 'long';
+export type PrimaryProblem = 'recoil' | 'aim' | 'transfer' | 'close' | 'long' | 'all';
 
 export interface UserInputs {
   deviceTier: DeviceTier;
@@ -161,24 +161,30 @@ function calculateScopeValue(
   }
 
   // Primary Problem adjustments
-  if (inputs.primaryProblem === 'recoil') {
+  if (inputs.primaryProblem === 'recoil' || inputs.primaryProblem === 'all') {
     if (category === 'gyro' || category === 'ads_gyro') {
       // Recoil control relies heavily on gyro adjustments for pull-down
       if (scope === 'scope_3x' || scope === 'scope_4x') {
         multiplier *= 1.15;
       }
     }
-  } else if (inputs.primaryProblem === 'transfer') {
+  }
+  
+  if (inputs.primaryProblem === 'transfer' || inputs.primaryProblem === 'all') {
     if (category === 'ads') {
       multiplier *= 0.90; // Dampen ADS slightly for spray transfer stability
     } else if (category === 'gyro' || category === 'ads_gyro') {
       multiplier *= 1.08; // Keep gyro snappy for fast transfers
     }
-  } else if (inputs.primaryProblem === 'close' && isCloseRangeOptic) {
+  }
+  
+  if ((inputs.primaryProblem === 'close' || inputs.primaryProblem === 'all') && isCloseRangeOptic) {
     if (category === 'camera' || category === 'ads') {
       multiplier *= 1.10;
     }
-  } else if (inputs.primaryProblem === 'long' && isLongRangeOptic) {
+  }
+  
+  if ((inputs.primaryProblem === 'long' || inputs.primaryProblem === 'all') && isLongRangeOptic) {
     if (category === 'camera' || category === 'ads') {
       multiplier *= 0.90;
     }

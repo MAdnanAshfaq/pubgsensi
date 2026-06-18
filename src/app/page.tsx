@@ -31,7 +31,7 @@ interface WizardData {
   gyroMode: 'always_on' | 'scope_on' | 'off';
   fingerCount: number;
   playstyle: 'rusher' | 'sniper' | 'assaulter' | 'balanced';
-  primaryProblem: 'recoil' | 'aim' | 'transfer' | 'close' | 'long';
+  primaryProblem: 'recoil' | 'aim' | 'transfer' | 'close' | 'long' | 'all';
 }
 
 export default function OnboardingWizard() {
@@ -324,6 +324,7 @@ export default function OnboardingWizard() {
                 { id: 'transfer', label: 'Horizontal Spray Transfer', desc: 'Struggling to switch targets while spraying. Dampens ADS by -10% and boosts Gyro by +8%.', icon: MoveHorizontal },
                 { id: 'close', label: 'Hipfire Reaction Speed', desc: 'Bullet spread is fine, but target acquisition is too slow. Boosts close range camera speeds.', icon: Zap },
                 { id: 'long', label: 'Long Range Precision', desc: 'Struggling to align precise headshots on distant enemies. Dampens high optics.', icon: Crosshair },
+                { id: 'all', label: 'Select All / Complete Calibration', desc: 'Apply all aim offset correction filters. Calibrates Close Range, Recoil, Transfer, and Precision simultaneously.', icon: Shield },
               ].map((opt) => {
                 const IconComponent = opt.icon;
                 return (
