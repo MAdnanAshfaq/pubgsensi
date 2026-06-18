@@ -186,29 +186,29 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
       const pct = ((currentVal - 1) / (maxVal - 1)) * 100;
 
       return (
-        <div key={scopeKey} className="space-y-1">
-          {/* Label Row (Plain text, no boxes) */}
-          <div className="flex justify-between items-center h-4">
-            <span className="text-[11px] font-semibold text-[#cbdbe6] font-body select-none">
+        <div key={scopeKey} className="space-y-2">
+          {/* Label Row */}
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-normal text-[#e2e8f0] font-body select-none">
               {label}
             </span>
-            <span className="text-[11px] font-bold text-[#cbdbe6] font-body select-none">
+            <span className="text-[13px] font-semibold text-[#e2e8f0] font-body select-none">
               {currentVal}%
             </span>
           </div>
 
-          {/* Controls Row (Squared buttons, solid color scheme) */}
-          <div className="flex items-center">
+          {/* Controls Row */}
+          <div className="slider-container flex items-center gap-3">
             {/* Minus Button */}
             <button
               onClick={() => handleSliderChange(category, scopeKey, Math.max(1, currentVal - 1))}
-              className="w-8 h-8 bg-[#1f2d3a] border border-[#455869] text-white hover:bg-[#2c3e50] flex items-center justify-center font-normal rounded-none cursor-pointer select-none active:scale-95 transition-all text-lg"
+              className="control-btn w-8 h-8 bg-[#121d28] border border-white/20 text-white hover:bg-[#1a2b3c] active:bg-[#2a3b4d] flex items-center justify-center font-normal rounded-none cursor-pointer select-none transition-all text-lg"
             >
-              -
+              −
             </button>
 
             {/* Slider track container */}
-            <div className="flex-grow px-2 flex items-center relative">
+            <div className="slider-track flex-grow h-1 bg-[#0d161f] relative flex items-center">
               <input
                 type="range"
                 min="1"
@@ -217,7 +217,7 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
                 onChange={(e) => handleSliderChange(category, scopeKey, Number(e.target.value))}
                 className="pubg-slider"
                 style={{
-                  background: `linear-gradient(to right, #7ea4b5 0%, #7ea4b5 ${pct}%, #0d151c ${pct}%, #0d151c 100%)`
+                  background: `linear-gradient(to right, #4a6375 0%, #4a6375 ${pct}%, #0d161f ${pct}%, #0d161f 100%)`
                 }}
               />
             </div>
@@ -225,7 +225,7 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
             {/* Plus Button */}
             <button
               onClick={() => handleSliderChange(category, scopeKey, Math.min(maxVal, currentVal + 1))}
-              className="w-8 h-8 bg-[#1f2d3a] border border-[#455869] text-white hover:bg-[#2c3e50] flex items-center justify-center font-normal rounded-none cursor-pointer select-none active:scale-95 transition-all text-lg"
+              className="control-btn w-8 h-8 bg-[#121d28] border border-white/20 text-white hover:bg-[#1a2b3c] active:bg-[#2a3b4d] flex items-center justify-center font-normal rounded-none cursor-pointer select-none transition-all text-lg"
             >
               +
             </button>
@@ -235,13 +235,13 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
     };
 
     return (
-      <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-6 space-y-4 shadow-2xl relative">
+      <div className="settings-overlay bg-[#1b2836]/85 border border-white/10 backdrop-blur-[4px] rounded-none p-6 md:p-8 space-y-6 shadow-2xl relative">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-sm font-bold text-white font-body select-none">
+            <h3 className="header-title text-[16px] font-medium text-white font-body select-none mb-1">
               {title}
             </h3>
-            <p className="text-[11px] text-[#a0b0c0] mt-0.5 select-none leading-relaxed">
+            <p className="header-desc text-[11px] text-[#cbd5e1] mt-0.5 select-none leading-relaxed">
               {desc}
             </p>
           </div>
@@ -257,9 +257,9 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
           {/* Left Column */}
-          <div className="space-y-3">
+          <div className="space-y-8">
             {renderSlider('no_scope_3rd', '3rd Person No Scope')}
             {renderSlider('red_dot', 'Red Dot, Holographic, Aim Assist')}
             {renderSlider('scope_3x', '3x Scope, Win94')}
@@ -267,7 +267,7 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
           </div>
 
           {/* Right Column */}
-          <div className="space-y-3">
+          <div className="space-y-8">
             {renderSlider('no_scope_1st', '1st Person No Scope')}
             {renderSlider('scope_2x', '2x Scope')}
             {renderSlider('scope_4x', '4x Scope, VSS')}
