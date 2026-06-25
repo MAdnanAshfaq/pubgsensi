@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface DeviceLookupResult {
+  // ── Calibration (fed into Gemini sensitivity engine) ──────────────────────
   deviceModel: string;
+  brandName: string;
   deviceTier: 'budget' | 'mid' | 'flagship';
   measuredLatencyMs: number;
   measuredSwipeSpeed: number;
@@ -12,6 +14,18 @@ export interface DeviceLookupResult {
   touchSamplingHz: number;
   gyroSensor: string;
   summary: string;
+  // ── Tactical spec card fields (fills the Stitch template) ─────────────────
+  displaySpecs: string;       // e.g. "6.55" AMOLED, 120Hz, 1080×2400, 800 nits"
+  chipsetInfo: string;        // e.g. "Snapdragon 865, 7nm, Adreno 650"
+  memoryStorageConfig: string; // e.g. "8GB/12GB RAM · 128GB/256GB UFS 3.1"
+  cameraSpecs: string;        // e.g. "48MP + 16MP + 8MP Triple · 4K60fps"
+  batteryChargingInfo: string; // e.g. "4510 mAh · 30W Warp Charge"
+  gyroDataDisplay: string;    // e.g. "Bosch BMI160 · 96% Stability · Premium"
+  samplingRateDisplay: string; // e.g. "240Hz Touch · 1.18× Speed Scale · Fast"
+  latencyDataDisplay: string;  // e.g. "65ms Avg Latency · Excellent Response"
+  refreshRate: string;         // e.g. "120Hz"
+  batteryCapacity: string;     // e.g. "4510mAh"
+  chargeSpeed: string;         // e.g. "30W"
 }
 
 export async function POST(req: NextRequest) {
@@ -47,47 +61,53 @@ async function lookupDeviceWithGemini(apiKey: string, deviceModel: string): Prom
   });
 
   const prompt = `
-You are a mobile hardware research expert with deep knowledge of Android and iOS devices used for gaming.
+You are a mobile hardware expert and gaming analyst. Research the device "${deviceModel}" deeply and return comprehensive specs.
 
-The user has entered this device name: "${deviceModel}"
+Fill ALL fields for a tactical gaming spec card AND calibration values for a PUBG sensitivity system.
 
-Your task: Research this exact device model and provide precise hardware specifications that affect PUBG Mobile / BGMI gameplay performance, specifically:
-1. Touch screen sampling rate and touch response latency
-2. Gyroscope sensor model and noise characteristics  
-3. Chipset performance tier and gaming stability
-4. Display refresh rate and rendering smoothness
+CALIBRATION RULES:
+- measuredLatencyMs (50–200): Flagship AMOLED 120hz+ → 50–80ms | Mid AMOLED 60-90hz → 80–120ms | Budget LCD → 120–180ms
+- measuredSwipeSpeed (0.80–1.25): 240Hz+ touch → 1.10–1.25 | Standard mid → 0.95–1.05 | Budget → 0.80–0.90
+- gyroStabilityScore (0.00–1.00): Premium Sony/Bosch → 0.90–0.98 | Mid sensors → 0.70–0.85 | Budget → 0.50–0.65
+- deviceTier: "flagship" if SD8 Gen1+/A15+/D9000+ | "mid" if SD7xx/D8xx/Exynos1xxx | "budget" otherwise
 
-Based on your research, output calibration values formatted for a sensitivity optimization system:
+SPEC CARD FORMATTING RULES (keep compact, 1-2 lines each):
+- displaySpecs: Include size, panel type, resolution, max refresh rate, brightness if known (e.g. '6.55" AMOLED · 120Hz · FHD+ · 800 nits')
+- chipsetInfo: Chip name + process node + GPU (e.g. 'Snapdragon 865 · 7nm · Adreno 650')
+- memoryStorageConfig: RAM options + storage options + storage type (e.g. '8/12GB RAM · 128/256GB UFS 3.1')
+- cameraSpecs: Main sensor + ultra-wide + tele if any + video (e.g. '48MP+16MP+8MP · 4K@60fps')
+- batteryChargingInfo: Capacity + wired charging + wireless if any (e.g. '4510mAh · 30W Warp · No Wireless')
+- gyroDataDisplay: Sensor brand/model + stability score + quality label (e.g. 'Bosch BMI160 · 96% Stability · Precise')
+- samplingRateDisplay: Touch sampling Hz + swipe multiplier + speed label (e.g. '240Hz Touch · 118% Speed · Fast')
+- latencyDataDisplay: Latency ms + response label (e.g. '65ms Avg · Excellent Response')
+- refreshRate: Just the number + Hz (e.g. '120Hz')
+- batteryCapacity: Just capacity (e.g. '4510mAh')
+- chargeSpeed: Wired charging wattage (e.g. '30W')
 
-- measuredLatencyMs: The typical touch input-to-display latency for this device in milliseconds (typical range: 50–200ms)
-  - Flagship AMOLED (e.g. LTPO, 120hz+): 50–80ms
-  - Mid-range AMOLED (60-90hz): 80–120ms
-  - Budget LCD: 120–180ms
-
-- measuredSwipeSpeed: A multiplier (0.80–1.25) representing how this device's screen surface and digitizer translate swipe speed
-  - Devices with high touch sampling rate (240Hz+) and smooth glass: 1.10–1.25
-  - Standard mid-range: 0.95–1.05
-  - Budget low sampling rate: 0.80–0.90
-
-- gyroStabilityScore: A score from 0.0 to 1.0 representing the quality and stability of this device's gyroscope sensor
-  - Premium Sony/Bosch sensors in flagships: 0.90–0.98
-  - Standard mid-range sensors: 0.70–0.85
-  - Budget noisy sensors: 0.50–0.65
-
-- deviceTier: "flagship" if Snapdragon 8 Gen 1+/Apple A15+/Dimensity 9000+, "mid" if Snapdragon 7xx/Dimensity 8xx/Exynos 1xxx, "budget" otherwise
-
-RESPOND WITH EXACTLY THIS JSON (no other text):
+RESPOND WITH EXACTLY THIS JSON (no other text, no markdown):
 {
-  "deviceModel": "<corrected official device name>",
+  "deviceModel": "<corrected official model name>",
+  "brandName": "<brand only e.g. OnePlus>",
   "deviceTier": "<flagship|mid|budget>",
   "measuredLatencyMs": <integer 50-200>,
-  "measuredSwipeSpeed": <float 0.80-1.25, 2 decimal places>,
-  "gyroStabilityScore": <float 0.00-1.00, 2 decimal places>,
-  "chipset": "<chipset name e.g. Snapdragon 8 Gen 2>",
-  "displayHz": <integer display refresh rate>,
-  "touchSamplingHz": <integer touch sampling rate in Hz>,
-  "gyroSensor": "<gyro sensor model or description e.g. Bosch BMI160>",
-  "summary": "<2-sentence expert summary of this device's gaming performance characteristics and why these calibration values were chosen>"
+  "measuredSwipeSpeed": <float 0.80-1.25>,
+  "gyroStabilityScore": <float 0.00-1.00>,
+  "chipset": "<chipset name>",
+  "displayHz": <integer>,
+  "touchSamplingHz": <integer>,
+  "gyroSensor": "<sensor model>",
+  "summary": "<2-sentence gaming performance summary>",
+  "displaySpecs": "<compact display spec>",
+  "chipsetInfo": "<compact chipset info>",
+  "memoryStorageConfig": "<compact RAM/storage>",
+  "cameraSpecs": "<compact camera spec>",
+  "batteryChargingInfo": "<compact battery info>",
+  "gyroDataDisplay": "<gyro display string>",
+  "samplingRateDisplay": "<touch sampling display string>",
+  "latencyDataDisplay": "<latency display string>",
+  "refreshRate": "<e.g. 120Hz>",
+  "batteryCapacity": "<e.g. 4510mAh>",
+  "chargeSpeed": "<e.g. 30W>"
 }
   `.trim();
 
@@ -96,10 +116,10 @@ RESPOND WITH EXACTLY THIS JSON (no other text):
   const clean = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
   const parsed: DeviceLookupResult = JSON.parse(clean);
 
-  // Safety clamps
-  parsed.measuredLatencyMs    = Math.max(40,  Math.min(220,  Math.round(parsed.measuredLatencyMs)));
-  parsed.measuredSwipeSpeed   = Math.max(0.80, Math.min(1.25, parseFloat(parsed.measuredSwipeSpeed.toFixed(2))));
-  parsed.gyroStabilityScore   = Math.max(0.0,  Math.min(1.0,  parseFloat(parsed.gyroStabilityScore.toFixed(2))));
+  // Safety clamps for calibration values
+  parsed.measuredLatencyMs  = Math.max(40,  Math.min(220,  Math.round(parsed.measuredLatencyMs)));
+  parsed.measuredSwipeSpeed = Math.max(0.80, Math.min(1.25, parseFloat(Number(parsed.measuredSwipeSpeed).toFixed(2))));
+  parsed.gyroStabilityScore = Math.max(0.0,  Math.min(1.0,  parseFloat(Number(parsed.gyroStabilityScore).toFixed(2))));
 
   return parsed;
 }

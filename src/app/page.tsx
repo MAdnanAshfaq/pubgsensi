@@ -61,11 +61,16 @@ export default function OnboardingWizard() {
   const [deviceInput, setDeviceInput] = useState('');
   const [lookupStatus, setLookupStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [lookupResult, setLookupResult] = useState<null | {
-    deviceModel: string; chipset: string; displayHz: number;
-    touchSamplingHz: number; gyroSensor: string;
+    // calibration
+    deviceModel: string; brandName: string; chipset: string; displayHz: number;
+    touchSamplingHz: number; gyroSensor: string; summary: string;
     deviceTier: 'budget' | 'mid' | 'flagship';
-    measuredLatencyMs: number; measuredSwipeSpeed: number;
-    gyroStabilityScore: number; summary: string;
+    measuredLatencyMs: number; measuredSwipeSpeed: number; gyroStabilityScore: number;
+    // tactical spec card
+    displaySpecs: string; chipsetInfo: string; memoryStorageConfig: string;
+    cameraSpecs: string; batteryChargingInfo: string; gyroDataDisplay: string;
+    samplingRateDisplay: string; latencyDataDisplay: string;
+    refreshRate: string; batteryCapacity: string; chargeSpeed: string;
   }>(null);
   const [lookupError, setLookupError] = useState('');
 
@@ -487,51 +492,148 @@ export default function OnboardingWizard() {
               </div>
             )}
 
-            {/* Results card */}
+            {/* ── Tactical Edition Results Card ─────────────────────────── */}
             {lookupStatus === 'done' && lookupResult && (
-              <div className="bg-surface-card border border-primary-yellow/20 rounded-2xl p-5 space-y-4 shadow-[0_0_20px_rgba(255,215,0,0.07)]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-headline text-base font-extrabold text-foreground uppercase tracking-wide">{lookupResult.deviceModel}</p>
-                    <p className="text-[10px] font-technical text-primary-yellow uppercase tracking-widest mt-0.5">{lookupResult.chipset} · {lookupResult.displayHz}Hz Display</p>
+              <div className="overflow-hidden rounded-2xl border border-primary-yellow/25 shadow-[0_0_30px_rgba(255,215,0,0.1)]">
+
+                {/* Hero Header */}
+                <div
+                  className="relative pt-8 pb-5 px-5 text-center overflow-hidden"
+                  style={{
+                    background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.05) 0%, transparent 70%), linear-gradient(45deg, #000 25%, #050505 25%, #050505 50%, #000 50%, #000 75%, #050505 75%, #050505 100%)',
+                    backgroundSize: '100% 100%, 40px 40px',
+                  }}
+                >
+                  {/* Watermark */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[6rem] font-black italic opacity-[0.04] text-primary-yellow select-none pointer-events-none leading-none">
+                    SPEC
                   </div>
-                  <span className={`text-[9px] font-technical font-bold uppercase tracking-widest px-2.5 py-1 rounded border ${
-                    lookupResult.deviceTier === 'flagship' ? 'bg-primary-yellow/10 border-primary-yellow/40 text-primary-yellow' :
-                    lookupResult.deviceTier === 'mid'      ? 'bg-blue-500/10 border-blue-400/30 text-blue-400' :
-                                                            'bg-white/5 border-white/10 text-text-muted'
+                  <div className="relative z-10">
+                    <p className="font-headline text-base font-extrabold italic text-white tracking-widest uppercase">
+                      {lookupResult.brandName}
+                    </p>
+                    <h2 className="font-headline text-5xl font-black italic text-primary-yellow leading-tight drop-shadow-md uppercase">
+                      {lookupResult.deviceModel.replace(lookupResult.brandName, '').trim()}
+                    </h2>
+                    <div className="flex justify-center items-center gap-3 mt-1">
+                      <div className="h-px w-10 bg-primary-yellow/50" />
+                      <span className="text-[10px] font-bold italic tracking-[0.3em] text-primary-yellow">
+                        BORN TO PLAY
+                      </span>
+                      <div className="h-px w-10 bg-primary-yellow/50" />
+                    </div>
+                  </div>
+                  {/* Tier badge */}
+                  <span className={`absolute top-4 right-4 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border ${
+                    lookupResult.deviceTier === 'flagship' ? 'border-primary-yellow/60 text-primary-yellow bg-primary-yellow/10' :
+                    lookupResult.deviceTier === 'mid'      ? 'border-blue-400/50 text-blue-400 bg-blue-400/10' :
+                                                            'border-white/20 text-white/50 bg-white/5'
                   }`}>{lookupResult.deviceTier.toUpperCase()}</span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: 'Touch Latency', value: `${lookupResult.measuredLatencyMs}ms`, icon: Gauge,
-                      sub: lookupResult.measuredLatencyMs < 80 ? 'Excellent' : lookupResult.measuredLatencyMs < 120 ? 'Good' : 'High' },
-                    { label: 'Swipe Speed', value: `${Math.round(lookupResult.measuredSwipeSpeed * 100)}%`, icon: MoveHorizontal,
-                      sub: lookupResult.measuredSwipeSpeed > 1.1 ? 'Fast Screen' : lookupResult.measuredSwipeSpeed < 0.95 ? 'Slow Screen' : 'Normal' },
-                    { label: 'Gyro Quality', value: `${Math.round(lookupResult.gyroStabilityScore * 100)}%`, icon: RotateCw,
-                      sub: lookupResult.gyroStabilityScore > 0.88 ? 'Precise' : lookupResult.gyroStabilityScore > 0.70 ? 'Moderate' : 'Noisy' },
-                  ].map(({ label, value, icon: Icon, sub }) => (
-                    <div key={label} className="bg-surface-dark border border-border-tactical/20 rounded-xl p-3 text-center">
-                      <Icon className="w-4 h-4 text-primary-yellow mx-auto mb-1.5" />
-                      <p className="font-headline text-lg font-black text-foreground">{value}</p>
-                      <p className="text-[9px] font-technical text-text-muted uppercase">{label}</p>
-                      <p className="text-[9px] font-technical text-primary-yellow/70 uppercase mt-0.5">{sub}</p>
+                {/* Spec rows */}
+                {([
+                  {
+                    label: 'DISPLAY',
+                    value: lookupResult.displaySpecs,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>,
+                  },
+                  {
+                    label: 'PROCESSOR',
+                    value: lookupResult.chipsetInfo,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>,
+                  },
+                  {
+                    label: 'MEMORY & STORAGE',
+                    value: lookupResult.memoryStorageConfig,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>,
+                  },
+                  {
+                    label: 'CAMERA SYSTEM',
+                    value: lookupResult.cameraSpecs,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+                  },
+                  {
+                    label: 'BATTERY & POWER',
+                    value: lookupResult.batteryChargingInfo,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><line x1="13" y1="2" x2="9" y2="7" strokeLinecap="round"/><line x1="9" y1="7" x2="11" y2="7"/><line x1="11" y1="7" x2="7" y2="12" strokeLinecap="round"/></svg>,
+                  },
+                  {
+                    label: 'GYRO QUALITY',
+                    value: lookupResult.gyroDataDisplay,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M22 12H2"/><circle cx="12" cy="12" r="9"/></svg>,
+                  },
+                  {
+                    label: 'SWIPE SPEED',
+                    value: lookupResult.samplingRateDisplay,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+                  },
+                  {
+                    label: 'TOUCH LATENCY',
+                    value: lookupResult.latencyDataDisplay,
+                    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>,
+                  },
+                ] as { label: string; value: string; icon: React.ReactNode }[]).map(({ label, value, icon }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-4 px-4 py-3 border-y border-r border-primary-yellow/10"
+                    style={{ borderLeft: '3px solid #FFD700', background: 'linear-gradient(90deg, rgba(255,214,0,0.07) 0%, transparent 100%)' }}
+                  >
+                    <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center text-primary-yellow opacity-80">
+                      {icon}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex-grow min-w-0">
+                      <p className="text-primary-yellow text-[10px] font-black tracking-widest font-headline">{label}</p>
+                      <p className="text-[12px] leading-tight text-gray-300 font-bold font-headline uppercase truncate">{value}</p>
+                    </div>
+                  </div>
+                ))}
 
-                <div className="space-y-1">
-                  <p className="text-[9px] font-technical text-text-muted uppercase tracking-wider">Touch Sampling: {lookupResult.touchSamplingHz}Hz · Gyro Sensor: {lookupResult.gyroSensor}</p>
-                  <p className="text-[10px] text-text-muted leading-relaxed border-t border-border-tactical/15 pt-2">{lookupResult.summary}</p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => { setLookupStatus('idle'); setLookupResult(null); setDeviceInput(''); }}
-                  className="text-[10px] font-technical uppercase tracking-wider text-text-muted hover:text-foreground underline"
+                {/* Footer badges */}
+                <div
+                  className="relative"
+                  style={{ background: 'rgba(10,10,10,0.95)', borderTop: '2px solid rgba(255,215,0,0.2)' }}
                 >
-                  Search Different Device
-                </button>
+                  {/* Hazard stripe */}
+                  <div
+                    className="h-3 w-full"
+                    style={{ background: 'repeating-linear-gradient(-45deg, #FFD700, #FFD700 8px, #000 8px, #000 16px)' }}
+                  />
+                  <div className="flex justify-around items-center py-3 px-2">
+                    {[
+                      { top: lookupResult.refreshRate, bottom: 'ULTRA SMOOTH', icon: <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> },
+                      { top: lookupResult.batteryCapacity, bottom: 'BATTERY', icon: <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg> },
+                      { top: lookupResult.chargeSpeed, bottom: 'CHARGING', icon: <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> },
+                      { top: lookupResult.touchSamplingHz + 'Hz', bottom: 'TOUCH RATE', icon: <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> },
+                    ].map(({ top, bottom, icon }) => (
+                      <div key={bottom} className="flex flex-col items-center gap-1">
+                        <div className="w-8 h-8 border border-primary-yellow/40 flex items-center justify-center text-primary-yellow rounded-sm opacity-80">
+                          {icon}
+                        </div>
+                        <span className="font-headline text-[9px] text-primary-yellow font-black text-center uppercase leading-none">
+                          {top}<br />{bottom}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-primary-yellow py-1.5 text-center">
+                    <p className="text-black font-black text-[10px] italic tracking-tighter font-headline uppercase">
+                      AIMSYNC · CALIBRATED FOR VICTORY
+                    </p>
+                  </div>
+                </div>
+
+                {/* Expert summary + re-search */}
+                <div className="bg-[#050505] px-4 py-3 space-y-2">
+                  <p className="text-[10px] text-text-muted leading-relaxed">{lookupResult.summary}</p>
+                  <button
+                    type="button"
+                    onClick={() => { setLookupStatus('idle'); setLookupResult(null); setDeviceInput(''); }}
+                    className="text-[10px] font-technical uppercase tracking-wider text-text-muted hover:text-primary-yellow underline transition-colors"
+                  >
+                    ↩ Search Different Device
+                  </button>
+                </div>
               </div>
             )}
 
