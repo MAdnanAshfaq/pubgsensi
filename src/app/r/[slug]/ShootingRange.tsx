@@ -1,18 +1,25 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Target, RefreshCw, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Target, RefreshCw, X, Smartphone, AlertTriangle } from 'lucide-react';
+
+interface ScopeState {
+  no_scope_3rd: number;
+  no_scope_1st: number;
+  red_dot: number;
+  scope_2x: number;
+  scope_3x: number;
+  scope_4x: number;
+  scope_6x: number;
+  scope_8x: number;
+}
 
 interface ShootingRangeProps {
-  adsValues: {
-    no_scope_3rd: number;
-    no_scope_1st: number;
-    red_dot: number;
-    scope_2x: number;
-    scope_3x: number;
-    scope_4x: number;
-    scope_6x: number;
-    scope_8x: number;
+  sensValues: {
+    camera: ScopeState;
+    ads: ScopeState;
+    gyro: ScopeState | null;
+    adsGyro: ScopeState | null;
   };
 }
 
@@ -26,54 +33,175 @@ interface Hit {
   score: number;
 }
 
-export default function ShootingRange({ adsValues }: ShootingRangeProps) {
+export default function ShootingRange({ sensValues }: ShootingRangeProps) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
   const [weapon, setWeapon] = useState<WeaponType>('m416');
   const [optic, setOptic] = useState<OpticType>('red_dot');
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Check orientation
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+    };
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const enterFullscreen = async () => {
+    try {
+      // Request gyro permission for iOS 13+
+      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        const permissionState = await (DeviceOrientationEvent as any).requestPermission();
+        if (permissionState !== 'granted') {
+          alert('Gyroscope permission denied. You can still play with touch swipe.');
+        }
+      }
+      
+      if (containerRef.current?.requestFullscreen) {
+        await containerRef.current.requestFullscreen();
+      } else if ((containerRef.current as any)?.webkitRequestFullscreen) {
+        await (containerRef.current as any).webkitRequestFullscreen();
+      }
+      setIsFullscreen(true);
+    } catch (e) {
+      console.error('Fullscreen request failed', e);
+      setIsFullscreen(true); // Fallback to simulated fullscreen (fixed positioning)
+    }
+  };
+
+  const exitFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if ((document as any).webkitFullscreenElement) {
+        await (document as any).webkitExitFullscreen();
+      }
+    } catch (e) {}
+    setIsFullscreen(false);
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  return (
+    <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-5 space-y-4">
+      <div className="flex justify-between items-center border-b border-[#384b5c]/30 pb-2">
+        <h3 className="font-headline text-base font-extrabold text-[#9cd8ff] tracking-wide uppercase flex items-center gap-2 select-none">
+          <Target className="w-5 h-5 text-primary-yellow animate-pulse" />
+          IMMERSIVE SHOOTING RANGE
+        </h3>
+      </div>
+      <p className="text-xs text-[#cbdbe6] leading-relaxed">
+        Test your actual sensitivity configuration in a simulated 3D environment. Includes real swipe scaling and gyroscope tracking.
+      </p>
+
+      <button
+        onClick={enterFullscreen}
+        className="w-full bg-primary-yellow text-background font-headline font-bold py-4 rounded-xl shadow-[0_4px_16px_rgba(255,215,0,0.25)] hover:bg-white active:scale-95 transition-all uppercase tracking-wide border border-primary-yellow/20 cursor-pointer"
+      >
+        ENTER SHOOTING RANGE
+      </button>
+
+      {/* Fullscreen Overlay */}
+      {isFullscreen && (
+        <div 
+          ref={containerRef}
+          className="fixed inset-0 z-50 bg-[#0c0e10] flex items-center justify-center overflow-hidden touch-none"
+        >
+          {isPortrait ? (
+            <div className="text-center space-y-4 p-6 flex flex-col items-center">
+              <Smartphone className="w-16 h-16 text-primary-yellow animate-pulse -rotate-90" />
+              <h2 className="text-2xl font-headline font-black text-white uppercase tracking-widest">
+                Rotate Your Device
+              </h2>
+              <p className="text-text-muted text-sm font-technical">
+                The shooting range requires landscape orientation for dual-thumb control and accurate gyroscope mapping.
+              </p>
+              <button 
+                onClick={exitFullscreen}
+                className="mt-4 px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10"
+              >
+                Exit Range
+              </button>
+            </div>
+          ) : (
+            <GameInstance 
+              sensValues={sensValues} 
+              weapon={weapon}
+              optic={optic}
+              onExit={exitFullscreen} 
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Game Instance Component (Only renders when in fullscreen landscape)
+// ─────────────────────────────────────────────────────────────────────────────
+function GameInstance({ 
+  sensValues, 
+  weapon, 
+  optic, 
+  onExit 
+}: { 
+  sensValues: ShootingRangeProps['sensValues'], 
+  weapon: WeaponType, 
+  optic: OpticType, 
+  onExit: () => void 
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
   const [bulletsLeft, setBulletsLeft] = useState(30);
-  const [isShooting, setIsShooting] = useState(false);
+  const [isFiring, setIsFiring] = useState(false);
   const [hits, setHits] = useState<Hit[]>([]);
-  const [scoreSummary, setScoreSummary] = useState<{
-    show: boolean;
-    grade: string;
-    accuracy: number;
-    avgDistance: number;
-    advice: string;
-  } | null>(null);
+  const [scoreSummary, setScoreSummary] = useState<any>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [recoilOffset, setRecoilOffset] = useState({ x: 0, y: 0 });
-  const isDraggingRef = useRef(false);
-  const pointerRef = useRef({ x: 0, y: 0 });
-  const shootIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isShootingRef = useRef(false);
-  const targetDistanceRef = useRef(50); // meters
+  // Crosshair position (virtual world space)
+  const posRef = useRef({ x: 0, y: 0 });
+  
+  // Touch tracking for right half of screen
+  const touchRef = useRef({ active: false, lastX: 0, lastY: 0, id: -1 });
+  
+  // Gyro tracking
+  const lastGyroRef = useRef<{ alpha: number, beta: number, gamma: number } | null>(null);
 
-  // Weapon specs
+  // Game loop & recoil
+  const gameLoopRef = useRef<number>(0);
+  const lastFireTimeRef = useRef<number>(0);
+  const isFiringRef = useRef(false);
+
   const weapons = {
-    m416: {
-      name: 'M416',
-      magSize: 30,
-      fireRate: 95, // ms
-      verticalKick: 4.8,
-      horizontalJitter: 2.2,
-      baseInaccuracy: 4,
-    },
-    akm: {
-      name: 'AKM',
-      magSize: 30,
-      fireRate: 115, // ms
-      verticalKick: 8.5,
-      horizontalJitter: 3.8,
-      baseInaccuracy: 7,
-    },
-    awm: {
-      name: 'AWM',
-      magSize: 5,
-      fireRate: 1200, // ms
-      verticalKick: 38,
-      horizontalJitter: 0.8,
-      baseInaccuracy: 1.5,
-    },
+    m416: { name: 'M416', magSize: 30, fireRate: 95, vKick: 8.5, hJitter: 3.5, spread: 4 },
+    akm: { name: 'AKM', magSize: 30, fireRate: 115, vKick: 13.5, hJitter: 5.5, spread: 6 },
+    awm: { name: 'AWM', magSize: 5, fireRate: 1200, vKick: 50, hJitter: 1, spread: 1 },
+  };
+
+  const getOpticKey = (): keyof ScopeState => {
+    switch (optic) {
+      case 'red_dot': return 'red_dot';
+      case 'scope_3x': return 'scope_3x';
+      case 'scope_4x': return 'scope_4x';
+      case 'scope_6x': return 'scope_6x';
+      default: return 'red_dot';
+    }
   };
 
   const getOpticZoom = () => {
@@ -86,580 +214,430 @@ export default function ShootingRange({ adsValues }: ShootingRangeProps) {
     }
   };
 
-  const getOpticLabel = () => {
-    switch (optic) {
-      case 'red_dot': return 'Red Dot (50m)';
-      case 'scope_3x': return '3x Scope (100m)';
-      case 'scope_4x': return '4x Scope (150m)';
-      case 'scope_6x': return '6x Scope (200m)';
+  // ── DEVICE ORIENTATION (GYRO) ──────────────────────────────────────────────
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.alpha === null || e.beta === null || e.gamma === null) return;
+      
+      const current = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
+      
+      if (lastGyroRef.current) {
+        // Calculate delta (rough approximation, assuming landscape orientation)
+        // In landscape, beta is tilt forward/back (vertical aim), gamma is twist (horizontal aim)
+        // NOTE: DeviceOrientation math can get complex with quaternions, but for a 2D canvas 
+        // simple deltas work okay for demonstration if device doesn't pass gimbal lock.
+        
+        let dBeta = current.beta - lastGyroRef.current.beta;
+        let dGamma = current.gamma - lastGyroRef.current.gamma;
+
+        // Handle wrap-around
+        if (dBeta > 180) dBeta -= 360; else if (dBeta < -180) dBeta += 360;
+        if (dGamma > 180) dGamma -= 360; else if (dGamma < -180) dGamma += 360;
+
+        // Apply sensitivity
+        const opticKey = getOpticKey();
+        let gyroSens = 0;
+        if (sensValues.gyro) {
+          gyroSens = isFiringRef.current 
+            ? (sensValues.adsGyro?.[opticKey] ?? 0) 
+            : (sensValues.gyro?.[opticKey] ?? 0);
+        }
+
+        // Only apply if gyro is enabled and > 0
+        if (gyroSens > 0) {
+          // PUBG gyro scaling factor (tune this so 300% sens feels realistic)
+          const gyroScale = (gyroSens / 100) * 8.0; 
+          
+          posRef.current.x += dBeta * gyroScale; // Mapping might need flip based on specific landscape orientation (left vs right)
+          posRef.current.y += dGamma * gyroScale; 
+          
+          // Clamp to virtual world bounds
+          posRef.current.x = Math.max(-1000, Math.min(1000, posRef.current.x));
+          posRef.current.y = Math.max(-1000, Math.min(1000, posRef.current.y));
+        }
+      }
+      
+      lastGyroRef.current = current;
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, [sensValues, optic]);
+
+
+  // ── TOUCH / MOUSE SWIPE (CAMERA/ADS) ────────────────────────────────────────
+  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+    let clientX = 0, clientY = 0, id = -1;
+    if ('touches' in e) {
+      // Find a touch on the right half of the screen
+      const w = window.innerWidth;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.clientX > w / 2) {
+          clientX = t.clientX;
+          clientY = t.clientY;
+          id = t.identifier;
+          break;
+        }
+      }
+      if (id === -1) return; // No touch on right half
+    } else {
+      clientX = (e as React.MouseEvent).clientX;
+      clientY = (e as React.MouseEvent).clientY;
+      id = 0;
+    }
+
+    touchRef.current = { active: true, lastX: clientX, lastY: clientY, id };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!touchRef.current.active) return;
+    
+    let clientX = 0, clientY = 0;
+    if ('touches' in e) {
+      const t = Array.from(e.changedTouches).find(t => t.identifier === touchRef.current.id);
+      if (!t) return;
+      clientX = t.clientX;
+      clientY = t.clientY;
+    } else {
+      clientX = (e as React.MouseEvent).clientX;
+      clientY = (e as React.MouseEvent).clientY;
+    }
+
+    const dx = clientX - touchRef.current.lastX;
+    const dy = clientY - touchRef.current.lastY;
+
+    touchRef.current.lastX = clientX;
+    touchRef.current.lastY = clientY;
+
+    // Apply sensitivity
+    const opticKey = getOpticKey();
+    const swipeSens = isFiringRef.current 
+      ? sensValues.ads[opticKey] 
+      : sensValues.camera[opticKey];
+
+    // Swipe scaling factor
+    const swipeScale = (swipeSens / 100) * 1.5;
+
+    posRef.current.x += dx * swipeScale;
+    posRef.current.y += dy * swipeScale;
+
+    // Clamp
+    posRef.current.x = Math.max(-1000, Math.min(1000, posRef.current.x));
+    posRef.current.y = Math.max(-1000, Math.min(1000, posRef.current.y));
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent | React.MouseEvent) => {
+    if ('touches' in e) {
+      const t = Array.from(e.changedTouches).find(t => t.identifier === touchRef.current.id);
+      if (t) touchRef.current.active = false;
+    } else {
+      touchRef.current.active = false;
     }
   };
 
-  const getActiveSensitivity = () => {
-    switch (optic) {
-      case 'red_dot': return adsValues.red_dot;
-      case 'scope_3x': return adsValues.scope_3x;
-      case 'scope_4x': return adsValues.scope_4x;
-      case 'scope_6x': return adsValues.scope_6x;
-      default: return 50;
-    }
+
+  // ── FIRING & RECOIL LOGIC ──────────────────────────────────────────────────
+  const startFiring = () => {
+    if (bulletsLeft <= 0 || scoreSummary) return;
+    setIsFiring(true);
+    isFiringRef.current = true;
+    lastFireTimeRef.current = performance.now();
+    fireBullet();
   };
 
-  // Reset target
-  const handleReset = () => {
+  const stopFiring = () => {
+    setIsFiring(false);
+    isFiringRef.current = false;
+  };
+
+  const fireBullet = () => {
+    setBulletsLeft((prev) => {
+      if (prev <= 0) {
+        if (prev === 1) finishMag(hits); // Calculate score if mag just emptied
+        return 0;
+      }
+
+      const specs = weapons[weapon];
+      const zoom = getOpticZoom();
+      
+      // Calculate hit location (center of screen, offset by base inaccuracy)
+      const hitX = -posRef.current.x + (Math.random() - 0.5) * specs.spread * 6 * (1 / zoom);
+      const hitY = -posRef.current.y + (Math.random() - 0.5) * specs.spread * 6 * (1 / zoom);
+
+      const targetRadius = 100 * zoom;
+      const distance = Math.sqrt(hitX * hitX + hitY * hitY);
+      const isBullsEye = distance <= (targetRadius * 0.2);
+      
+      let score = 0;
+      if (distance <= targetRadius * 0.2) score = 10;
+      else if (distance <= targetRadius * 0.4) score = 8;
+      else if (distance <= targetRadius * 0.6) score = 6;
+      else if (distance <= targetRadius * 0.8) score = 4;
+      else if (distance <= targetRadius) score = 2;
+
+      const newHit = { x: hitX, y: hitY, isBullsEye, score };
+      
+      setHits(h => {
+        const newHits = [...h, newHit];
+        if (prev - 1 === 0) finishMag(newHits);
+        return newHits;
+      });
+
+      // Apply Recoil (pushes reticle UP, which means virtual world moves DOWN relative to screen)
+      const kickY = specs.vKick * (1 / zoom);
+      const jitterX = (Math.random() - 0.5) * specs.hJitter * 2.5 * (1 / zoom);
+
+      posRef.current.x += jitterX;
+      posRef.current.y -= kickY; // Move view UP
+
+      return prev - 1;
+    });
+  };
+
+  const finishMag = (finalHits: Hit[]) => {
+    stopFiring();
+    if (finalHits.length === 0) return;
+
+    const avgDist = finalHits.reduce((acc, h) => acc + Math.sqrt(h.x * h.x + h.y * h.y), 0) / finalHits.length;
+    const onTarget = finalHits.filter(h => h.score > 0).length;
+    const accuracy = Math.round((onTarget / finalHits.length) * 100);
+
+    let grade = 'C';
+    let advice = 'Heavy recoil climb. Pull down harder or increase ADS/Gyro sensitivity.';
+    if (accuracy >= 85 && avgDist < 40) {
+      grade = 'SSS'; advice = 'Perfect spray control! Settings are locked in.';
+    } else if (accuracy >= 65 && avgDist < 70) {
+      grade = 'S'; advice = 'Excellent control. Minor horizontal jitter remaining.';
+    } else if (accuracy >= 45 && avgDist < 100) {
+      grade = 'A'; advice = 'Good grouping. Slight vertical climb detected.';
+    } else if (accuracy >= 25 && avgDist < 150) {
+      grade = 'B'; advice = 'Moderate climb. Try increasing ADS/Gyro by 5-10%.';
+    }
+
+    setScoreSummary({ show: true, grade, accuracy, avgDist: Math.round(avgDist), advice });
+  };
+
+  const resetTarget = () => {
     setBulletsLeft(weapons[weapon].magSize);
     setHits([]);
-    setRecoilOffset({ x: 0, y: 0 });
+    posRef.current = { x: 0, y: 0 };
     setScoreSummary(null);
-    setIsShooting(false);
-    isShootingRef.current = false;
-    if (shootIntervalRef.current) {
-      clearInterval(shootIntervalRef.current);
-      shootIntervalRef.current = null;
-    }
   };
 
-  // Reset target when weapon changes
-  useEffect(() => {
-    handleReset();
-  }, [weapon, optic]);
 
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (shootIntervalRef.current) clearInterval(shootIntervalRef.current);
-    };
-  }, []);
-
-  // Handle pointer drag (recoil control)
-  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    pointerRef.current = { x, y };
-    isDraggingRef.current = true;
-    canvas.setPointerCapture(e.pointerId);
-
-    // Single fire for Bolt-Action AWM on click
-    if (weapon === 'awm' && !isShooting && bulletsLeft > 0 && !scoreSummary) {
-      fireBullet();
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDraggingRef.current) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const dx = x - pointerRef.current.x;
-    const dy = y - pointerRef.current.y;
-    
-    pointerRef.current = { x, y };
-    
-    const adsSens = getActiveSensitivity();
-    // Responsiveness scaling linked to slider value
-    const sensitivityMultiplier = adsSens / 100;
-    // Base scaling coefficient to balance mouse/swipe distance
-    const dragMultiplier = 1.35; 
-
-    setRecoilOffset(prev => ({
-      x: Math.max(-180, Math.min(180, prev.x + dx * sensitivityMultiplier * dragMultiplier)),
-      y: Math.max(-180, Math.min(180, prev.y + dy * sensitivityMultiplier * dragMultiplier))
-    }));
-  };
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    isDraggingRef.current = false;
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.releasePointerCapture(e.pointerId);
-    }
-  };
-
-  // Draw simulation loop
+  // ── RENDER LOOP ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animId: number;
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-    const render = () => {
-      // Clear canvas
-      ctx.fillStyle = '#0c0e10';
+    const render = (time: number) => {
+      // Fire logic check
+      if (isFiringRef.current && weapon !== 'awm') {
+        const timeSinceFire = time - lastFireTimeRef.current;
+        if (timeSinceFire > weapons[weapon].fireRate) {
+          fireBullet();
+          lastFireTimeRef.current = time;
+        }
+      }
+
+      ctx.fillStyle = '#1e242a'; // Sky/background
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
 
-      // Draw Grid / Radar Background (Premium Vanguard Style)
-      ctx.strokeStyle = 'rgba(77, 71, 50, 0.2)';
-      ctx.lineWidth = 1;
-      // Draw grid lines
-      const gridSize = 40;
-      for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
+      // Draw virtual world (target and hits)
+      // They move opposite to camera position
+      const targetX = cx + posRef.current.x;
+      const targetY = cy + posRef.current.y;
 
-      // Draw Range markers (stands/hills)
-      ctx.fillStyle = 'rgba(77, 71, 50, 0.05)';
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height - 30);
-      ctx.lineTo(canvas.width, canvas.height - 30);
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
-      ctx.closePath();
-      ctx.fill();
-
-      // Draw Target Board
       const zoom = getOpticZoom();
-      const baseRadius = 80;
+      const baseRadius = 100;
       const targetRadius = baseRadius * zoom;
 
-      // Draw target stand shadow and pole
-      ctx.fillStyle = '#1e2022';
-      ctx.fillRect(centerX - 4, centerY, 8, canvas.height - centerY - 30);
-      
-      // Draw target rings (Standard PUBG circular range board)
+      // Draw ground
+      ctx.fillStyle = '#2a3138';
+      ctx.beginPath();
+      ctx.moveTo(0, cy + posRef.current.y + targetRadius + 20);
+      ctx.lineTo(canvas.width, cy + posRef.current.y + targetRadius + 20);
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.fill();
+
+      // Draw Target Board Rings
       const ringColors = [
-        { c: '#ffffff', border: '#cbd5e1', text: '#475569' }, // 1-2 Ring
-        { c: '#ffffff', border: '#cbd5e1', text: '#475569' }, // 3-4 Ring
-        { c: '#3b82f6', border: '#2563eb', text: '#ffffff' }, // 5-6 Ring
-        { c: '#ef4444', border: '#dc2626', text: '#ffffff' }, // 7-8 Ring
-        { c: '#f59e0b', border: '#d97706', text: '#1e293b' }, // 9-10 Ring (Bulls-Eye)
+        { c: '#ffffff', border: '#cbd5e1' },
+        { c: '#ffffff', border: '#cbd5e1' },
+        { c: '#3b82f6', border: '#2563eb' },
+        { c: '#ef4444', border: '#dc2626' },
+        { c: '#f59e0b', border: '#d97706' }, // Bulls-Eye
       ];
 
       for (let i = 0; i < 5; i++) {
         const radius = targetRadius * (1 - i * 0.2);
         ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.arc(targetX, targetY, radius, 0, 2 * Math.PI);
         ctx.fillStyle = ringColors[i].c;
         ctx.fill();
         ctx.strokeStyle = ringColors[i].border;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
-
-        // Draw ring numbers (scoring tags)
-        if (radius > 15) {
-          ctx.fillStyle = ringColors[i].border;
-          ctx.font = `bold ${Math.round(8 * zoom + 3)}px monospace`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          // Top number
-          ctx.fillText((10 - i * 2).toString(), centerX, centerY - radius + (8 * zoom));
-          // Bottom number
-          ctx.fillText((10 - i * 2).toString(), centerX, centerY + radius - (8 * zoom));
-        }
       }
 
-      // Draw inner core bulls-eye dot
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, targetRadius * 0.05, 0, 2 * Math.PI);
-      ctx.fillStyle = '#000000';
-      ctx.fill();
-
-      // Draw all previous bullet impacts (hits)
+      // Draw Hits (fixed to target)
       hits.forEach((hit) => {
-        // Impact dot
+        const hX = targetX + hit.x;
+        const hY = targetY + hit.y;
+        
         ctx.beginPath();
-        ctx.arc(centerX + hit.x, centerY + hit.y, 3, 0, 2 * Math.PI);
-        ctx.fillStyle = hit.isBullsEye ? '#ffd700' : '#ef4444';
+        ctx.arc(hX, hY, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = hit.isBullsEye ? '#ffd700' : '#000000';
         ctx.fill();
-        // Inner core of bullet hole
-        ctx.beginPath();
-        ctx.arc(centerX + hit.x, centerY + hit.y, 1.2, 0, 2 * Math.PI);
-        ctx.fillStyle = '#27272a';
-        ctx.fill();
-        // Muted shock ring
-        ctx.beginPath();
-        ctx.arc(centerX + hit.x, centerY + hit.y, 6, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.15)';
-        ctx.stroke();
       });
 
-      // Draw Reticle (Dynamic Position shifted by Recoil)
-      const reticleX = centerX + recoilOffset.x;
-      const reticleY = centerY + recoilOffset.y;
+      // Draw Crosshair (Fixed in center of screen)
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2;
+      const gap = 6;
+      const len = 12;
 
-      ctx.strokeStyle = '#22c55e'; // Green crosshair
-      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx - gap - len, cy); ctx.lineTo(cx - gap, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + gap, cy); ctx.lineTo(cx + gap + len, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, cy - gap - len); ctx.lineTo(cx, cy - gap); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, cy + gap); ctx.lineTo(cx, cy + gap + len); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2 * Math.PI); ctx.fillStyle = '#22c55e'; ctx.fill();
 
-      // Draw crosshair lines
-      const lineLen = 8;
-      const gap = 4;
-      // Left
-      ctx.beginPath();
-      ctx.moveTo(reticleX - lineLen - gap, reticleY);
-      ctx.lineTo(reticleX - gap, reticleY);
-      ctx.stroke();
-      // Right
-      ctx.beginPath();
-      ctx.moveTo(reticleX + gap, reticleY);
-      ctx.lineTo(reticleX + lineLen + gap, reticleY);
-      ctx.stroke();
-      // Top
-      ctx.beginPath();
-      ctx.moveTo(reticleX, reticleY - lineLen - gap);
-      ctx.lineTo(reticleX, reticleY - gap);
-      ctx.stroke();
-      // Bottom
-      ctx.beginPath();
-      ctx.moveTo(reticleX, reticleY + gap);
-      ctx.lineTo(reticleX, reticleY + lineLen + gap);
-      ctx.stroke();
-
-      // Center dot
-      ctx.beginPath();
-      ctx.arc(reticleX, reticleY, 1.5, 0, 2 * Math.PI);
-      ctx.fillStyle = '#22c55e';
-      ctx.fill();
-
-      // If scope/optic is active, draw lens frame/shadow to look premium
+      // Scope Overlay
       if (optic !== 'red_dot') {
-        const borderGradient = ctx.createRadialGradient(
-          centerX, centerY, centerY * 0.7, 
-          centerX, centerY, centerY * 1.2
-        );
-        borderGradient.addColorStop(0, 'rgba(0,0,0,0)');
-        borderGradient.addColorStop(0.5, 'rgba(0,0,0,0.5)');
-        borderGradient.addColorStop(1, 'rgba(12,14,16,0.98)');
-        
-        ctx.fillStyle = borderGradient;
+        const grad = ctx.createRadialGradient(cx, cy, cy * 0.6, cx, cy, cy * 1.2);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.95)');
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw scope casing circular frame
         ctx.beginPath();
-        ctx.arc(centerX, centerY, centerY * 0.9, 0, 2 * Math.PI);
-        ctx.strokeStyle = '#27272a';
-        ctx.lineWidth = 15;
+        ctx.arc(cx, cy, cy * 0.9, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 40;
         ctx.stroke();
-
-        ctx.font = '9px monospace';
-        ctx.fillStyle = '#999077';
-        ctx.fillText(getOpticLabel(), centerX, centerY - centerY * 0.82);
       }
 
-      animId = requestAnimationFrame(render);
+      gameLoopRef.current = requestAnimationFrame(render);
     };
 
-    render();
+    gameLoopRef.current = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(gameLoopRef.current);
+      window.removeEventListener('resize', resizeCanvas);
     };
-  }, [recoilOffset, hits, optic, weapon]);
+  }, [optic, weapon, hits]);
 
-  // Fire a single bullet
-  const fireBullet = () => {
-    setBulletsLeft((prev) => {
-      if (prev <= 0) return 0;
-      
-      const currentBullets = prev - 1;
-      const specs = weapons[weapon];
-      const zoom = getOpticZoom();
-      
-      // Calculate hit point relative to current reticle position
-      // base inaccuracy spreads the bullet slightly
-      const randomInaccuracyX = (Math.random() - 0.5) * specs.baseInaccuracy * 6 * (1 / zoom);
-      const randomInaccuracyY = (Math.random() - 0.5) * specs.baseInaccuracy * 6 * (1 / zoom);
-
-      const hitX = recoilOffset.x + randomInaccuracyX;
-      const hitY = recoilOffset.y + randomInaccuracyY;
-
-      // Distance from center of target
-      const distance = Math.sqrt(hitX * hitX + hitY * hitY);
-      
-      // Calculate score based on distance and zoom
-      // Bullseye radius is 20 * zoom
-      const targetRadius = 80 * zoom;
-      const isBullsEye = distance <= (targetRadius * 0.2); // within yellow ring
-      
-      let bulletScore = 0;
-      if (distance <= targetRadius * 0.2) bulletScore = 10;
-      else if (distance <= targetRadius * 0.4) bulletScore = 8;
-      else if (distance <= targetRadius * 0.6) bulletScore = 6;
-      else if (distance <= targetRadius * 0.8) bulletScore = 4;
-      else if (distance <= targetRadius) bulletScore = 2;
-
-      const newHit: Hit = {
-        x: hitX,
-        y: hitY,
-        isBullsEye,
-        score: bulletScore,
-      };
-
-      setHits((prevHits) => {
-        const updated = [...prevHits, newHit];
-        
-        // If magazine is empty, calculate spray score summary
-        if (currentBullets === 0) {
-          setTimeout(() => {
-            calculateSpraySummary(updated);
-          }, 300);
-        }
-        return updated;
-      });
-
-      // Recoil kickback pushes crosshair UP (negative Y in canvas space) and jitter X
-      const kickY = -specs.verticalKick * (1 / zoom);
-      const jitterX = (Math.random() - 0.5) * specs.horizontalJitter * 2.5 * (1 / zoom);
-
-      setRecoilOffset((prev) => ({
-        x: Math.max(-180, Math.min(180, prev.x + jitterX)),
-        // Cap climb-up to prevent scrolling off screen completely
-        y: Math.max(-180, Math.min(180, prev.y + kickY)),
-      }));
-
-      return currentBullets;
-    });
-  };
-
-  // Start continuous fire
-  const startShooting = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (bulletsLeft <= 0 || scoreSummary || isShootingRef.current) return;
-    
-    // AWM is single fire, no automatic interval
-    if (weapon === 'awm') {
-      return;
-    }
-
-    setIsShooting(true);
-    isShootingRef.current = true;
-    
-    // Fire first bullet immediately
-    fireBullet();
-    
-    const specs = weapons[weapon];
-    shootIntervalRef.current = setInterval(() => {
-      if (isShootingRef.current) {
-        fireBullet();
-      }
-    }, specs.fireRate);
-  };
-
-  const stopShooting = () => {
-    setIsShooting(false);
-    isShootingRef.current = false;
-    if (shootIntervalRef.current) {
-      clearInterval(shootIntervalRef.current);
-      shootIntervalRef.current = null;
-    }
-  };
-
-  // Calculate grade and advice
-  const calculateSpraySummary = (finalHits: Hit[]) => {
-    stopShooting();
-    
-    if (finalHits.length === 0) return;
-
-    const total = finalHits.length;
-    const avgDistance = finalHits.reduce((acc, curr) => acc + Math.sqrt(curr.x * curr.x + curr.y * curr.y), 0) / total;
-    const onTargetCount = finalHits.filter(h => h.score > 0).length;
-    const accuracy = Math.round((onTargetCount / total) * 100);
-
-    let grade = 'C';
-    let advice = '';
-    const adsSens = getActiveSensitivity();
-
-    if (accuracy >= 85 && avgDistance < 22) {
-      grade = 'SSS';
-      advice = `Outstanding spray control! Your ${getOpticLabel().split(' ')[0]} ADS sensitivity of ${adsSens}% is perfectly tuned to your physical swipe speed and screen response. Lock this setting in!`;
-    } else if (accuracy >= 70 && avgDistance < 38) {
-      grade = 'S';
-      advice = `Excellent grouping. You controlled the vertical kick very well. Your sensitivity of ${adsSens}% is highly stable. Minor wrist drift adjustments will push this to championship tier.`;
-    } else if (accuracy >= 50 && avgDistance < 60) {
-      grade = 'A';
-      advice = `Good spray grouping. The bullets are centered but showed slightly wider vertical drift. If you felt you were struggling to pull down, consider raising your ${getOpticLabel().split(' ')[0]} ADS slider by 3-5%.`;
-    } else if (accuracy >= 30 && avgDistance < 90) {
-      grade = 'B';
-      advice = `Moderate recoil hold. The weapon climbed upwards. Try increasing your ADS sensitivity or practice a faster finger swipe downwards to counteract the climb.`;
-    } else {
-      grade = 'C';
-      advice = `Heavy bullet climb detected. Your sensitivity might be too low, requiring excessive swipe space. Try increasing your ADS sensitivity slider by 10% and test again.`;
-    }
-
-    setScoreSummary({
-      show: true,
-      grade,
-      accuracy,
-      avgDistance: Math.round(avgDistance),
-      advice,
-    });
-  };
 
   return (
-    <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-5 space-y-4 relative overflow-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-center border-b border-[#384b5c]/30 pb-2">
-        <h3 className="font-headline text-base font-extrabold text-[#9cd8ff] tracking-wide uppercase flex items-center gap-2 select-none">
-          <Target className="w-5 h-5 text-primary-yellow animate-pulse" />
-          INTERACTIVE SHOOTING RANGE
-        </h3>
-        <button
-          onClick={handleReset}
-          className="text-[9px] font-technical text-primary-yellow border border-primary-yellow/30 px-2 py-0.5 bg-primary-yellow/5 rounded hover:bg-primary-yellow/15 flex items-center gap-1 cursor-pointer"
-        >
-          <RefreshCw className="w-2.5 h-2.5" />
-          RESET RANGE
-        </button>
+    <div className="w-full h-full relative font-headline">
+      {/* Background Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-0 touch-none"
+        onMouseDown={handleTouchStart}
+        onMouseMove={handleTouchMove}
+        onMouseUp={handleTouchEnd}
+        onMouseLeave={handleTouchEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+      />
+
+      {/* UI Overlay */}
+      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-4">
+        
+        {/* Top Bar */}
+        <div className="flex justify-between items-start pointer-events-auto">
+          <div className="bg-black/50 p-2 rounded border border-white/10 text-primary-yellow">
+            <h4 className="font-black text-lg">{weapons[weapon].name}</h4>
+            <div className="text-xs text-white">{bulletsLeft} / {weapons[weapon].magSize}</div>
+          </div>
+          <button 
+            onClick={onExit}
+            className="bg-red-500/80 text-white p-2 rounded font-bold uppercase hover:bg-red-600"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Action Controls (Bottom) */}
+        <div className="flex justify-between items-end pointer-events-auto">
+          {/* Left Side Fire Button */}
+          <button
+            onPointerDown={startFiring}
+            onPointerUp={stopFiring}
+            onPointerLeave={stopFiring}
+            className={`w-28 h-28 rounded-full border-4 flex items-center justify-center font-black text-2xl transition-all shadow-xl ${
+              bulletsLeft <= 0 ? 'bg-zinc-800 border-zinc-600 text-zinc-500' :
+              isFiring ? 'bg-white border-red-500 text-red-500 scale-95' : 'bg-white/20 border-white text-white hover:bg-white/30'
+            }`}
+            style={{ backdropFilter: 'blur(4px)' }}
+          >
+            FIRE
+          </button>
+
+          {/* Right Side Controls */}
+          {bulletsLeft <= 0 && !scoreSummary && (
+            <button 
+              onClick={resetTarget}
+              className="bg-primary-yellow text-black px-6 py-3 rounded-full font-black animate-pulse shadow-[0_0_20px_rgba(255,215,0,0.5)] flex items-center gap-2"
+            >
+              <RefreshCw className="w-5 h-5" /> RELOAD & RESET
+            </button>
+          )}
+
+          <div className="text-white/30 text-xs tracking-[0.2em] pointer-events-none absolute bottom-4 right-1/2 translate-x-1/2">
+            SWIPE RIGHT HALF TO AIM
+          </div>
+        </div>
       </div>
 
-      {/* Simulator Info Controls */}
-      <div className="grid grid-cols-2 gap-3">
-        {/* Weapon Selection */}
-        <div className="space-y-1">
-          <span className="text-[10px] text-text-muted uppercase tracking-wider block select-none">SELECT WEAPON</span>
-          <div className="grid grid-cols-3 gap-1">
-            {(['m416', 'akm', 'awm'] as WeaponType[]).map((w) => (
-              <button
-                key={w}
-                onClick={() => setWeapon(w)}
-                className={`text-[10px] py-1.5 font-headline font-bold rounded uppercase cursor-pointer transition-all border ${
-                  weapon === w
-                    ? 'bg-primary-yellow/15 border-primary-yellow text-primary-yellow'
-                    : 'bg-[#121d28] border-white/5 text-[#a0b0c0] hover:text-white'
-                }`}
-              >
-                {w}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Optic Selection */}
-        <div className="space-y-1">
-          <span className="text-[10px] text-text-muted uppercase tracking-wider block select-none">SELECT OPTIC</span>
-          <div className="grid grid-cols-4 gap-1">
-            {(['red_dot', 'scope_3x', 'scope_4x', 'scope_6x'] as OpticType[]).map((o) => (
-              <button
-                key={o}
-                onClick={() => setOptic(o)}
-                className={`text-[9px] py-1.5 font-headline font-bold rounded uppercase cursor-pointer transition-all border ${
-                  optic === o
-                    ? 'bg-primary-yellow/15 border-primary-yellow text-primary-yellow'
-                    : 'bg-[#121d28] border-white/5 text-[#a0b0c0] hover:text-white'
-                }`}
-              >
-                {o.replace('_', ' ')}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* The Interactive Canvas Area */}
-      <div className="relative">
-        <canvas
-          ref={canvasRef}
-          width={450}
-          height={260}
-          className="w-full h-[260px] bg-[#0c0e10] border border-[#384b5c]/25 cursor-crosshair rounded-lg touch-none"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        />
-
-        {/* HUD Overlay inside Canvas */}
-        <div className="absolute top-3 left-3 pointer-events-none select-none font-technical text-[10px] text-primary-yellow bg-[#0c0e10]/80 px-2.5 py-1 rounded border border-white/10 space-y-0.5">
-          <div>WEAPON: <span className="font-bold text-white">{weapons[weapon].name}</span></div>
-          <div>OPTIC: <span className="font-bold text-white uppercase">{optic.replace('_', ' ')}</span></div>
-          <div>ADS SENS: <span className="font-bold text-white">{getActiveSensitivity()}%</span></div>
-        </div>
-
-        <div className="absolute top-3 right-3 pointer-events-none select-none font-technical text-[10px] text-primary-yellow bg-[#0c0e10]/80 px-2.5 py-1 rounded border border-white/10">
-          MAGAZINE: <span className="font-bold text-white">{bulletsLeft} / {weapons[weapon].magSize}</span>
-        </div>
-
-        {/* Action Trigger overlay if not mobile */}
-        {bulletsLeft > 0 && !isShooting && !scoreSummary && (
-          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 pointer-events-none select-none font-technical text-[9px] text-[#cbd5e1]/60 bg-[#0c0e10]/80 border border-white/5 px-3 py-1 rounded-full uppercase tracking-wider text-center animate-pulse">
-            {weapon === 'awm' ? 'Tap target area to fire single shot' : 'Hold target or hold trigger button below to spray'}
-          </div>
-        )}
-
-        {/* Results Screen Modal Card overlay */}
-        {scoreSummary?.show && (
-          <div className="absolute inset-0 bg-[#0c0e10]/95 flex flex-col justify-center items-center p-6 text-center space-y-4 border border-[#384b5c]/30 rounded-lg animate-fade-in">
-            <div className="space-y-1">
-              <span className="font-technical text-[9px] text-primary-yellow uppercase tracking-widest block font-black">
-                SPRAY DIAGNOSIS RESOLVED
-              </span>
-              <h4 className="font-headline text-lg font-bold text-white uppercase tracking-tight">
-                {weapons[weapon].name} Recoil Control Profile
-              </h4>
+      {/* Score Modal */}
+      {scoreSummary?.show && (
+        <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center pointer-events-auto backdrop-blur-sm">
+          <div className="bg-[#1b2836] border border-primary-yellow/50 rounded-xl p-8 max-w-md text-center shadow-2xl space-y-6">
+            <div className="space-y-2">
+              <div className="text-primary-yellow text-sm font-black tracking-widest uppercase">Spray Analysis</div>
+              <div className="text-6xl font-black text-white">{scoreSummary.grade}</div>
             </div>
-
-            {/* Big Grade Badge */}
-            <div className="relative w-24 h-24 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border border-primary-yellow/20 bg-primary-yellow/5 animate-pulse-glow" />
-              <div className="font-headline text-5xl font-extrabold tracking-tighter text-primary-yellow animate-bounce">
-                {scoreSummary.grade}
+            
+            <div className="grid grid-cols-2 gap-4 text-left bg-black/30 p-4 rounded-lg">
+              <div>
+                <div className="text-white/50 text-xs">ACCURACY</div>
+                <div className="text-white font-bold text-xl">{scoreSummary.accuracy}%</div>
+              </div>
+              <div>
+                <div className="text-white/50 text-xs">DRIFT</div>
+                <div className="text-white font-bold text-xl">{scoreSummary.avgDist}px</div>
               </div>
             </div>
 
-            {/* Grid Metrics */}
-            <div className="grid grid-cols-2 gap-4 w-full max-w-xs font-technical text-xs text-[#cbd5e1]">
-              <div className="bg-[#1b2836]/65 border border-white/5 p-2 rounded">
-                <div className="text-[10px] text-text-muted uppercase">HIT ACCURACY</div>
-                <div className="font-bold text-white mt-0.5">{scoreSummary.accuracy}%</div>
-              </div>
-              <div className="bg-[#1b2836]/65 border border-white/5 p-2 rounded">
-                <div className="text-[10px] text-text-muted uppercase">DRIFT CENTER</div>
-                <div className="font-bold text-white mt-0.5">{scoreSummary.avgDistance}px</div>
-              </div>
-            </div>
-
-            {/* Advice paragraph */}
-            <p className="text-xs text-[#cbdbe6] leading-relaxed max-w-sm">
-              {scoreSummary.advice}
-            </p>
+            <p className="text-white/80 text-sm">{scoreSummary.advice}</p>
 
             <button
-              onClick={handleReset}
-              className="px-6 py-2 rounded-xl bg-primary-yellow text-background font-headline font-black tracking-wide text-xs uppercase active:scale-95 transition-all shadow-[0_4px_12px_rgba(255,215,0,0.2)] cursor-pointer"
+              onClick={resetTarget}
+              className="w-full bg-primary-yellow text-black font-black py-4 rounded-lg hover:bg-white transition-colors"
             >
-              TEST AGAIN
+              PRACTICE AGAIN
             </button>
           </div>
-        )}
-      </div>
-
-      {/* Trigger Button - crucial for touch screens */}
-      {weapon !== 'awm' && !scoreSummary && (
-        <div className="flex gap-2">
-          <button
-            onPointerDown={startShooting}
-            onPointerUp={stopShooting}
-            onPointerLeave={stopShooting}
-            onTouchEnd={stopShooting}
-            className={`flex-1 font-headline font-black py-4 px-4 rounded-xl flex items-center justify-center gap-2 select-none active:scale-95 transition-all text-base border cursor-pointer ${
-              bulletsLeft <= 0
-                ? 'bg-zinc-800 text-zinc-600 border-zinc-900/10 cursor-not-allowed'
-                : isShooting
-                ? 'bg-red-600/20 text-red-500 border-red-500/40 animate-pulse'
-                : 'bg-primary-yellow text-background border-primary-yellow/20 shadow-[0_4px_16px_rgba(255,215,0,0.15)] hover:bg-white'
-            }`}
-            disabled={bulletsLeft <= 0}
-          >
-            {isShooting ? 'FIRING SPRAY... (DRAG ON TARGET)' : 'HOLD TO FIRE SPRAY'}
-          </button>
         </div>
       )}
     </div>

@@ -474,7 +474,7 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
       </div>
 
       {/* Interactive Shooting Range Simulator */}
-      <ShootingRange adsValues={sensValues.ads} />
+      <ShootingRange sensValues={sensValues} />
 
       {/* AimSync Calibration Engine Feedback Control */}
       <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-5 space-y-4">
