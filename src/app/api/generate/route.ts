@@ -5,8 +5,8 @@ import { getFallbackExplanations, FallbackExplanations } from '@/utils/fallbacks
 import { saveResult } from '@/utils/db';
 import crypto from 'crypto';
 
-// Gemini has 60s, but we want a response under 12s for good UX
-const LLM_TIMEOUT_MS = 12000;
+// Gemini timeout
+const LLM_TIMEOUT_MS = 20000;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Type that Gemini must return
@@ -57,33 +57,30 @@ export async function POST(req: NextRequest) {
       gyroStabilityScore:  body.gyroStabilityScore  !== undefined ? Number(body.gyroStabilityScore)  : undefined,
     };
 
+    // Device name from AI lookup (passed through from wizard step 7)
+    const deviceName: string = body.deviceModel || body.deviceInput || '';
     const apiKey = process.env.GEMINI_API_KEY;
 
     let sensitivity: SensitivityProfile;
     let explanations: FallbackExplanations;
 
     if (!apiKey) {
-      // ── No API key: pure deterministic fallback ──────────────────────────
       console.warn('[AimSync] No GEMINI_API_KEY – using rule engine + fallback templates.');
       sensitivity   = calculateSensitivity(inputs);
       explanations  = getFallbackExplanations(inputs.playstyle, inputs.primaryProblem, inputs.fingerCount);
-
     } else {
-      // ── Gemini is the primary brain ───────────────────────────────────────
       try {
         const geminiResult = await Promise.race([
-          callGeminiExpert(apiKey, inputs),
+          callGeminiExpert(apiKey, inputs, deviceName),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error('Gemini timed out')), LLM_TIMEOUT_MS)
           ),
         ]);
 
-        // Use Gemini's numbers directly
         sensitivity  = geminiResult.sensitivity as SensitivityProfile;
         explanations = geminiResult.explanations;
 
       } catch (err) {
-        // ── Gemini failed: fall back to deterministic engine ─────────────
         console.error('[AimSync] Gemini call failed, falling back to rule engine:', err);
         sensitivity  = calculateSensitivity(inputs);
         explanations = getFallbackExplanations(inputs.playstyle, inputs.primaryProblem, inputs.fingerCount);
@@ -106,12 +103,11 @@ export async function POST(req: NextRequest) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // callGeminiExpert
-// Sends the full pro-analyst prompt and expects a structured JSON containing
-// BOTH the sensitivity values AND the expert explanations.
 // ─────────────────────────────────────────────────────────────────────────────
 async function callGeminiExpert(
   apiKey: string,
   inputs: UserInputs,
+  deviceName: string,
 ): Promise<GeminiFullResponse> {
 
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -119,75 +115,98 @@ async function callGeminiExpert(
     model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     generationConfig: {
       responseMimeType: 'application/json',
+      temperature: 0.7,   // Enough variation to differ per device, but not hallucinate
     },
   });
 
-  // ── Encode hardware calibration context ─────────────────────────────────
-  const calibrationContext = buildCalibrationContext(inputs);
+  const calibrationContext  = buildCalibrationContext(inputs);
+  const deviceAnchor        = buildDeviceAnchor(inputs, deviceName);
+  const gyroActive          = inputs.gyroMode !== 'off';
 
   const prompt = `
-You are a professional esports analyst, PUBG Mobile / BGMI sensitivity expert, and deep research AI.
-Your mission is to generate the BEST POSSIBLE, tournament-grade sensitivity configuration for a real player
-based on every piece of hardware and behavioral data provided.
+You are a professional PUBG Mobile / BGMI esports analyst with years of competitive coaching experience.
+You have spent thousands of hours testing sensitivities on specific phone hardware and you know exactly
+how different chipsets, refresh rates, touch digitizers, and gyroscopes affect in-game feel.
 
-════════════════════════════════════════════════
-PLAYER HARDWARE & PREFERENCE PROFILE
-════════════════════════════════════════════════
+Your job: Generate a REAL, WORKING, UNIQUE sensitivity config for this SPECIFIC player on this SPECIFIC device.
 
-1. DEVICE TIER:          ${inputs.deviceTier.toUpperCase()} (${deviceTierDescription(inputs.deviceTier)})
-2. TARGET FRAME RATE:    ${inputs.fps} FPS
-3. GYROSCOPE MODE:       ${inputs.gyroMode === 'always_on' ? 'Always On (full gyro combat active)' : inputs.gyroMode === 'scope_on' ? 'Scope-Only (gyro activates when ADS)' : 'Disabled (finger-only control)'}
-4. FINGER LAYOUT:        ${inputs.fingerCount}-finger claw/thumb setup
-5. COMBAT ROLE:          ${inputs.playstyle.toUpperCase()} (${playstyleDescription(inputs.playstyle)})
-6. WEAK POINTS:          ${inputs.primaryProblem === 'all' ? 'ALL (Recoil, Aim, Spray Transfer, Close Fight, Long Range)' : inputs.primaryProblem.toUpperCase()}
+⚠️ CRITICAL: Do NOT produce generic or average values. Every input below uniquely shifts the numbers.
+   A OnePlus 12 at 120fps feels COMPLETELY different from a Redmi Note 12 at 60fps.
+   Your output must reflect these real hardware differences.
+
+════════════════════════════════════════════════════════════════
+PLAYER + HARDWARE PROFILE
+════════════════════════════════════════════════════════════════
+
+Device:          ${deviceName ? `"${deviceName}"` : `(Unknown – use ${inputs.deviceTier} tier defaults)`}
+Device Tier:     ${inputs.deviceTier.toUpperCase()} – ${deviceTierDescription(inputs.deviceTier)}
+Target FPS:      ${inputs.fps} FPS
+Gyroscope Mode:  ${inputs.gyroMode === 'always_on' ? 'ALWAYS ON – gyro controls camera + recoil' : inputs.gyroMode === 'scope_on' ? 'SCOPE ONLY – gyro activates on ADS' : 'DISABLED – 100% finger control'}
+Finger Layout:   ${inputs.fingerCount}-finger ${inputs.fingerCount >= 5 ? 'claw (fast scope access, higher sens viable)' : inputs.fingerCount <= 2 ? 'thumb (deliberate swipes, lower sens needed)' : 'hybrid'}
+Combat Role:     ${inputs.playstyle.toUpperCase()} – ${playstyleDescription(inputs.playstyle)}
+Primary Problem: ${inputs.primaryProblem === 'all' ? 'ALL – full recoil control + aim improvement' : inputs.primaryProblem.toUpperCase()}
 
 ${calibrationContext}
 
-════════════════════════════════════════════════
-RESEARCH & OPTIMIZATION REQUIREMENTS
-════════════════════════════════════════════════
+════════════════════════════════════════════════════════════════
+DEVICE-SPECIFIC STARTING POINT (apply your expertise from here)
+════════════════════════════════════════════════════════════════
+${deviceAnchor}
 
-STEP 1 – DEVICE RESEARCH:
-- Factor in how ${inputs.deviceTier} devices handle touch sampling rate, gyroscope sensor noise, and FPS stability.
-- ${inputs.fps >= 90 ? `At ${inputs.fps} FPS the touch polling and gyro readings are faster – sensitivity values should reflect this precision advantage.` : `At ${inputs.fps} FPS there is moderate frame delay – compensate with slightly lower values to prevent overshooting.`}
-- ${inputs.deviceTier === 'budget' ? 'Budget gyro sensors are noisy – scale gyro values conservatively to reduce jitter.' : inputs.deviceTier === 'flagship' ? 'Flagship sensors are precise – gyro can be set higher to leverage the clean signal.' : 'Mid-tier devices have acceptable sensors – moderate gyro with slight noise headroom.'}
+════════════════════════════════════════════════════════════════
+HOW TO PRODUCE REAL IN-GAME VALUES (follow this logic strictly)
+════════════════════════════════════════════════════════════════
 
-STEP 2 – PRO PLAYER RESEARCH & OPTIMIZATION:
-- Research and apply sensitivity ranges used by top BGMI / PUBG Mobile pro players (e.g. Jonathan, Mortal, Scout, Neyoo, Aman, Zgod, Destro etc.) for ${inputs.playstyle} playstyles.
-- Consider that pro players at ${inputs.fps} FPS on ${inputs.deviceTier} devices commonly use specific ranges for each scope tier.
-- Optimize for: zero-recoil sprays, fast snap aim, spray transfer control, close CQB tracking, stable long-range precision.
+CAMERA sensitivity (free-look / swipe):
+- Higher FPS → Camera No-Scope can be HIGHER (screen refreshes faster, swipe feels lighter)
+- Budget/high-latency devices need LOWER Camera to avoid overshooting
+- Rushers need higher No-Scope camera (fast rotation), Snipers need low Camera values
+- 2x–8x should DROP significantly each tier: roughly 60% → 45% → 35% → 25% → 18% → 12% of No-Scope
 
-STEP 3 – PERSONALIZATION FOR THIS SPECIFIC PLAYER:
-- Their primary weakness is: ${inputs.primaryProblem === 'all' ? 'ALL areas – create a universal setup that balances all aspects' : inputs.primaryProblem}.
-- Their playstyle bias is: ${inputs.playstyle}.
-- ${inputs.gyroMode !== 'off' ? `Gyroscope is ON – factor in real wrist tilt control for recoil compensation and micro-adjustments.` : `Gyroscope is OFF – all control is finger-based, camera and ADS must compensate fully.`}
-- ${inputs.fingerCount >= 5 ? `${inputs.fingerCount}-finger claw unlocks faster scope access and dedicated fire buttons – allow slightly higher sensitivities.` : inputs.fingerCount <= 2 ? `${inputs.fingerCount}-finger setup requires slower, more deliberate swipes – keep sensitivities conservative.` : `${inputs.fingerCount}-finger setup is standard – use balanced sensitivity ranges.`}
+ADS sensitivity (aim-down-sight):
+- Must be lower than camera at every scope – ADS is for precision
+- Recoil problems → slightly LOWER ADS values for better spray control
+- Gyro users can run LOWER ADS (gyro handles fine-tuning)
+- Non-gyro users need slightly HIGHER ADS (finger alone must control everything)
+- Budget + high latency → reduce ADS across all scopes by 10-15%
+- 4x and beyond: values must be conservative – pro players NEVER go above 30 on 4x ADS
 
-════════════════════════════════════════════════
-VALID SENSITIVITY RANGES (PUBG Mobile / BGMI)
-════════════════════════════════════════════════
-You MUST stay within these ranges. Values outside them are invalid in-game:
+GYRO sensitivity (physical tilt / recoil pull-down):
+- ONLY for gyroMode != "off"
+- Flagship + low latency + high gyro stability → can run higher gyro (more wrist control)
+- Budget + low stability → lower gyro to prevent wild drift
+- Gyro always_on: No-Scope gyro = ~200–350 | Scope-on only: No-Scope gyro = 180–280
+- 6x and 8x gyro should be MUCH lower than No-Scope (tiny physical tilt = big scope movement)
+- IMPORTANT: adsGyro values should be 10–25% LOWER than gyro for spray stability
 
-Camera:
-  No Scope:  85–150  |  Red Dot / Holo: 30–65  |  2x: 25–50  |  3x: 20–50  |  4x: 15–32  |  6x: 10–25  |  8x: 6–18
+PLAYSTYLE adjustments (shift all values by these offsets):
+- Rusher:    Camera +10 to +15 | ADS +5 | Gyro No-Scope +20
+- Sniper:    Camera -10 to -20 | ADS -8 to -12 | Gyro 6x/8x -20
+- Assaulter: Camera +5  | ADS moderate | Gyro moderate
+- Balanced:  Use reference values without major offset
 
-ADS:
-  No Scope:  80–130  |  Red Dot / Holo: 30–80  |  2x: 25–60  |  3x: 20–50  |  4x: 15–40  |  6x: 8–40   |  8x: 5–26
+FPS adjustments:
+- 40fps:  Camera -10 to -15  | ADS -5  | Gyro -15 to -20
+- 60fps:  No adjustment (baseline)
+- 90fps:  Camera +5  | ADS +3  | Gyro +10
+- 120fps: Camera +10 | ADS +5  | Gyro +20 to +30
 
-Gyroscope (if active):
-  No Scope:  240–420 |  Red Dot / Holo: 220–400 |  2x: 200–360 |  3x: 150–320 |  4x: 120–290 |  6x: 70–250 |  8x: 45–200
+════════════════════════════════════════════════════════════════
+VALID IN-GAME RANGES (PUBG Mobile / BGMI) – HARD LIMITS
+════════════════════════════════════════════════════════════════
+Camera:  No Scope 85–150 | Red Dot 30–65 | 2x 25–50 | 3x 20–50 | 4x 15–32 | 6x 10–25 | 8x 6–18
+ADS:     No Scope 80–130 | Red Dot 30–80 | 2x 25–60 | 3x 20–50 | 4x 15–40 | 6x 8–40   | 8x 5–26
+Gyro:    No Scope 100–420| Red Dot 80–400 | 2x 80–360| 3x 60–320| 4x 50–290| 6x 30–250 | 8x 20–200
+ADS-Gyro: Same as Gyro above
 
-ADS Gyroscope (if active, mirrors Gyroscope with fine-tuning):
-  Same ranges as Gyroscope above.
-
-════════════════════════════════════════════════
-OUTPUT FORMAT – RESPOND WITH EXACTLY THIS JSON
-════════════════════════════════════════════════
+════════════════════════════════════════════════════════════════
+OUTPUT FORMAT — RESPOND WITH ONLY THIS JSON, NO OTHER TEXT
+════════════════════════════════════════════════════════════════
 {
   "sensitivity": {
     "camera": {
       "no_scope": <integer>,
-      "red_dot": <integer>,
+      "red_dot":  <integer>,
       "scope_2x": <integer>,
       "scope_3x": <integer>,
       "scope_4x": <integer>,
@@ -196,25 +215,25 @@ OUTPUT FORMAT – RESPOND WITH EXACTLY THIS JSON
     },
     "ads": {
       "no_scope": <integer>,
-      "red_dot": <integer>,
+      "red_dot":  <integer>,
       "scope_2x": <integer>,
       "scope_3x": <integer>,
       "scope_4x": <integer>,
       "scope_6x": <integer>,
       "scope_8x": <integer>
     },
-    "gyro": ${inputs.gyroMode !== 'off' ? `{
+    "gyro": ${gyroActive ? `{
       "no_scope": <integer>,
-      "red_dot": <integer>,
+      "red_dot":  <integer>,
       "scope_2x": <integer>,
       "scope_3x": <integer>,
       "scope_4x": <integer>,
       "scope_6x": <integer>,
       "scope_8x": <integer>
     }` : 'null'},
-    "adsGyro": ${inputs.gyroMode !== 'off' ? `{
+    "adsGyro": ${gyroActive ? `{
       "no_scope": <integer>,
-      "red_dot": <integer>,
+      "red_dot":  <integer>,
       "scope_2x": <integer>,
       "scope_3x": <integer>,
       "scope_4x": <integer>,
@@ -223,29 +242,27 @@ OUTPUT FORMAT – RESPOND WITH EXACTLY THIS JSON
     }` : 'null'}
   },
   "explanations": {
-    "camera_explanation": "<2-3 sentence expert explanation: why these camera values suit their playstyle, FPS, finger count, and device tier. Be specific and actionable.>",
-    "ads_explanation": "<2-3 sentence expert explanation: how the ADS values address their primary weakness (${inputs.primaryProblem}), support their combat role, and control recoil/spray transfer. Be specific.>",
-    "gyro_explanation": "${inputs.gyroMode !== 'off' ? '<2-3 sentence expert explanation: how the gyro values leverage their device sensor quality and FPS for recoil pull-down and wrist micro-adjustment. Reference specific scope tiers.>' : 'Gyroscope is disabled for this player.'}",
-    "ads_gyro_explanation": "${inputs.gyroMode !== 'off' ? '<2-3 sentence expert explanation: how ADS-Gyro interacts with fire button timing for maximum recoil compensation during active sprays. Be specific to their weak points.>' : 'Gyroscope is disabled for this player.'}"
+    "camera_explanation": "<2-3 sentences: why exactly these camera values for THIS device at ${inputs.fps}fps with ${inputs.fingerCount} fingers. Name the device if known. Mention the FPS/latency impact.>",
+    "ads_explanation": "<2-3 sentences: how these ADS values directly fix their ${inputs.primaryProblem} problem and suit ${inputs.playstyle} combat. Be specific about scope tiers.>",
+    "gyro_explanation": "${gyroActive ? '<2-3 sentences: how these gyro values work with this device gyro sensor quality and stability score. Explain the wrist pull-down technique these values are designed for.>' : 'Gyroscope is disabled for this player. All sensitivity control is finger-based.'}",
+    "ads_gyro_explanation": "${gyroActive ? '<2-3 sentences: how ADS-Gyro values complement ADS during active sprays. Explain when to combine wrist tilt with finger drag for maximum recoil compensation.>' : 'Gyroscope is disabled for this player.'}"
   }
 }
 
-CRITICAL RULES:
-- ALL integer values must be within the valid ranges listed above. DO NOT exceed them.
-- If gyroMode is "off", gyro and adsGyro MUST be null in JSON.
-- Do NOT add any text outside the JSON object.
-- Make the explanations read like expert coaching – specific, insightful, and actionable.
+FINAL REMINDER:
+- Every number must be DIFFERENT from a generic device at different specs – that is the whole point.
+- Do NOT use round numbers like 100, 200, 300 unless the logic genuinely leads there.
+- The values must feel like they were crafted specifically for this device + player combination.
+- Stay strictly within the valid ranges above.
   `.trim();
 
   const result = await model.generateContent(prompt);
   const text   = result.response.text();
-
-  // Strip markdown code fences if Gemini wraps the JSON
-  const clean = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
+  const clean  = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
   const parsed: GeminiFullResponse = JSON.parse(clean);
 
-  // Safety: clamp all values to valid PUBG ranges in case Gemini drifts
-  parsed.sensitivity = clampSensitivityProfile(parsed.sensitivity, inputs.gyroMode !== 'off');
+  // Safety clamp – catches any drift
+  parsed.sensitivity = clampSensitivityProfile(parsed.sensitivity, gyroActive);
 
   return parsed;
 }
@@ -254,96 +271,133 @@ CRITICAL RULES:
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Builds a device-specific numerical starting anchor so Gemini has a concrete
+ * base to adjust FROM, preventing it from defaulting to the middle of every range.
+ */
+function buildDeviceAnchor(inputs: UserInputs, deviceName: string): string {
+  // These are realistic, proven baseline values used by pro players as documented
+  // in community resources (GamerzClass, JonathanisBoss config sheets, etc.)
+  const tbl: Record<string, Record<string, number[]>> = {
+    //                         [cam_ns, cam_rd, cam_2x, cam_3x, cam_4x, cam_6x, cam_8x,
+    //                          ads_ns, ads_rd, ads_2x, ads_3x, ads_4x, ads_6x, ads_8x,
+    //                          g_ns,  g_rd,   g_2x,   g_3x,   g_4x,   g_6x,   g_8x]
+    flagship: {
+      '120': [130,52,42,35,25,18,12, 105,52,42,32,24,18,12, 300,280,240,200,170,120,85],
+      '90':  [120,48,40,32,23,17,11, 100,48,40,30,22,17,11, 280,260,220,185,155,110,75],
+      '60':  [110,44,37,30,22,16,10, 95, 44,37,28,21,16,10, 260,240,200,170,140, 95,65],
+      '40':  [100,40,34,28,20,15, 9, 90, 40,34,26,20,15, 9, 230,210,180,150,120, 80,55],
+    },
+    mid: {
+      '120': [120,48,40,32,23,17,11, 95, 48,40,30,22,17,11, 270,250,210,175,145,100,70],
+      '90':  [112,44,37,30,22,16,10, 90, 44,37,28,21,16,10, 250,230,195,160,130, 90,62],
+      '60':  [105,41,34,28,21,15, 9, 85, 41,34,26,20,15, 9, 230,210,175,145,118, 80,55],
+      '40':  [ 95,38,32,26,19,14, 8, 80, 38,32,24,18,14, 8, 205,190,155,130,105, 70,48],
+    },
+    budget: {
+      '120': [110,44,37,30,22,16,10, 88, 44,37,28,21,16,10, 235,215,180,150,122, 84,58],
+      '90':  [103,41,34,28,20,15, 9, 83, 41,34,26,20,15, 9, 215,198,165,138,112, 76,52],
+      '60':  [ 96,38,32,26,19,14, 8, 78, 38,32,24,18,14, 8, 198,180,150,125,102, 69,47],
+      '40':  [ 88,35,29,24,17,13, 7, 72, 35,29,22,17,13, 7, 178,162,135,112, 90, 61,42],
+    },
+  };
+
+  const tier  = inputs.deviceTier in tbl ? inputs.deviceTier : 'mid';
+  const fps   = String(inputs.fps) in tbl[tier] ? String(inputs.fps) : '60';
+  const v     = tbl[tier][fps];
+
+  const deviceLabel = deviceName
+    ? `Based on "${deviceName}" (${tier} · ${fps}fps), here are the BASELINE values to start from:`
+    : `Based on ${tier.toUpperCase()} device at ${fps}fps, here are the BASELINE values to start from:`;
+
+  return `${deviceLabel}
+
+Camera baseline:  No-Scope=${v[0]} | Red-Dot=${v[1]} | 2x=${v[2]} | 3x=${v[3]} | 4x=${v[4]} | 6x=${v[5]} | 8x=${v[6]}
+ADS baseline:     No-Scope=${v[7]} | Red-Dot=${v[8]} | 2x=${v[9]} | 3x=${v[10]} | 4x=${v[11]} | 6x=${v[12]} | 8x=${v[13]}
+Gyro baseline:    No-Scope=${v[14]}| Red-Dot=${v[15]} | 2x=${v[16]} | 3x=${v[17]} | 4x=${v[18]} | 6x=${v[19]} | 8x=${v[20]}
+
+NOW apply all adjustments above (playstyle, problem area, calibration data, finger count) to shift
+these baselines up or down. Your final output should reflect those shifts – NOT just copy these numbers.
+If the device name is known, factor in its specific chipset, touch latency, and gyro sensor quality.`;
+}
+
 function buildCalibrationContext(inputs: UserInputs): string {
-  const lines: string[] = ['7. HARDWARE CALIBRATION RESULTS (measured on this device):'];
+  const lines: string[] = ['Hardware Calibration (measured on this specific device):'];
+  let hasData = false;
 
   if (inputs.measuredSwipeSpeed !== undefined) {
-    const label = inputs.measuredSwipeSpeed < 0.85
-      ? 'SLOW – user swipes slowly and deliberately'
-      : inputs.measuredSwipeSpeed > 1.15
-      ? 'FAST – user swipes with high speed and aggression'
-      : 'NORMAL – user swipe speed is average';
-    lines.push(`   Swipe Speed Multiplier: ${inputs.measuredSwipeSpeed.toFixed(3)} (${label})`);
+    hasData = true;
+    const swipeImpact = inputs.measuredSwipeSpeed < 0.9
+      ? `SLOW SCREEN → reduce Camera No-Scope by ${Math.round((1 - inputs.measuredSwipeSpeed) * 30)} | reduce ADS No-Scope by ${Math.round((1 - inputs.measuredSwipeSpeed) * 20)}`
+      : inputs.measuredSwipeSpeed > 1.1
+      ? `FAST SCREEN → increase Camera No-Scope by ${Math.round((inputs.measuredSwipeSpeed - 1) * 30)} | increase ADS No-Scope by ${Math.round((inputs.measuredSwipeSpeed - 1) * 20)}`
+      : 'NORMAL SCREEN → no correction needed';
+    lines.push(`  Swipe Speed: ${inputs.measuredSwipeSpeed.toFixed(3)}× (${swipeImpact})`);
   }
 
   if (inputs.measuredLatencyMs !== undefined) {
-    const label = inputs.measuredLatencyMs > 130
-      ? 'HIGH LATENCY – screen response is sluggish, may need compensation'
-      : inputs.measuredLatencyMs < 80
-      ? 'LOW LATENCY – extremely responsive screen, precision is maximized'
-      : 'NORMAL LATENCY – standard screen response';
-    lines.push(`   Touch Latency: ${inputs.measuredLatencyMs}ms (${label})`);
+    hasData = true;
+    const latImpact = inputs.measuredLatencyMs > 130
+      ? `HIGH LATENCY ${inputs.measuredLatencyMs}ms → reduce all ADS values by 8-12 to compensate for delayed response`
+      : inputs.measuredLatencyMs < 70
+      ? `ULTRA-LOW LATENCY ${inputs.measuredLatencyMs}ms → device is very responsive, can afford higher values`
+      : `NORMAL LATENCY ${inputs.measuredLatencyMs}ms → no major correction needed`;
+    lines.push(`  Touch Latency: ${inputs.measuredLatencyMs}ms (${latImpact})`);
   }
 
   if (inputs.gyroStabilityScore !== undefined) {
-    const label = inputs.gyroStabilityScore < 0.6
-      ? 'UNSTABLE – gyro sensor shows significant jitter / noise'
-      : inputs.gyroStabilityScore > 0.9
-      ? 'VERY STABLE – gyro sensor is clean and precise'
-      : 'MODERATE – acceptable gyro stability with minor noise';
-    lines.push(`   Gyro Stability Score: ${(inputs.gyroStabilityScore * 100).toFixed(0)}% (${label})`);
+    hasData = true;
+    const gyroImpact = inputs.gyroStabilityScore < 0.6
+      ? `POOR GYRO (${Math.round(inputs.gyroStabilityScore * 100)}%) → reduce Gyro/ADS-Gyro by 30–50 to prevent drift`
+      : inputs.gyroStabilityScore > 0.88
+      ? `EXCELLENT GYRO (${Math.round(inputs.gyroStabilityScore * 100)}%) → gyro sensor is clean, can safely increase Gyro values`
+      : `MODERATE GYRO (${Math.round(inputs.gyroStabilityScore * 100)}%) → small noise reduction on Gyro No-Scope recommended`;
+    lines.push(`  Gyro Stability: ${(inputs.gyroStabilityScore * 100).toFixed(0)}% (${gyroImpact})`);
   }
 
-  if (lines.length === 1) {
-    return '7. HARDWARE CALIBRATION: Not performed (calibration steps were skipped).';
+  if (!hasData) {
+    return 'Hardware Calibration: Not performed – device specs not scanned. Use tier defaults.';
   }
   return lines.join('\n');
 }
 
 function deviceTierDescription(tier: string): string {
   switch (tier) {
-    case 'flagship': return 'High-end flagship – fast processor, stable 90/120fps, precise gyro sensor';
-    case 'mid':      return 'Mid-range device – consistent 60fps performance, decent gyro accuracy';
-    case 'budget':   return 'Budget device – may have frame drops, gyro sensor noise, touch latency';
+    case 'flagship': return 'flagship processor (SD8/Dimensity9000+/A-series), stable high-FPS, precise gyro';
+    case 'mid':      return 'mid-range processor (SD7xx/D8xx), consistent 60fps, decent gyro accuracy';
+    case 'budget':   return 'budget processor, possible frame drops, noisy gyro sensor, higher touch latency';
     default:         return tier;
   }
 }
 
 function playstyleDescription(playstyle: string): string {
   switch (playstyle) {
-    case 'rusher':    return 'Aggressive close-range, fast rotation, hipfire specialist';
-    case 'sniper':    return 'Long-range precision, slow methodical scanning, bolt-action snaps';
-    case 'assaulter': return 'Mid-range hybrid, spray control, holds compounds';
-    case 'balanced':  return 'All-around utility player, adapts to any range';
+    case 'rusher':    return 'aggressive close-range, fast rotation, hipfire CQB specialist';
+    case 'sniper':    return 'long-range precision, bolt-action snaps, methodical slow scanning';
+    case 'assaulter': return 'mid-range hybrid, M416/AKM spray control, compound holder';
+    case 'balanced':  return 'all-around utility – adapts between ranges';
     default:          return playstyle;
   }
 }
 
 // Clamp Gemini output to valid PUBG Mobile in-game ranges
 function clampSensitivityProfile(s: GeminiFullResponse['sensitivity'], gyroActive: boolean): GeminiFullResponse['sensitivity'] {
-  const clampCamera = (v: number, scope: string) => {
-    const ranges: Record<string, [number,number]> = {
-      no_scope: [85,150], red_dot: [30,65], scope_2x: [25,50],
-      scope_3x: [20,50],  scope_4x: [15,32], scope_6x: [10,25], scope_8x: [6,18],
-    };
-    const [min, max] = ranges[scope] || [1,400];
-    return Math.max(min, Math.min(max, Math.round(v)));
-  };
-  const clampAds = (v: number, scope: string) => {
-    const ranges: Record<string, [number,number]> = {
-      no_scope: [80,130], red_dot: [30,80], scope_2x: [25,60],
-      scope_3x: [20,50],  scope_4x: [15,40], scope_6x: [8,40], scope_8x: [5,26],
-    };
-    const [min, max] = ranges[scope] || [1,400];
-    return Math.max(min, Math.min(max, Math.round(v)));
-  };
-  const clampGyro = (v: number, scope: string) => {
-    const ranges: Record<string, [number,number]> = {
-      no_scope: [240,420], red_dot: [220,400], scope_2x: [200,360],
-      scope_3x: [150,320], scope_4x: [120,290], scope_6x: [70,250], scope_8x: [45,200],
-    };
-    const [min, max] = ranges[scope] || [1,500];
-    return Math.max(min, Math.min(max, Math.round(v)));
-  };
+  const ranges = {
+    camera:  { no_scope:[85,150], red_dot:[30,65], scope_2x:[25,50], scope_3x:[20,50], scope_4x:[15,32], scope_6x:[10,25], scope_8x:[6,18]  },
+    ads:     { no_scope:[80,130], red_dot:[30,80], scope_2x:[25,60], scope_3x:[20,50], scope_4x:[15,40], scope_6x:[8,40],  scope_8x:[5,26]  },
+    gyro:    { no_scope:[100,420],red_dot:[80,400], scope_2x:[80,360],scope_3x:[60,320],scope_4x:[50,290],scope_6x:[30,250],scope_8x:[20,200]},
+  } as const;
 
+  const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, Math.round(v)));
   const scopes = ['no_scope','red_dot','scope_2x','scope_3x','scope_4x','scope_6x','scope_8x'] as const;
 
   for (const sc of scopes) {
-    s.camera[sc] = clampCamera(s.camera[sc], sc);
-    s.ads[sc]    = clampAds(s.ads[sc], sc);
+    const [cMin, cMax] = ranges.camera[sc]; s.camera[sc] = clamp(s.camera[sc], cMin, cMax);
+    const [aMin, aMax] = ranges.ads[sc];    s.ads[sc]    = clamp(s.ads[sc],    aMin, aMax);
     if (gyroActive && s.gyro && s.adsGyro) {
-      s.gyro[sc]    = clampGyro(s.gyro[sc], sc);
-      s.adsGyro[sc] = clampGyro(s.adsGyro[sc], sc);
+      const [gMin, gMax] = ranges.gyro[sc];
+      s.gyro[sc]    = clamp(s.gyro[sc],    gMin, gMax);
+      s.adsGyro[sc] = clamp(s.adsGyro[sc], gMin, gMax);
     }
   }
   return s;

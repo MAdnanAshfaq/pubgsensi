@@ -166,7 +166,11 @@ export default function OnboardingWizard() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          // Pass device name so Gemini can research exact hardware specs
+          deviceModel: lookupResult?.deviceModel || deviceInput || '',
+        }),
       });
       const data = await response.json();
       clearInterval(interval);
