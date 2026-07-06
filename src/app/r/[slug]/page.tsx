@@ -4,6 +4,8 @@ import { Shield, ListChecks, AlertTriangle } from 'lucide-react';
 import { getResult, isDatabaseConfigured } from '@/utils/db';
 import SensitivityDashboard from './SensitivityDashboard';
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { neon } from '@neondatabase/serverless';
 import { UserInputs, SensitivityProfile } from './ruleEngine';
 import { FallbackExplanations } from './fallbacks';
@@ -14,8 +12,37 @@ export interface SavedResult {
 
 // Environment config
 const DATABASE_URL = process.env.DATABASE_URL;
-const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
-const FILE_PATH = path.join(DATA_DIR, 'results.json');
+const isEdge = process.env.NEXT_RUNTIME === 'edge';
+
+// Lazy-load path and fs only on Node.js runtime
+const getFs = () => {
+  if (isEdge) return null;
+  try {
+    return require('fs');
+  } catch {
+    return null;
+  }
+};
+
+const getPath = () => {
+  if (isEdge) return null;
+  try {
+    return require('path');
+  } catch {
+    return null;
+  }
+};
+
+const getPaths = () => {
+  const pathModule = getPath();
+  if (!pathModule) return { DATA_DIR: '', FILE_PATH: '', FEEDBACK_FILE_PATH: '' };
+  
+  const DATA_DIR = process.env.DATA_DIR || pathModule.join(process.cwd(), 'data');
+  const FILE_PATH = pathModule.join(DATA_DIR, 'results.json');
+  const FEEDBACK_FILE_PATH = pathModule.join(DATA_DIR, 'feedback.json');
+  
+  return { DATA_DIR, FILE_PATH, FEEDBACK_FILE_PATH };
+};
 
 // Helper to initialize PostgreSQL client
 const getSql = () => {
@@ -26,7 +53,6 @@ const getSql = () => {
 export function isDatabaseConfigured(): boolean {
   return !!DATABASE_URL;
 }
-
 
 // PostgreSQL Table definition auto-creation
 let isTableInitialized = false;
@@ -61,6 +87,10 @@ async function ensurePostgresTable() {
 
 // Local filesystem fallback functions
 function ensureLocalDataFile() {
+  const fs = getFs();
+  if (!fs) return;
+  const { DATA_DIR, FILE_PATH } = getPaths();
+  
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
@@ -95,8 +125,21 @@ export async function saveResult(
     }
   }
 
+  // Edge runtime cannot write to local disk, return directly
+  const fs = getFs();
+  if (isEdge || !fs) {
+    return {
+      slug,
+      inputs,
+      values,
+      explanations,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
   // Filesystem fallback
   ensureLocalDataFile();
+  const { FILE_PATH } = getPaths();
   const fileContent = fs.readFileSync(FILE_PATH, 'utf-8');
   const db = JSON.parse(fileContent || '{}');
 
@@ -140,16 +183,24 @@ export async function getResult(slug: string): Promise<SavedResult | null> {
     }
   }
 
+  const fs = getFs();
+  if (isEdge || !fs) {
+    return null;
+  }
+
   // Filesystem fallback
   ensureLocalDataFile();
+  const { FILE_PATH } = getPaths();
   const fileContent = fs.readFileSync(FILE_PATH, 'utf-8');
   const db = JSON.parse(fileContent || '{}');
   return db[slug] || null;
 }
 
-const FEEDBACK_FILE_PATH = path.join(DATA_DIR, 'feedback.json');
-
 function ensureLocalFeedbackFile() {
+  const fs = getFs();
+  if (!fs) return;
+  const { DATA_DIR, FEEDBACK_FILE_PATH } = getPaths();
+
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
@@ -173,9 +224,15 @@ export async function saveFeedback(slug: string, score: string): Promise<boolean
     }
   }
 
+  const fs = getFs();
+  if (isEdge || !fs) {
+    return false;
+  }
+
   // Filesystem fallback
   try {
     ensureLocalFeedbackFile();
+    const { FEEDBACK_FILE_PATH } = getPaths();
     const fileContent = fs.readFileSync(FEEDBACK_FILE_PATH, 'utf-8');
     const list = JSON.parse(fileContent || '[]');
     list.push({ slug, score, createdAt: new Date().toISOString() });
@@ -186,4 +243,3 @@ export async function saveFeedback(slug: string, score: string): Promise<boolean
     return false;
   }
 }
-

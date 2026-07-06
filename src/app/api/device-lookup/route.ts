@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const runtime = 'edge';
+
 export interface DeviceLookupResult {
   // ── Calibration (fed into Gemini sensitivity engine) ──────────────────────
   deviceModel: string;

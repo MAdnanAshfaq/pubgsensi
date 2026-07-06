@@ -3,7 +3,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { calculateSensitivity, UserInputs, SensitivityProfile } from '@/utils/ruleEngine';
 import { getFallbackExplanations, FallbackExplanations } from '@/utils/fallbacks';
 import { saveResult } from '@/utils/db';
-import crypto from 'crypto';
+
+export const runtime = 'edge';
 
 // Gemini timeout
 const LLM_TIMEOUT_MS = 20000;
@@ -87,7 +88,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const slug  = crypto.randomBytes(4).toString('hex');
+    const randomArray = new Uint8Array(4);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(randomArray);
+    } else {
+      for (let i = 0; i < 4; i++) {
+        randomArray[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    const slug = Array.from(randomArray, (b) => b.toString(16).padStart(2, '0')).join('');
     const saved = await saveResult(slug, inputs, sensitivity, explanations);
 
     return NextResponse.json({ success: true, slug: saved.slug, result: saved });
