@@ -12,7 +12,14 @@ export interface SavedResult {
 
 // Environment config
 const DATABASE_URL = process.env.DATABASE_URL;
-const isEdge = process.env.NEXT_RUNTIME === 'edge';
+// Detect edge/Cloudflare runtime reliably:
+// - Cloudflare Workers/Pages sets globalThis.EdgeRuntime = 'cloudflare'
+// - Next.js edge runtime sets process.env.NEXT_RUNTIME = 'edge'
+// - In both cases, Node.js APIs (fs, path, process.cwd) are unavailable
+const isEdge =
+  process.env.NEXT_RUNTIME === 'edge' ||
+  typeof (globalThis as any).EdgeRuntime !== 'undefined' ||
+  typeof require === 'undefined';
 
 // Lazy-load path and fs only on Node.js runtime
 const getFs = () => {
