@@ -26,6 +26,7 @@ import {
   Gauge,
   RotateCw
 } from 'lucide-react';
+import AdUnit from '@/components/AdUnit';
 
 const STORAGE_KEY = 'aimsync_wizard_state';
 
@@ -214,7 +215,13 @@ export default function OnboardingWizard() {
         />
       </div>
 
-      {/* Main Content Area */}
+      {/* AdSense Banner — shown on all wizard steps */}
+      <AdUnit
+        slot="6068297962050182"
+        format="horizontal"
+        className="my-2"
+      />
+
       <main className="flex-1 flex flex-col justify-center py-6">
         {step === 1 && (
           <div className="space-y-6">

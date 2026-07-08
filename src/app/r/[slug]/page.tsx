@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Shield, ListChecks, AlertTriangle } from 'lucide-react';
 import { getResult, isDatabaseConfigured } from '@/utils/db';
 import SensitivityDashboard from './SensitivityDashboard';
+import AdUnit from '@/components/AdUnit';
 
 export const runtime = 'edge';
 
@@ -144,6 +145,13 @@ export default async function ResultPage({ params }: PageProps) {
           )}
         </div>
       </section>
+
+      {/* AdSense Banner — between profile specs and sensitivity dashboard */}
+      <AdUnit
+        slot="6068297962050182"
+        format="auto"
+        className="my-4"
+      />
 
       {/* Interactive sensitivity Dashboard */}
       <main className="flex-1">
