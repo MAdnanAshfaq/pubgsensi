@@ -12,8 +12,33 @@ export const metadata: Metadata = {
 };
 
 export default function Guide2() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "PUBG Mobile Gyroscope Settings Explained: Full Guide",
+    "description": "Improve your aiming with the best PUBG Mobile gyroscope settings. Learn the difference between Always-On and Scope-On, and how to calibrate it.",
+    "image": "https://www.gamingsensi.site/images/gyro_wrist_tilt.png",
+    "author": {
+      "@type": "Organization",
+      "name": "AimSync"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AimSync",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.gamingsensi.site/icon.svg"
+      }
+    },
+    "datePublished": "2026-07-09"
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         PUBG Mobile Gyroscope Settings Explained: The Complete Masterclass
       </h1>

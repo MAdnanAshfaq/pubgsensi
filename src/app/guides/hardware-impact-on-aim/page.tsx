@@ -12,8 +12,33 @@ export const metadata: Metadata = {
 };
 
 export default function HardwareImpactGuide() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "How Phone Hardware Affects Aim and Sensitivity — AimSync",
+    "description": "Learn how display refresh rate (Hz), touch sampling rate, and processor input latency affect your aiming sensitivity in PUBG Mobile & BGMI.",
+    "image": "https://www.gamingsensi.site/images/refresh_rate_smoothness.png",
+    "author": {
+      "@type": "Organization",
+      "name": "AimSync"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AimSync",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.gamingsensi.site/icon.svg"
+      }
+    },
+    "datePublished": "2026-07-09"
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Touch Latency & Refresh Rate: How Your Phone Hardware Affects Aim
       </h1>

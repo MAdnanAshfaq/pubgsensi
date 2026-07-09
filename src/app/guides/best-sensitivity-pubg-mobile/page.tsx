@@ -12,8 +12,33 @@ export const metadata: Metadata = {
 };
 
 export default function Guide1() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "The Best PUBG Mobile Sensitivity Settings (2026 Guide)",
+    "description": "Find the absolute best PUBG Mobile sensitivity settings for zero recoil. Comprehensive guide on camera, ADS, and gyroscope settings.",
+    "image": "https://www.gamingsensi.site/images/sensi_chart_comparison.png",
+    "author": {
+      "@type": "Organization",
+      "name": "AimSync"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AimSync",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.gamingsensi.site/icon.svg"
+      }
+    },
+    "datePublished": "2026-07-09"
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         The Best PUBG Mobile Sensitivity Settings: Complete 2026 Tuning Manual
       </h1>

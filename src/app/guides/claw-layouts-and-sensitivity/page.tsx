@@ -12,8 +12,33 @@ export const metadata: Metadata = {
 };
 
 export default function ClawLayoutsGuide() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
+    "description": "A deep dive into 2-finger, 3-finger, 4-finger, and 5-finger claw layouts for PUBG Mobile, detailing how layouts dictate your camera and ADS sensitivity requirements.",
+    "image": "https://www.gamingsensi.site/images/four_finger_claw_triggers.png",
+    "author": {
+      "@type": "Organization",
+      "name": "AimSync"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AimSync",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.gamingsensi.site/icon.svg"
+      }
+    },
+    "datePublished": "2026-07-09"
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Claw Layouts & Sensitivity: The Definitive 2, 3, 4, and 5-Finger Tuning Guide
       </h1>

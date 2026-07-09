@@ -12,8 +12,33 @@ export const metadata: Metadata = {
 };
 
 export default function RecoilControlDrills() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
+    "description": "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
+    "image": "https://www.gamingsensi.site/images/recoil_spread_comparison.png",
+    "author": {
+      "@type": "Organization",
+      "name": "AimSync"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AimSync",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.gamingsensi.site/icon.svg"
+      }
+    },
+    "datePublished": "2026-07-09"
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Mastering Recoil Control: Training Drills & Setup Manual
       </h1>
