@@ -45,8 +45,12 @@ export default function Guide2() {
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         PUBG Mobile Gyroscope Settings Explained: The Complete Masterclass
       </h1>
-      <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 11 Min Read
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+        <span>•</span>
+        <span>Published: July 9, 2026</span>
+        <span>•</span>
+        <span>11 Min Read</span>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
@@ -74,7 +78,7 @@ export default function Guide2() {
           Every modern smartphone has a built-in sensor called a gyroscope. This sensor measures angular velocity and tilt. When enabled in the settings menu, tilting your phone downwards physically translates to your crosshair pulling downwards in the game.
         </p>
         <p>
-          This is extremely powerful because it isolates camera aiming from trigger controls. For instance, when firing, you don't need to drag your finger down to control the vertical recoil of an M416 or AKM. Instead, you simply tilt your wrist forward. This leaves your fingers free to crouch-spam, tap peek buttons, jump, or perform quick weapon swaps.
+          This is extremely powerful because it isolates camera aiming from trigger controls. For instance, when firing, you don't need to drag your finger down to control the vertical recoil of an M416 or AKM. Instead, you simply tilt your wrist forward. This leaves your fingers free to crouch-spam, tap peek buttons, jump, or perform quick gear swaps.
         </p>
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">2. Always-On vs. Scope-On Gyroscope</h2>
@@ -117,7 +121,7 @@ export default function Guide2() {
           2. **ADS Gyroscope Sensitivity:** Controls the speed *while actively shooting*. 
         </p>
         <p>
-          **Tuning Formula:** Keep your ADS Gyroscope settings **10% to 15% higher** than your standard Gyroscope settings. This keeps your crosshair extremely stable while scanning, but gives you the extra pull-down speed needed to counter high-recoil guns like the Beryl M762 or Groza.
+          **Tuning Formula:** Keep your ADS Gyroscope settings **10% to 15% higher** than your standard Gyroscope settings. This keeps your crosshair extremely stable while scanning, but gives you the extra pull-down speed needed to counter high-recoil setups like the Beryl M762 or Groza.
         </p>
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">4. Best Gyroscope Sensitivity Multipliers</h2>
@@ -143,13 +147,13 @@ export default function Guide2() {
         </p>
         <ol className="list-decimal pl-6 space-y-3">
           <li>
-            <strong>The Steady Hand Drill:</strong> Go to the training area, pick up a weapon, and look at a target at 30 meters. Take your fingers off the screen completely. Try to keep the crosshair locked dead center on the target using only your wrists.
+            <strong>The Steady Hand Drill:</strong> Go to the training area, pick up a gear, and look at a target at 30 meters. Take your fingers off the screen completely. Try to keep the crosshair locked dead center on the target using only your wrists.
           </li>
           <li>
             <strong>The Tilt Tracking Drill:</strong> Stand facing a line of moving targets. Practice following them smoothly by slowly rotating your phone left and right, without swiping.
           </li>
           <li>
-            <strong>The Recoil Pull Down:</strong> Equip a high-recoil weapon (like the AKM). Scope in, press fire, and tilt your phone forward. Adjust your tilt speed until the bullet holes cluster in a single spot.
+            <strong>The Recoil Pull Down:</strong> Equip a high-recoil gear (like the AKM). Scope in, press fire, and tilt your phone forward. Adjust your tilt speed until the bullet holes cluster in a single spot.
           </li>
         </ol>
 

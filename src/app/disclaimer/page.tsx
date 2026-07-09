@@ -37,7 +37,7 @@ export default function Disclaimer() {
           <li><strong>PUBG Corporation / Krafton</strong> (Owners of the PUBG IP).</li>
         </ul>
         <p>
-          The names &ldquo;PUBG Mobile,&rdquo; &ldquo;BGMI,&rdquo; &ldquo;Battlegrounds Mobile India,&rdquo; as well as related logos, weapon designations, maps, and specific game modes are registered trademarks of their respective owners. Their use on this website is strictly for informational, educational, and analytical purposes under fair use policies.
+          The names &ldquo;PUBG Mobile,&rdquo; &ldquo;BGMI,&rdquo; &ldquo;Battlegrounds Mobile India,&rdquo; as well as related logos, gear designations, maps, and specific game modes are registered trademarks of their respective owners. Their use on this website is strictly for informational, educational, and analytical purposes under fair use policies.
         </p>
       </section>
 
@@ -74,7 +74,7 @@ export default function Disclaimer() {
             AimSync Compliance Operations
           </p>
           <p className="text-sm mt-1">
-            Email: <a href="mailto:support@gamingsensi.site" className="underline hover:text-white transition-colors">support@gamingsensi.site</a>
+            Email: <a href="mailto:adnanchy083@gmail.com" className="underline hover:text-white transition-colors">adnanchy083@gmail.com</a>
           </p>
         </div>
       </section>

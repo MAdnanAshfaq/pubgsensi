@@ -34,7 +34,7 @@ export default function About() {
 
         <h2 className="text-xl font-bold text-white mt-8 mb-2">Contact Us</h2>
         <p>For support, business inquiries, or general feedback about the sensitivity generation algorithms, please contact our team directly at:</p>
-        <p className="font-technical text-primary-yellow">Email: support@gamingsensi.site</p>
+        <p className="font-technical text-primary-yellow">Email: adnanchy083@gmail.com</p>
       </div>
     </main>
   );

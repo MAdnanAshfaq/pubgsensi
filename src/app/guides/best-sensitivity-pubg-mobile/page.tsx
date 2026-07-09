@@ -45,8 +45,12 @@ export default function Guide1() {
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         The Best PUBG Mobile Sensitivity Settings: Complete 2026 Tuning Manual
       </h1>
-      <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 12 Min Read
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+        <span>•</span>
+        <span>Published: July 9, 2026</span>
+        <span>•</span>
+        <span>12 Min Read</span>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
@@ -76,7 +80,7 @@ export default function Guide1() {
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">A. Camera Sensitivity (Screen Swipe / Free Look)</h3>
         <p>
-          This controls how fast your camera turns when you swipe the screen without firing your weapon. It determines your target acquisition speed. If this is too low, you will struggle to turn 180 degrees when attacked from behind. If it is too high, you will overshoot your targets while scanning.
+          This controls how fast your camera turns when you swipe the screen without firing your gear. It determines your target acquisition speed. If this is too low, you will struggle to turn 180 degrees when attacked from behind. If it is too high, you will overshoot your targets while scanning.
         </p>
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">B. ADS (Aim Down Sights) Sensitivity</h3>

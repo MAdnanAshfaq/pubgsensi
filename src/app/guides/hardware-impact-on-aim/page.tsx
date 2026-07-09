@@ -45,8 +45,12 @@ export default function HardwareImpactGuide() {
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Touch Latency & Refresh Rate: How Your Phone Hardware Affects Aim
       </h1>
-      <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 12 Min Read
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+        <span>•</span>
+        <span>Published: July 9, 2026</span>
+        <span>•</span>
+        <span>12 Min Read</span>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

@@ -304,7 +304,7 @@ export default function OnboardingWizard() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               {[
-                { id: 'always_on', label: 'Always-on Gyroscope', desc: 'Highly Recommended. Gyroscope controls both camera look and weapon recoil tilting.', icon: RotateCw },
+                { id: 'always_on', label: 'Always-on Gyroscope', desc: 'Highly Recommended. Gyroscope controls both camera look and gear recoil tilting.', icon: RotateCw },
                 { id: 'scope_on', label: 'Scope-only Gyroscope', desc: 'Gyroscope is only active when aiming down sights (ADS). Good for sniper players.', icon: Crosshair },
                 { id: 'off', label: 'Disabled (Swipe only)', desc: 'Recoil is controlled entirely by sliding fingers on screen. Recommended to learn Gyro!', icon: Smartphone },
               ].map((opt) => {
@@ -466,14 +466,14 @@ export default function OnboardingWizard() {
                     onChange={(e) => setDeviceInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleDeviceLookup()}
                     placeholder="e.g. OnePlus 8 5G, iPhone 13, POCO X5 Pro"
-                    className="w-full pl-10 pr-4 py-3 bg-surface-card border border-border-tactical/40 rounded-xl text-sm text-foreground placeholder:text-text-muted/50 focus:outline-none focus:border-primary-yellow/60 focus:bg-surface-hover transition-all"
+                    className="w-full pl-10 pr-4 h-12 bg-surface-card border border-border-tactical/40 rounded-xl text-sm text-foreground placeholder:text-text-muted/50 focus:outline-none focus:border-primary-yellow/60 focus:bg-surface-hover transition-all"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={handleDeviceLookup}
                   disabled={!deviceInput.trim() || lookupStatus === 'loading'}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary-yellow text-background font-headline font-bold text-sm uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-yellow/90 transition-all active:scale-95 shrink-0"
+                  className="flex items-center gap-2 px-4 h-12 rounded-xl bg-primary-yellow text-background font-headline font-bold text-sm uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-yellow/90 transition-all active:scale-95 shrink-0"
                 >
                   {lookupStatus === 'loading'
                     ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -661,12 +661,11 @@ export default function OnboardingWizard() {
         )}
       </main>
 
-      {/* Footer Navigation */}
       <footer className="flex justify-between gap-4 border-t border-border-tactical/20 pt-6">
         <button
           onClick={prevStep}
           disabled={step === 1}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-headline font-bold text-base uppercase border transition-all ${
+          className={`flex items-center gap-2 px-6 h-12 rounded-xl font-headline font-bold text-base uppercase border transition-all ${
             step === 1
               ? 'border-border-tactical/20 text-text-muted/40 cursor-not-allowed'
               : 'border-border-tactical/50 text-foreground hover:bg-surface-hover active:scale-95'
@@ -679,7 +678,7 @@ export default function OnboardingWizard() {
         {step < 7 ? (
           <button
             onClick={nextStep}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-headline font-bold text-base uppercase bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-95 shadow-lg"
+            className="flex items-center gap-2 px-6 h-12 rounded-xl font-headline font-bold text-base uppercase bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-95 shadow-lg"
           >
             CONTINUE
             <ArrowRight className="w-4 h-4" />
@@ -687,7 +686,7 @@ export default function OnboardingWizard() {
         ) : (
           <button
             onClick={handleSubmit}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl font-headline font-extrabold text-base uppercase bg-primary-yellow text-background hover:bg-primary-yellow/90 transition-all active:scale-95 shadow-[0_4px_20px_rgba(255,215,0,0.3)] border border-primary-yellow/10"
+            className="flex items-center gap-2 px-8 h-12 rounded-xl font-headline font-extrabold text-base uppercase bg-primary-yellow text-background hover:bg-primary-yellow/90 transition-all active:scale-95 shadow-[0_4px_20px_rgba(255,215,0,0.3)] border border-primary-yellow/10"
           >
             GENERATE PROFILE
             <Wrench className="w-4 h-4" />
@@ -763,7 +762,7 @@ export default function OnboardingWizard() {
             On a physical level, this swipe translates to a delta of coordinates on the touch screen. A high-friction surface forces you to exert more force, causing you to overshoot or undershoot targets. To combat this, our algorithm scales up baseline Camera sensitivity values on budget devices or screens that suffer from high touch resistance. 
           </p>
           <p className="mb-4">
-            Furthermore, your thumb's physical range of motion is physically constrained by the width of the display. If you use a two-finger thumb layout, your thumbs must perform dual duty: navigating player movement and dragging down to control recoil. This restricted space requires higher ADS multipliers to ensure you can pull down vertical weapon kick before your thumb hits the physical bottom bezel of your phone.
+            Furthermore, your thumb's physical range of motion is physically constrained by the width of the display. If you use a two-finger thumb layout, your thumbs must perform dual duty: navigating player movement and dragging down to control recoil. This restricted space requires higher ADS multipliers to ensure you can pull down vertical gear kick before your thumb hits the physical bottom bezel of your phone.
           </p>
         </div>
 
@@ -787,7 +786,7 @@ export default function OnboardingWizard() {
             3. The Recoil Control Formula: ADS vs. Gyroscope Multipliers
           </h3>
           <p className="mb-4">
-            Vertical weapon climb in PUBG and BGMI is caused by recoil force pushing the barrel upward. To maintain a static point of aim, you must apply a counter-balancing downward movement. This is achieved in one of two ways:
+            Vertical gear climb in PUBG and BGMI is caused by recoil force pushing the barrel upward. To maintain a static point of aim, you must apply a counter-balancing downward movement. This is achieved in one of two ways:
           </p>
           <ul className="list-decimal pl-5 space-y-2 mb-4">
             <li>
@@ -873,16 +872,16 @@ export default function OnboardingWizard() {
             </div>
 
             <div>
-              <h4 className="font-bold text-primary-yellow">Q7: How do vertical recoil multipliers differ between 5.56mm and 7.62mm weapons?</h4>
+              <h4 className="font-bold text-primary-yellow">Q7: How do vertical recoil multipliers differ between 5.56mm and 7.62mm gears?</h4>
               <p className="text-xs text-text-muted mt-1">
-                7.62mm weapons like the Beryl M762 and AKM generate significantly higher vertical and horizontal recoil climb than 5.56mm rifles (M416, SCAR-L). If you primarily run 7.62mm rifles, you will need to increase your ADS and Gyroscope scope multipliers by 5% to 10% compared to standard M416-optimized configurations.
+                7.62mm gears like the Beryl M762 and AKM generate significantly higher vertical and horizontal recoil climb than 5.56mm rifles (M416, SCAR-L). If you primarily run 7.62mm rifles, you will need to increase your ADS and Gyroscope scope multipliers by 5% to 10% compared to standard M416-optimized configurations.
               </p>
             </div>
 
             <div>
-              <h4 className="font-bold text-primary-yellow">Q8: What is the difference between Classic and Custom Weapon sensitivity?</h4>
+              <h4 className="font-bold text-primary-yellow">Q8: What is the difference between Classic and Custom Gear sensitivity?</h4>
               <p className="text-xs text-text-muted mt-1">
-                Classic sensitivity applies globally to all weapons when using a specific scope. Custom Weapon sensitivity allows you to override global settings for individual weapons. For example, you can set a higher 3x gyroscope sensitivity specifically for the M416 to control sprays, while keeping a lower global 3x sensitivity for snipers or DMRs.
+                Classic sensitivity applies globally to all gears when using a specific scope. Custom Gear sensitivity allows you to override global settings for individual gears. For example, you can set a higher 3x gyroscope sensitivity specifically for the M416 to control sprays, while keeping a lower global 3x sensitivity for snipers or DMRs.
               </p>
             </div>
           </div>

@@ -3,13 +3,13 @@ import AdUnit from '@/components/AdUnit';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
+  title: "Gear Recoil Control Drills — PUBG Mobile & BGMI Guide",
   description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
   alternates: {
     canonical: "https://www.gamingsensi.site/guides/recoil-control-drills",
   },
   openGraph: {
-    title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
+    title: "Gear Recoil Control Drills — PUBG Mobile & BGMI Guide",
     description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
   },
 };
@@ -18,7 +18,7 @@ export default function RecoilControlDrills() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
+    "headline": "Gear Recoil Control Drills — PUBG Mobile & BGMI Guide",
     "description": "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
     "image": "https://www.gamingsensi.site/images/recoil_spread_comparison.png",
     "author": {
@@ -45,17 +45,21 @@ export default function RecoilControlDrills() {
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Mastering Recoil Control: Training Drills & Setup Manual
       </h1>
-      <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 12 Min Read
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+        <span>•</span>
+        <span>Published: July 9, 2026</span>
+        <span>•</span>
+        <span>12 Min Read</span>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
         <p>
-          Recoil control is the primary differentiator between casual players and top-tier conquerors in PUBG Mobile and BGMI. While having an optimized sensitivity layout is critical, it is only half of the equation. The other half is developing the muscle memory and motor skills needed to drag your fingers or tilt your phone at the exact speed required to cancel out weapon recoil.
+          Recoil control is the primary differentiator between casual players and top-tier conquerors in PUBG Mobile and BGMI. While having an optimized sensitivity layout is critical, it is only half of the equation. The other half is developing the muscle memory and motor skills needed to drag your fingers or tilt your phone at the exact speed required to cancel out gear recoil.
         </p>
 
         <p>
-          In this comprehensive guide, we will analyze the mechanics of vertical and horizontal weapon climb, provide detailed training ground **recoil control drills** used by professional players, and explain how to troubleshoot your sensitivity settings based on your spray patterns. Watch competitive tournament highlights and matches on the official <a href="https://www.youtube.com/@PUBGMOBILEEsports" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">PUBG Mobile Esports Channel</a>.
+          In this comprehensive guide, we will analyze the mechanics of vertical and horizontal gear climb, provide detailed training ground **recoil control drills** used by professional players, and explain how to troubleshoot your sensitivity settings based on your spray patterns. Watch competitive tournament highlights and matches on the official <a href="https://www.youtube.com/@PUBGMOBILEEsports" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">PUBG Mobile Esports Channel</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">
@@ -76,12 +80,12 @@ export default function RecoilControlDrills() {
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">A. Vertical Recoil (Predictable)</h3>
         <p>
-          This is the upward kick of your weapon when firing. It climbs at a relatively constant rate. You control it by dragging your finger down on the screen or tilting your phone forward (using gyroscope). Because it is predictable, you can train your muscle memory to neutralize it completely.
+          This is the upward kick of your gear when firing. It climbs at a relatively constant rate. You control it by dragging your finger down on the screen or tilting your phone forward (using gyroscope). Because it is predictable, you can train your muscle memory to neutralize it completely.
         </p>
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">B. Horizontal Recoil (Random)</h3>
         <p>
-          This is the random left-to-right bounce. Unlike vertical recoil, horizontal recoil is random and cannot be fully predicted. You minimize it by choosing correct weapon attachments (like the Half Grip or Compensator) and performing rapid micro-adjustments with your gyroscope.
+          This is the random left-to-right bounce. Unlike vertical recoil, horizontal recoil is random and cannot be fully predicted. You minimize it by choosing correct gear attachments (like the Half Grip or Compensator) and performing rapid micro-adjustments with your gyroscope.
         </p>
 
         <AdUnit slot="1234567890" format="auto" className="my-8" />
@@ -96,7 +100,7 @@ export default function RecoilControlDrills() {
           Equip an M416 with a 3x or 4x scope. Stand at the shooting benches facing the stationary targets at 50 meters.
         </p>
         <p>
-          Fire a full 40-round magazine and try to keep all bullets clustered within the center ring of the target. If the weapon climbs upward, increase your ADS/Gyro scope sensitivity by **5%**. If the weapon dips downward, reduce it by **5%**. Repeat this until you can keep 90% of the bullets in the inner circle.
+          Fire a full 40-round magazine and try to keep all bullets clustered within the center ring of the target. If the gear climbs upward, increase your ADS/Gyro scope sensitivity by **5%**. If the gear dips downward, reduce it by **5%**. Repeat this until you can keep 90% of the bullets in the inner circle.
         </p>
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">Drill 2: The Target Transition (Spray Transfer)</h3>
@@ -109,7 +113,7 @@ export default function RecoilControlDrills() {
 
         <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">Drill 3: The Crouch-Peak Stability Test</h3>
         <p>
-          Find a wall or cover in the training area. Practice peeking out, crouching, opening your scope, firing a 15-bullet burst, and peeking back into cover. Crouching reduces your weapon's recoil by roughly **20% to 30%**, and peeking helps minimize exposure to return fire.
+          Find a wall or cover in the training area. Practice peeking out, crouching, opening your scope, firing a 15-bullet burst, and peeking back into cover. Crouching reduces your gear's recoil by roughly **20% to 30%**, and peeking helps minimize exposure to return fire.
         </p>
 
         <AdUnit slot="0987654321" format="rectangle" className="my-8" />

@@ -69,7 +69,7 @@ export default function TrainingPlan({ result }: TrainingPlanProps) {
               focus: 'Consistent Drag Rate Calibration',
               duration: '15 Minutes',
               target: 'Keep a full 30-round spray grouped within the 7-ring circle',
-              guide: 'Equip your primary weapon (M416 or AKM) with a Red Dot. Stand at 45m. Fire a full 30-round magazine on a stationary target. Maintain a continuous drag down. Adjust slider speed if it climbs too high.',
+              guide: 'Equip your primary gear (M416 or AKM) with a Red Dot. Stand at 45m. Fire a full 30-round magazine on a stationary target. Maintain a continuous drag down. Adjust slider speed if it climbs too high.',
             },
           ];
         case 2:
@@ -103,7 +103,7 @@ export default function TrainingPlan({ result }: TrainingPlanProps) {
               focus: 'Horizontal Jitter Containment',
               duration: '15 Minutes',
               target: 'Maintain bullet groupings within the blue ring on targets',
-              guide: 'Spray 10-round bursts at 50m. Since horizontal recoil is random, focus on resetting your spray or using micro tilt/drag adjustments when the gun starts shaking left or right.',
+              guide: 'Spray 10-round bursts at 50m. Since horizontal recoil is random, focus on resetting your spray or using micro tilt/drag adjustments when the setup starts shaking left or right.',
             },
           ];
         case 4:
@@ -265,10 +265,10 @@ export default function TrainingPlan({ result }: TrainingPlanProps) {
         case 6:
           return [
             {
-              name: 'Shotgun Quick-peeking',
+              name: 'Burst Loadout Quick-peeking',
               focus: 'Single-shot snap accuracy',
               duration: '15 Minutes',
-              target: 'Land a full shotgun spread on target torso via jump-peeking',
+              target: 'Land a full burst loadout spread on target torso via jump-peeking',
               guide: 'Equip DBS or S12K. Practice run, jump, peek around a corner, fire, and immediately fall back. Teaches instant target acquisition and crosshair placement before firing.',
             },
             {

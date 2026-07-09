@@ -45,8 +45,12 @@ export default function ClawLayoutsGuide() {
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Claw Layouts & Sensitivity: The Definitive 2, 3, 4, and 5-Finger Tuning Guide
       </h1>
-      <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 12 Min Read
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+        <span>•</span>
+        <span>Published: July 9, 2026</span>
+        <span>•</span>
+        <span>12 Min Read</span>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
@@ -84,7 +88,7 @@ export default function ClawLayoutsGuide() {
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">2. The Three-Finger Claw Layout</h2>
         <p>
-          The three-finger claw offloads weapon firing to your left index finger, keeping your thumbs dedicated to movement and aiming.
+          The three-finger claw offloads gear firing to your left index finger, keeping your thumbs dedicated to movement and aiming.
         </p>
         <p>
           * **Action Allocation:** Left thumb moves, left index finger fires. Right thumb handles camera rotation, scoping, crouching, and reloading.

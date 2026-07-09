@@ -75,7 +75,7 @@ export default function GuidesHub() {
           The Gyroscope Advantage in PUBG and BGMI
         </h3>
         <p>
-          Using a gyroscope transfers the strain of recoil management from your fingers to your wrists. When firing an automatic weapon, vertical climb can be compensated for by tilting the phone forward at a constant rate, rather than continuously sliding your finger down the screen. This physical separation translates to cleaner crosshair tracking and faster target transitions.
+          Using a gyroscope transfers the strain of recoil management from your fingers to your wrists. When firing an automatic gear, vertical climb can be compensated for by tilting the phone forward at a constant rate, rather than continuously sliding your finger down the screen. This physical separation translates to cleaner crosshair tracking and faster target transitions.
         </p>
 
         <h3 className="text-lg font-bold text-white uppercase tracking-wide">

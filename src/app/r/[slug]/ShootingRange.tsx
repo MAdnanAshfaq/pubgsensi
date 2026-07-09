@@ -23,7 +23,7 @@ interface ShootingRangeProps {
   };
 }
 
-type WeaponType = 'm416' | 'akm' | 'awm';
+type GearType = 'm416' | 'akm' | 'awm';
 type OpticType = 'red_dot' | 'scope_3x' | 'scope_4x' | 'scope_6x';
 
 interface Hit {
@@ -37,7 +37,7 @@ interface Hit {
 export default function ShootingRange({ sensValues }: ShootingRangeProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
-  const [weapon, setWeapon] = useState<WeaponType>('m416');
+  const [gear, setGear] = useState<GearType>('m416');
   const [optic, setOptic] = useState<OpticType>('red_dot');
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -143,8 +143,8 @@ export default function ShootingRange({ sensValues }: ShootingRangeProps) {
           ) : (
             <GameInstance 
               sensValues={sensValues} 
-              weapon={weapon}
-              setWeapon={setWeapon}
+              gear={gear}
+              setGear={setGear}
               optic={optic}
               setOptic={setOptic}
               onExit={exitFullscreen} 
@@ -161,15 +161,15 @@ export default function ShootingRange({ sensValues }: ShootingRangeProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 function GameInstance({ 
   sensValues, 
-  weapon, 
-  setWeapon,
+  gear, 
+  setGear,
   optic, 
   setOptic,
   onExit 
 }: { 
   sensValues: ShootingRangeProps['sensValues'], 
-  weapon: WeaponType, 
-  setWeapon: (w: WeaponType) => void,
+  gear: GearType, 
+  setGear: (w: GearType) => void,
   optic: OpticType, 
   setOptic: (o: OpticType) => void,
   onExit: () => void 
@@ -200,7 +200,7 @@ function GameInstance({
   const lastFireTimeRef = useRef<number>(0);
   const isFiringRef = useRef(false);
 
-  const weapons = {
+  const gears = {
     m416: { name: 'M416', magSize: 30, fireRate: 95, vKick: 8.5, hJitter: 3.5, spread: 4 },
     akm: { name: 'AKM', magSize: 30, fireRate: 115, vKick: 13.5, hJitter: 5.5, spread: 6 },
     awm: { name: 'AWM', magSize: 5, fireRate: 1200, vKick: 50, hJitter: 1, spread: 1 },
@@ -384,7 +384,7 @@ function GameInstance({
         return 0;
       }
 
-      const specs = weapons[weapon];
+      const specs = gears[gear];
       const zoom = getOpticZoom();
       
       // Calculate hit location (center of screen, offset by base inaccuracy)
@@ -451,7 +451,7 @@ function GameInstance({
   };
 
   const resetTarget = () => {
-    setBulletsLeft(weapons[weapon].magSize);
+    setBulletsLeft(gears[gear].magSize);
     setHits([]);
     posRef.current = { x: 0, y: 0 };
     setScoreSummary(null);
@@ -481,9 +481,9 @@ function GameInstance({
 
     const render = (time: number) => {
       // Fire logic check
-      if (isFiringRef.current && weapon !== 'awm') {
+      if (isFiringRef.current && gear !== 'awm') {
         const timeSinceFire = time - lastFireTimeRef.current;
-        if (timeSinceFire > weapons[weapon].fireRate) {
+        if (timeSinceFire > gears[gear].fireRate) {
           fireBullet();
           lastFireTimeRef.current = time;
         }
@@ -599,7 +599,7 @@ function GameInstance({
       cancelAnimationFrame(gameLoopRef.current);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [optic, weapon, hits]);
+  }, [optic, gear, hits]);
 
 
   return (
@@ -648,9 +648,9 @@ function GameInstance({
 
         {/* Action Controls */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Bottom Right - Weapon & Optic & Reload */}
+          {/* Bottom Right - Gear & Optic & Reload */}
           <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 pointer-events-auto flex flex-col items-end gap-3 z-20">
-            {/* Weapon & Optic Selectors */}
+            {/* Gear & Optic Selectors */}
             <div className={`flex flex-col gap-2 transition-opacity duration-300 ${isEditingHUD ? 'opacity-30 pointer-events-none' : 'opacity-80 hover:opacity-100'}`}>
               <div className="bg-black/60 p-2 rounded-lg border border-white/10 backdrop-blur-md flex flex-col items-end">
                 <div className="text-[9px] text-primary-yellow tracking-widest uppercase mb-1">Optic</div>
@@ -659,7 +659,7 @@ function GameInstance({
                     <button 
                       key={o}
                       onClick={() => setOptic(o)}
-                      className={`px-2 py-1 rounded text-xs font-black uppercase transition-colors ${optic === o ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                      className={`px-3 py-2 rounded text-xs font-black uppercase transition-colors ${optic === o ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
                     >
                       {o.replace('scope_', '').replace('_', ' ')}
                     </button>
@@ -668,19 +668,19 @@ function GameInstance({
               </div>
 
               <div className="bg-black/60 p-2 rounded-lg border border-white/10 backdrop-blur-md flex flex-col items-end">
-                <div className="text-[9px] text-primary-yellow tracking-widest uppercase mb-1">Weapon</div>
+                <div className="text-[9px] text-primary-yellow tracking-widest uppercase mb-1">Gear</div>
                 <div className="flex gap-1">
-                  {(['m416', 'akm', 'awm'] as WeaponType[]).map(w => (
+                  {(['m416', 'akm', 'awm'] as GearType[]).map(w => (
                     <button 
                       key={w}
-                      onClick={() => setWeapon(w)}
-                      className={`px-3 py-1 rounded text-xs font-black uppercase transition-colors ${weapon === w ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                      onClick={() => setGear(w)}
+                      className={`px-4 py-2 rounded text-xs font-black uppercase transition-colors ${gear === w ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
                     >
-                      {weapons[w].name}
+                      {gears[w].name}
                     </button>
                   ))}
                 </div>
-                <div className="text-xs text-white/70 mt-1">{bulletsLeft} / {weapons[weapon].magSize} Ammo</div>
+                <div className="text-xs text-white/70 mt-1">{bulletsLeft} / {gears[gear].magSize} Ammo</div>
               </div>
             </div>
 
