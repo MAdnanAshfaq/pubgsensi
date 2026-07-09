@@ -34,7 +34,7 @@ export default function AdUnit({ slot, format = 'auto', className = '' }: AdUnit
         data-ad-client="ca-pub-6068297962050182"
         data-ad-slot={slot}
         data-ad-format={format}
-        data-full-width-responsive="true"
+        data-full-width-responsive="false"
       />
     </div>
   )

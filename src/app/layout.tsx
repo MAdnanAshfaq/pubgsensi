@@ -38,7 +38,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6068297962050182"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
         />
         <div className="flex-1">
