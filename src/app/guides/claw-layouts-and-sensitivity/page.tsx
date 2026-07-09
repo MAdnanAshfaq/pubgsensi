@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import AdUnit from '@/components/AdUnit';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
@@ -14,66 +15,101 @@ export default function ClawLayoutsGuide() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
-        Claw Layouts & Sensitivity: 2, 3, 4, and 5-Finger Setup Guide
+        Claw Layouts & Sensitivity: The Definitive 2, 3, 4, and 5-Finger Tuning Guide
       </h1>
       <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 6 Min Read
+        Updated: 2026 • 12 Min Read
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
         <p>
-          In competitive mobile shooter games like PUBG Mobile and BGMI, your control layout dictates how fast you can execute actions like crouching, scoping, and firing. But one major concept many players overlook is how your physical finger layout directly impacts your sensitivity requirements.
+          Your physical control setup is the foundation of your aim. When playing competitive mobile shooters like Battlegrounds Mobile India (BGMI) or PUBG Mobile, understanding the correlation between **claw layouts and sensitivity** is critical. A common mistake among players is utilizing high-sensitivity sliders designed for 4-finger layouts on standard 2-finger thumb setups, leading to inaccurate aim, floaty tracking, and uncontrollable recoil.
         </p>
 
         <p>
-          Your layout determines how many fingers are dedicated to controlling the camera versus executing actions. Let's break down the most popular configurations and explain how your sensitivity must adjust to fit your layout.
+          Your layout determines how many fingers are dedicated to moving the camera, controlling recoil, and pressing tactical buttons. In this guide, we will analyze 2-finger, 3-finger, 4-finger, and 5-finger setups, and detail how your sensitivity values must change to match your layout's physical constraints.
         </p>
+
+        <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">
+          <Image
+            src="/images/four_finger_claw_triggers.png"
+            alt="PUBG Mobile Claw Layout Diagram"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 800px"
+          />
+        </div>
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">1. The Two-Finger (Thumbs) Layout</h2>
         <p>
-          The two-finger setup is where almost every mobile gamer starts. Using only your left and right thumbs, you handle movement, camera rotation, scoping, crouching, jump shots, and recoil control.
+          The two-finger thumb layout is the default starting point. You hold the phone with both hands and use only your left and right thumbs to execute every action.
         </p>
         <p>
-          <strong>Sensitivity Impact:</strong> Because your right thumb is doing multiple jobs (scoping, aiming, and firing), you have limited screen real estate for continuous swiping. Therefore, 2-finger players generally need a <strong>higher Camera and ADS sensitivity</strong>. If your sensitivity is too low, you will run out of screen space when tracking moving targets or pulling down to control recoil while shooting.
+          * **Action Allocation:** Left thumb handles movement (joystick). Right thumb handles looking, aiming, scope triggers, crouching, firing, jumping, and reloading.
+        </p>
+        <p>
+          **Sensitivity Strategy:** Because your right thumb has to handle aiming and firing concurrently, you have very little physical screen space to drag and pull down for recoil. Therefore, 2-finger players must play with a **higher Camera and ADS sensitivity**. If your sensitivity is too low, you will run out of screen space when tracking moving targets, causing your tracking to halt.
         </p>
 
         <AdUnit slot="1234567890" format="auto" className="my-8" />
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">2. The Three-Finger Claw Layout</h2>
         <p>
-          The three-finger claw layout is the bridge between beginner and competitive setups. Typically, your left index finger is introduced to handle the fire button at the top-left of the screen, while your left thumb controls movement. Your right thumb remains in charge of camera rotation, scoping, crouching, and reloading.
+          The three-finger claw offloads weapon firing to your left index finger, keeping your thumbs dedicated to movement and aiming.
         </p>
         <p>
-          <strong>Sensitivity Impact:</strong> By offloading the firing action to your left index finger, your right thumb is freed up purely to track targets. Since you are not trying to press the fire button and swipe at the same time, you can afford to <strong>slightly lower your ADS sensitivity</strong>. This yields massive benefits for mid-to-long-range recoil control, making sprays more stable.
+          * **Action Allocation:** Left thumb moves, left index finger fires. Right thumb handles camera rotation, scoping, crouching, and reloading.
+        </p>
+        <p>
+          **Sensitivity Strategy:** Since firing is controlled by your left hand, your right thumb can focus entirely on tracking targets. This allows you to **lower your ADS sensitivity by 10% to 15%** compared to a 2-finger setup. Lower ADS sensitivity makes your sprays far more stable, especially at mid-ranges (50m - 100m).
         </p>
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">3. The Four-Finger Claw Layout (Recommended)</h2>
         <p>
-          The four-finger claw is the golden standard for competitive play. Your left index finger fires the weapon (top-left), and your right index finger opens scopes and crouches (top-right). Your left thumb handles joystick movement, and your right thumb is purely dedicated to looking around and tracking.
+          The four-finger claw is the setup used by most semi-professional and professional players. It splits movement, aiming, firing, and scoping across four separate digits.
         </p>
         <p>
-          <strong>Sensitivity Impact:</strong> Since aim control is isolated entirely from button triggers, you achieve maximum aiming stability. Four-finger claw players can lower their <strong>Camera and ADS sensitivity significantly</strong> for extreme precision. 
+          * **Action Allocation:** Left index finger fires, left thumb moves. Right index finger scopes/crouches, right thumb aims and rotates the camera.
         </p>
         <p>
-          Furthermore, because you can instantly transition between hip-fire and scoping, your 3rd Person No-Scope and 1st Person No-Scope sensitivities can be set higher for quick 180-degree turns, while keeping ADS scope sensitivities low and stable.
+          **Sensitivity Strategy:** This is the most balanced layout. Aim rotation is completely isolated from all button triggers. Because of this structural isolation, 4-finger claw players can lower their **Camera and ADS settings significantly** for maximum precision. 
+        </p>
+        <p>
+          To move fast, 4-finger players can run a high **3rd Person No-Scope** (to turn 180 degrees instantly), while keeping scope sensitivities low and stable for zero-recoil sprays.
         </p>
 
         <AdUnit slot="0987654321" format="rectangle" className="my-8" />
 
         <h2 className="text-2xl font-bold text-white mt-10 mb-4">4. The Five-Finger Claw Layout</h2>
         <p>
-          For players seeking absolute speed, the five-finger claw adds an additional finger (usually the left middle finger) to handle map updates, peek buttons, or jump triggers.
+          The five-finger claw is an advanced layout designed to maximize action speeds. 
         </p>
         <p>
-          <strong>Sensitivity Impact:</strong> This layout is highly intensive and crowded. Because your fingers cover a large portion of the screen, your available swiping area is minimized. If you play 5-finger claw, you almost certainly must rely on <strong>Always-On Gyroscope</strong>. The physical gyroscope handles 80% of your camera rotation and recoil control, allowing your thumbs to focus entirely on button prompts and micro-adjustments.
+          * **Action Allocation:** Typically, left index and middle fingers handle firing and peeking, left thumb moves, right index scopes, and right thumb aims.
+        </p>
+        <p>
+          **Sensitivity Strategy:** Because five fingers are placed on the screen, your available swiping area is extremely limited. If you play 5-finger claw, you **must rely on Always-On Gyroscope**. The physical gyroscope handles 80% of your camera rotation and recoil control, allowing your thumbs to focus entirely on button taps and micro-aim adjustments.
         </p>
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Summary: Matching Layout to Sensitivity</h2>
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">5. Summary Tuning Guide for Layout Transitions</h2>
         <p>
-          As a rule of thumb: the fewer fingers you use, the higher your touch sensitivity must be to compensate for shared screen actions. As you add more fingers (claw layouts), you can lower touch sensitivity to gain precision, offsetting the speed difference by learning gyroscope controls.
+          If you are transitioning to a new layout, follow these guidelines:
         </p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>
+            <strong>Going from 2-Finger to 3-Finger:</strong> Reduce your Red Dot and 3x ADS sensitivity by **5% to 8%** since you have more finger control.
+          </li>
+          <li>
+            <strong>Going from 3-Finger to 4-Finger:</strong> Keep your Camera settings the same, but lower your scope ADS settings to increase spray accuracy.
+          </li>
+          <li>
+            <strong>Switching to 5-Finger:</strong> Max out your Gyroscope values (300%-400%) and lower your Touch ADS values to below 30% to prevent fingers from shaking your aim.
+          </li>
+        </ul>
+
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">6. Conclusion</h2>
         <p>
-          If you are transitioning layouts, remember to use an interactive configurator tool to calculate a new baseline tailored specifically to your hardware constraints.
+          Your layout determines your physical capabilities. Do not blindly copy sensitivity codes. Analyze your finger configurations, align them with your device specs, and choose the correct camera, ADS, and gyroscope settings to master the battlefield.
         </p>
       </div>
     </main>

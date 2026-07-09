@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import AdUnit from '@/components/AdUnit';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
@@ -14,77 +15,95 @@ export default function RecoilControlDrills() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
-        Mastering Recoil Control: Training Drills & Setup
+        Mastering Recoil Control: Training Drills & Setup Manual
       </h1>
       <div className="text-sm font-technical text-text-muted mb-10 uppercase tracking-widest">
-        Updated: 2026 • 6 Min Read
+        Updated: 2026 • 12 Min Read
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
         <p>
-          Recoil control is the ultimate differentiator between a casual player and a conqueror in PUBG Mobile and BGMI. Having a great sensitivity configuration is only half the battle; the other half is building the motor skills and muscle memory to pull down on the screen or tilt your phone accurately during intense combat.
+          Recoil control is the primary differentiator between casual players and top-tier conquerors in PUBG Mobile and BGMI. While having an optimized sensitivity layout is critical, it is only half of the equation. The other half is developing the muscle memory and motor skills needed to drag your fingers or tilt your phone at the exact speed required to cancel out weapon recoil.
         </p>
 
         <p>
-          In this guide, we will cover the science behind recoil control and share the top drills used by professional players in the Training Grounds to achieve laser-like sprays.
+          In this comprehensive guide, we will analyze the mechanics of vertical and horizontal weapon climb, provide detailed training ground **recoil control drills** used by professional players, and explain how to troubleshoot your sensitivity settings based on your spray patterns.
         </p>
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Understanding Vertical vs. Horizontal Recoil</h2>
+        <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">
+          <Image
+            src="/images/recoil_spread_comparison.png"
+            alt="PUBG Mobile Recoil Control Drills Target"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 800px"
+          />
+        </div>
+
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">1. Understanding Recoil Mechanics</h2>
         <p>
-          Before practicing, you must understand what you are fighting:
+          Before practicing, you must understand what you are fighting when you hold down the fire button:
         </p>
-        <ul className="list-disc pl-6 space-y-3">
-          <li>
-            <strong>Vertical Recoil:</strong> This is the upward kick of your weapon when holding down the fire button. It is completely constant and predictable. You control it by dragging your firing finger down or tilting your phone forward (gyroscope).
-          </li>
-          <li>
-            <strong>Horizontal Recoil:</strong> This is the left-to-right bounce. Unlike vertical recoil, horizontal recoil is random. You cannot perfectly predict it, so you minimize it using weapon attachments (like the half grip or angled foregrip) and micro-adjustments.
-          </li>
-        </ul>
+
+        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">A. Vertical Recoil (Predictable)</h3>
+        <p>
+          This is the upward kick of your weapon when firing. It climbs at a relatively constant rate. You control it by dragging your finger down on the screen or tilting your phone forward (using gyroscope). Because it is predictable, you can train your muscle memory to neutralize it completely.
+        </p>
+
+        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">B. Horizontal Recoil (Random)</h3>
+        <p>
+          This is the random left-to-right bounce. Unlike vertical recoil, horizontal recoil is random and cannot be fully predicted. You minimize it by choosing correct weapon attachments (like the Half Grip or Compensator) and performing rapid micro-adjustments with your gyroscope.
+        </p>
 
         <AdUnit slot="1234567890" format="auto" className="my-8" />
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Drill 1: The 20m Target Trace (Hip-fire)</h2>
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">2. The 3 Essential Recoil Control Drills</h2>
         <p>
-          Go to the Training Grounds and stand in front of the moving targets at the 20-meter range.
-        </p>
-        <p>
-          Without scoping, fire in hip-fire mode and try to keep your crosshair locked strictly on the head of the moving target. Keep your character moving left and right (strafing) while doing this. This drill builds your base camera sensitivity tracking, which is essential for close-quarters combat (CQC).
+          Spend 10 minutes in the Training Grounds practicing these routines before jumping into classic matches:
         </p>
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Drill 2: The Target Transition (100m Spray)</h2>
+        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">Drill 1: The 50m Target Lock (Spray Control)</h3>
         <p>
-          Equip an M416 with a 4x or 6x scope (adjusted down to 3x). Stand at the shooting benches and locate the stationary boards placed at 50m, 100m, and 150m.
+          Equip an M416 with a 3x or 4x scope. Stand at the shooting benches facing the stationary targets at 50 meters.
         </p>
         <p>
-          Practice firing a 10-bullet burst on the 50m target, then instantly scope out, scope back in, and fire a 10-bullet burst on the 100m target. Do this rapidly. This forces your brain to register the "swipe distance" needed to move your crosshair between targets while fighting the weapon's initial recoil kick.
+          Fire a full 40-round magazine and try to keep all bullets clustered within the center ring of the target. If the weapon climbs upward, increase your ADS/Gyro scope sensitivity by **5%**. If the weapon dips downward, reduce it by **5%**. Repeat this until you can keep 90% of the bullets in the inner circle.
+        </p>
+
+        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">Drill 2: The Target Transition (Spray Transfer)</h3>
+        <p>
+          Set up three targets at 50m, 75m, and 100m.
+        </p>
+        <p>
+          Open your scope, fire a 10-bullet burst on the first target, then instantly swipe or tilt to the second target without scoping out, and fire another 10-bullet burst. Finally, transfer to the third target. This drill trains your transition speed and teaches your muscles how much physical distance is required to move the crosshair while fighting active recoil.
+        </p>
+
+        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">Drill 3: The Crouch-Peak Stability Test</h3>
+        <p>
+          Find a wall or cover in the training area. Practice peeking out, crouching, opening your scope, firing a 15-bullet burst, and peeking back into cover. Crouching reduces your weapon's recoil by roughly **20% to 30%**, and peeking helps minimize exposure to return fire.
         </p>
 
         <AdUnit slot="0987654321" format="rectangle" className="my-8" />
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Drill 3: The Gyroscope Pull-Down Test</h2>
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">3. Troubleshooting Your Recoil</h2>
         <p>
-          If you play with Always-On Gyroscope, stand facing a flat wall in the training area. Scope in and fire a full 40-round magazine without touching the screen with your fingers. Use *only* the tilt of your wrist to keep the bullet grouping as tight as possible.
+          If your sprays are shaky, look at your bullet holes on the wall and apply these settings adjustments:
         </p>
-        <p>
-          If the gun climbs upward and you cannot tilt your phone fast enough, your <strong>ADS Gyroscope Sensitivity is too low</strong>. If the crosshair shakes violently or dips downward, your sensitivity is too high.
-        </p>
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">Pro Tips for Recoil Stabilization</h2>
-        <ul className="list-disc pl-6 space-y-3">
+        <ul className="list-disc pl-6 space-y-2">
           <li>
-            <strong>Crouch Before Spraying:</strong> Crouching reduces your weapon's recoil by roughly 20-30%. Always crouch before initiating a mid-to-long-range spray transfer.
+            <strong>Horizontal Shaking:</strong> If the bullets bounce wildly from left to right, your sensitivity is likely too high, or you need to equip an Angled Grip/Half Grip. Reduce your scope sensitivity by **3% to 5%**.
           </li>
           <li>
-            <strong>First 5 Bullets Rule:</strong> The first 5 bullets of any spray have the lowest horizontal deviance. If you cannot hit your target in the first 10 bullets, stop firing, scope out, scope in, and reset your spray.
+            <strong>Vertical Climbing:</strong> If you run out of screen space or find yourself tilting your wrist to an uncomfortable angle, increase your ADS or Gyroscope sensitivity by **8% to 10%**.
           </li>
           <li>
-            <strong>Wrist Position:</strong> When using gyro, keep your elbows resting on a table or your knees (if sitting). Floating elbows create micro-shakes that translate directly into aiming instability.
+            <strong>Shaky Start:</strong> If the first 5 bullets are stable but the rest climb uncontrollably, make sure you are crouched and tap-firing instead of holding down the trigger for too long.
           </li>
         </ul>
 
+        <h2 className="text-2xl font-bold text-white mt-10 mb-4">4. Conclusion</h2>
         <p>
-          Consistent practice for just 15 minutes a day before jumping into classic matches will do more for your recoil control than copying 100 different sensitivity codes. Start slow, dial in your unique settings, and keep practicing!
+          Recoil control is a physical skill that requires regular practice. By understanding the mechanical differences between vertical and horizontal dispersion, adjusting your settings based on target patterns, and practicing transitions daily, you can achieve laser-like sprays and dominate your matches.
         </p>
       </div>
     </main>
