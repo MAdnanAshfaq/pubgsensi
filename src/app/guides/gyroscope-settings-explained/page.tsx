@@ -55,7 +55,7 @@ export default function Guide2() {
         </p>
 
         <p>
-          In this exhaustive masterclass, we will explain how the gyroscope works, compare the Always-On and Scope-On modes, detail how it influences your ADS recoil control, and provide the exact calibration techniques to stabilize your wrist movements.
+          In this exhaustive masterclass, we will explain how the gyroscope works, compare the Always-On and Scope-On modes, detail how it influences your ADS recoil control, and provide the exact calibration techniques to stabilize your wrist movements. For regional news and BGMI tournaments, visit the <a href="https://www.battlegroundsmobileindia.com" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">Official BGMI Website</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">

@@ -55,7 +55,7 @@ export default function HardwareImpactGuide() {
         </p>
 
         <p>
-          In this detailed guide, we will analyze the technical specs of mobile displays, explain touch digitizer polling rates, explore thermal throttling's impact on FPS, and provide a calibration blueprint to match your settings to your hardware tier.
+          In this detailed guide, we will analyze the technical specs of mobile displays, explain touch digitizer polling rates, explore thermal throttling's impact on FPS, and provide a calibration blueprint to match your settings to your hardware tier. For details on how mobile OS kernels process touch digitizer inputs, check the <a href="https://developer.android.com/training/gestures" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">Android Developer Input Gestures Documentation</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">

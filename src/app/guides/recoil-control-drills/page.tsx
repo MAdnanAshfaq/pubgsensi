@@ -55,7 +55,7 @@ export default function RecoilControlDrills() {
         </p>
 
         <p>
-          In this comprehensive guide, we will analyze the mechanics of vertical and horizontal weapon climb, provide detailed training ground **recoil control drills** used by professional players, and explain how to troubleshoot your sensitivity settings based on your spray patterns.
+          In this comprehensive guide, we will analyze the mechanics of vertical and horizontal weapon climb, provide detailed training ground **recoil control drills** used by professional players, and explain how to troubleshoot your sensitivity settings based on your spray patterns. Watch competitive tournament highlights and matches on the official <a href="https://www.youtube.com/@PUBGMOBILEEsports" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">PUBG Mobile Esports Channel</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">

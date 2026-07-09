@@ -55,7 +55,7 @@ export default function ClawLayoutsGuide() {
         </p>
 
         <p>
-          Your layout determines how many fingers are dedicated to moving the camera, controlling recoil, and pressing tactical buttons. In this guide, we will analyze 2-finger, 3-finger, 4-finger, and 5-finger setups, and detail how your sensitivity values must change to match your layout's physical constraints.
+          Your layout determines how many fingers are dedicated to moving the camera, controlling recoil, and pressing tactical buttons. In this guide, we will analyze 2-finger, 3-finger, 4-finger, and 5-finger setups, and detail how your sensitivity values must change to match your layout's physical constraints. For ergonomics tips and safety suggestions to prevent wrist strain during extended play, review the <a href="https://1hp.org/blog" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">1HP Esports Health Blog</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">

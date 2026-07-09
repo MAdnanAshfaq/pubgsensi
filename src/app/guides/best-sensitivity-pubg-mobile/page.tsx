@@ -55,7 +55,7 @@ export default function Guide1() {
         </p>
 
         <p>
-          The truth is that optimal sensitivity is highly dependent on your specific hardware specifications, display size, and control layout. In this comprehensive guide, we will analyze every component of the setting sliders, provide mathematical tuning formulas, detail recoil control tips, and provide optimized baseline configurations to help you establish a zero-recoil profile.
+          The truth is that optimal sensitivity is highly dependent on your specific hardware specifications, display size, and control layout. In this comprehensive guide, we will analyze every component of the setting sliders, provide mathematical tuning formulas, detail recoil control tips, and provide optimized baseline configurations to help you establish a zero-recoil profile. For official updates and game news, check the <a href="https://www.pubgmobile.com" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">Official PUBG Mobile Website</a>.
         </p>
 
         <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">

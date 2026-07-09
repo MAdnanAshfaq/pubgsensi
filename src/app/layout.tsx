@@ -38,7 +38,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head />
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </head>
       <body className="min-h-full flex flex-col">
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6068297962050182"
@@ -60,6 +62,7 @@ export default function RootLayout({
               <a href="/about" className="text-primary-yellow hover:text-white transition-colors">About</a>
               <a href="/privacy-policy" className="text-primary-yellow hover:text-white transition-colors">Privacy</a>
               <a href="/terms" className="text-primary-yellow hover:text-white transition-colors">Terms</a>
+              <a href="/disclaimer" className="text-primary-yellow hover:text-white transition-colors">Disclaimer</a>
             </div>
           </div>
         </footer>
