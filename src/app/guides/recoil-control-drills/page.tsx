@@ -60,6 +60,7 @@ export default function RecoilControlDrills() {
             src="/images/recoil_spread_comparison.png"
             alt="PUBG Mobile Recoil Control Drills Target"
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />

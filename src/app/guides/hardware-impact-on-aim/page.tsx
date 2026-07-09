@@ -60,6 +60,7 @@ export default function HardwareImpactGuide() {
             src="/images/refresh_rate_smoothness.png"
             alt="PUBG Mobile Refresh Rate Comparison"
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />

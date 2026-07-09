@@ -60,6 +60,7 @@ export default function Guide2() {
             src="/images/gyro_wrist_tilt.png"
             alt="PUBG Mobile Gyroscope Settings Diagram"
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />

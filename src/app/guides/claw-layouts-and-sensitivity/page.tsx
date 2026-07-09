@@ -60,6 +60,7 @@ export default function ClawLayoutsGuide() {
             src="/images/four_finger_claw_triggers.png"
             alt="PUBG Mobile Claw Layout Diagram"
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />

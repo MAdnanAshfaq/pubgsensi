@@ -60,6 +60,7 @@ export default function Guide1() {
             src="/images/sensi_chart_comparison.png"
             alt="PUBG Mobile Sensitivity Settings Chart"
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />
