@@ -4,6 +4,10 @@ import AdUnit from '@/components/AdUnit';
 export const metadata: Metadata = {
   title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
   description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
+  openGraph: {
+    title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
+    description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
+  },
 };
 
 export default function RecoilControlDrills() {

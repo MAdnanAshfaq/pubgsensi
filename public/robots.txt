@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://gamingsensi.site
+Host: https://www.gamingsensi.site
 
 # Sitemaps
-Sitemap: https://gamingsensi.site/sitemap.xml
+Sitemap: https://www.gamingsensi.site/sitemap.xml

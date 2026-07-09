@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AimSync — PUBG Mobile & BGMI Sensitivity Generator",
     description: "Free AI-powered sensitivity calculator for PUBG Mobile and BGMI.",
-    url: "https://gamingsensi.site",
+    url: "https://www.gamingsensi.site",
     siteName: "AimSync",
   },
 };

@@ -4,6 +4,10 @@ import AdUnit from '@/components/AdUnit';
 export const metadata: Metadata = {
   title: "How Phone Hardware Affects Aim and Sensitivity — AimSync",
   description: "Learn how display refresh rate (Hz), touch sampling rate, and processor input latency affect your aiming sensitivity in PUBG Mobile & BGMI.",
+  openGraph: {
+    title: "How Phone Hardware Affects Aim and Sensitivity — AimSync",
+    description: "Learn how display refresh rate (Hz), touch sampling rate, and processor input latency affect your aiming sensitivity in PUBG Mobile & BGMI.",
+  },
 };
 
 export default function HardwareImpactGuide() {

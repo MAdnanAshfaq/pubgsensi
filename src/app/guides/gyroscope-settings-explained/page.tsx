@@ -4,6 +4,10 @@ import AdUnit from '@/components/AdUnit';
 export const metadata: Metadata = {
   title: "PUBG Mobile Gyroscope Settings Explained: Full Guide",
   description: "A comprehensive guide on PUBG Mobile and BGMI gyroscope controls, comparing Always-On vs Scope-On gyroscope configurations for better recoil control.",
+  openGraph: {
+    title: "PUBG Mobile Gyroscope Settings Explained: Full Guide",
+    description: "A comprehensive guide on PUBG Mobile and BGMI gyroscope controls, comparing Always-On vs Scope-On gyroscope configurations for better recoil control.",
+  },
 };
 
 export default function Guide2() {

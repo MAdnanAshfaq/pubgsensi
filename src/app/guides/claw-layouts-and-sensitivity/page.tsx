@@ -4,6 +4,10 @@ import AdUnit from '@/components/AdUnit';
 export const metadata: Metadata = {
   title: "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
   description: "A deep dive into 2-finger, 3-finger, 4-finger, and 5-finger claw layouts for PUBG Mobile, detailing how layouts dictate your camera and ADS sensitivity requirements.",
+  openGraph: {
+    title: "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
+    description: "A deep dive into 2-finger, 3-finger, 4-finger, and 5-finger claw layouts for PUBG Mobile, detailing how layouts dictate your camera and ADS sensitivity requirements.",
+  },
 };
 
 export default function ClawLayoutsGuide() {

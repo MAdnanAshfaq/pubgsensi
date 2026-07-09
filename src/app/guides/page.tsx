@@ -4,6 +4,10 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: "Tactical Sensitivity Guides — AimSync",
   description: "Master your recoil, understand gyroscope tilting, optimize multi-finger claw layouts, and calibrate settings for your device's touch screen latency.",
+  openGraph: {
+    title: "Tactical Sensitivity Guides — AimSync",
+    description: "Master your recoil, understand gyroscope tilting, optimize multi-finger claw layouts, and calibrate settings for your device's touch screen latency.",
+  },
 };
 
 export default function GuidesHub() {
