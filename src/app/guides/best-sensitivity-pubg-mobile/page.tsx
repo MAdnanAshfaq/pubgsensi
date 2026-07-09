@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import AdUnit from '@/components/AdUnit';
+
+export const metadata: Metadata = {
+  title: "The Best PUBG Mobile Sensitivity Settings (2026 Guide)",
+  description: "Stop blindly copying PUBG Mobile sensitivity codes. Learn how display refresh rate, touch sampling rate, and player layouts affect recoil control.",
+};
 
 export default function Guide1() {
   return (

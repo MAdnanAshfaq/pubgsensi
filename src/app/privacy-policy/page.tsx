@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — AimSync PUBG/BGMI Sensitivity Generator",
+  description: "Read our privacy policy to understand how we process local session state, handle third-party cookies, and integrate Google AdSense advertising.",
+};
+
 export default function PrivacyPolicy() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">

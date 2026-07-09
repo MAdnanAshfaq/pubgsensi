@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://pubg-sensi.vercel.app',
+  siteUrl: 'https://gamingsensi.site',
   generateRobotsTxt: true,
   sitemapSize: 7000,
   changefreq: 'weekly',

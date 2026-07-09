@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Terms of Service — AimSync Sensitivity Configurator",
+  description: "Terms of service and non-affiliation disclaimers for using the AimSync PUBG Mobile and BGMI sensitivity generation tool.",
+};
+
 export default function Terms() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">

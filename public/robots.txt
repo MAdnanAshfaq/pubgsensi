@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://pubg-sensi.vercel.app
+Host: https://gamingsensi.site
 
 # Sitemaps
-Sitemap: https://pubg-sensi.vercel.app/sitemap.xml
+Sitemap: https://gamingsensi.site/sitemap.xml

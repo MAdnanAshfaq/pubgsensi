@@ -1,9 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: "Tactical Sensitivity Guides — AimSync",
+  description: "Master your recoil, understand gyroscope tilting, optimize multi-finger claw layouts, and calibrate settings for your device's touch screen latency.",
+};
 
 export default function GuidesHub() {
   const guides = [
     {
-      title: "The Best Sensitivity Settings for PUBG Mobile (2024)",
+      title: "The Best Sensitivity Settings for PUBG Mobile (2026 Guide)",
       slug: "best-sensitivity-pubg-mobile",
       description: "Stop copying YouTubers and find out how to actually find the best settings for your device."
     },
@@ -12,7 +18,21 @@ export default function GuidesHub() {
       slug: "gyroscope-settings-explained",
       description: "A deep dive into PUBG Mobile's gyroscope settings and how it impacts recoil control and close combat."
     },
-    // We can add more later
+    {
+      title: "Claw Layouts and Sensitivity: 2, 3, 4, and 5-Finger Settings",
+      slug: "claw-layouts-and-sensitivity",
+      description: "Learn how your physical layout dictates your touch, ADS, and gyroscope sensitivity needs."
+    },
+    {
+      title: "Mastering Recoil Control: Training Drills & Setup",
+      slug: "recoil-control-drills",
+      description: "Improve your mid and long-range sprays with these target tracking exercises and wrist position guides."
+    },
+    {
+      title: "Touch Latency & Refresh Rate: How Your Phone Affects Aim",
+      slug: "hardware-impact-on-aim",
+      description: "Understand the correlation between display Hz, touch sampling rates, thermal throttling, and aim stability."
+    }
   ];
 
   return (
