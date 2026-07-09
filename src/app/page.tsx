@@ -738,79 +738,191 @@ export default function OnboardingWizard() {
         }}
       />
 
-      {/* ── On-Page SEO: 800+ Words Topical Content Block ────────────────────── */}
-      <section className="border-t border-border-tactical/30 pt-12 mt-12 text-[#cbdbe6] font-body text-sm space-y-6 leading-relaxed">
-        <h2 className="text-xl font-headline font-black text-primary-yellow uppercase tracking-wider">
-          AimSync Sensitivity Calculator: Optimize Your PUBG Mobile & BGMI Settings
-        </h2>
-        <p>
-          Welcome to AimSync, the ultimate AI-driven sensitivity configurator designed specifically for competitive mobile shooters like PUBG Mobile and Battlegrounds Mobile India (BGMI). If you have ever copied a professional player's sensitivity code only to find your crosshair bouncing or aiming feeling sluggish, you are experiencing the realities of hardware mismatch.
-        </p>
-        <p>
-          AimSync solves this by using local device testing and specs mapping to compute personalized baseline values for your Camera, ADS (Aim Down Sights), and Gyroscope settings. By analyzing your display refresh rate, touch sampling rate, layout (claw vs thumbs), and playstyle, we deliver a zero-recoil configuration that matches your phone digitizer's exact specs.
-        </p>
+      {/* ── On-Page SEO: 1,800+ Words Comprehensive Topical Authority Guide ────────────────────── */}
+      <section className="border-t border-border-tactical/30 pt-12 mt-12 text-[#cbdbe6] font-body text-sm space-y-8 leading-relaxed">
+        <div>
+          <h2 className="text-2xl font-headline font-black text-primary-yellow uppercase tracking-wider mb-4">
+            AimSync Sensitivity Calculator: Optimize Your PUBG Mobile & BGMI Settings
+          </h2>
+          <p className="mb-4">
+            Welcome to AimSync, the ultimate AI-driven sensitivity configurator designed specifically for competitive mobile shooters like PUBG Mobile and Battlegrounds Mobile India (BGMI). If you have ever copied a professional player's sensitivity code only to find your crosshair bouncing or aiming feeling sluggish, you are experiencing the realities of hardware mismatch. In competitive esports, sensitivity is not a static number—it is a variable calculation that must align with your phone's physical specs, display technology, control layout, and personal muscle memory.
+          </p>
+          <p className="mb-4">
+            AimSync solves this by using local hardware metrics, user preferences, and specs mapping to compute personalized baseline values for your Camera, ADS (Aim Down Sights), and Gyroscope settings. By analyzing your display refresh rate, touch sampling rate, layout (claw vs thumbs), and playstyle, we deliver a zero-recoil configuration that matches your phone digitizer's exact specs.
+          </p>
+        </div>
 
-        <h3 className="text-md font-bold text-white uppercase tracking-wide">Why Standard Pro Codes Fail</h3>
-        <p>
-          A pro player playing at 120 FPS on an iPad Pro has significantly less input delay and display latency than a player on a 60Hz mid-range Android phone. If you copy their high gyroscope multipliers (300%-400%) on a low touch-precision device, the noisy accelerometer inputs will cause pixel-skipping, making it impossible to control mid-range sprays with the M416 or Beryl M762.
-        </p>
-        <p>
-          Our tool computes offsets. For budget devices, we damp the high-end multipliers and scale up standard ADS values, giving your thumbs the extra physical reaction speed needed to control recoil before your finger swipes off the screen bounds.
-        </p>
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-3">
+            1. The Physics of Touch-Screen Aiming & Swipe Friction
+          </h3>
+          <p className="mb-4">
+            Aiming on a flat glass screen is governed by physical friction and touch-digitizer response. When you drag your thumb across a smartphone display, your skin undergoes micro-stiction (slip-stick behavior). The friction coefficient changes depending on screen factors like matte vs. glossy screen protectors, humidity, sweat, and screen wear. 
+          </p>
+          <p className="mb-4">
+            On a physical level, this swipe translates to a delta of coordinates on the touch screen. A high-friction surface forces you to exert more force, causing you to overshoot or undershoot targets. To combat this, our algorithm scales up baseline Camera sensitivity values on budget devices or screens that suffer from high touch resistance. 
+          </p>
+          <p className="mb-4">
+            Furthermore, your thumb's physical range of motion is physically constrained by the width of the display. If you use a two-finger thumb layout, your thumbs must perform dual duty: navigating player movement and dragging down to control recoil. This restricted space requires higher ADS multipliers to ensure you can pull down vertical weapon kick before your thumb hits the physical bottom bezel of your phone.
+          </p>
+        </div>
 
-        <h3 className="text-md font-bold text-white uppercase tracking-wide">Frequently Asked Questions (FAQ)</h3>
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-bold text-primary-yellow">Q1: What is the difference between Camera and ADS sensitivity?</h4>
-            <p className="text-xs text-text-muted mt-1">
-              Camera sensitivity dictates how fast your screen moves when you look around or track a target without firing. ADS (Aim Down Sights) sensitivity is only active *while shooting*. ADS is the primary mechanic used to drag down and control vertical recoil using your fingers.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold text-primary-yellow">Q2: Should I play with Always-On Gyroscope?</h4>
-            <p className="text-xs text-text-muted mt-1">
-              Yes. Enabling Always-On Gyroscope isolates camera aiming from screen button taps. By tilting your wrists to pull down recoil and track running enemies, you free up your index fingers and thumbs to crouch, jump, peek, and tap scope triggers.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold text-primary-yellow">Q3: How does screen refresh rate (Hz) affect sensitivity?</h4>
-            <p className="text-xs text-text-muted mt-1">
-              Higher refresh rates (90Hz or 120Hz) update the image faster, providing instant visual feedback. This makes aiming feel snappier, allowing you to run slightly lower, more precise sensitivity profiles without feeling like your crosshair is heavy or dragging.
-            </p>
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-3">
+            2. Touch Latency, Display Refresh Rate (Hz), and Processor Throttling
+          </h3>
+          <p className="mb-4">
+            Your phone's hardware specifications dictate how quickly your aiming inputs reflect on the display. A gaming smartphone with a 120Hz display refresh rate updates the visual frame every 8.3 milliseconds. If that phone features a 360Hz touch sampling rate, the screen digitizer scans for finger contact every 2.7 milliseconds. This extremely tight loop provides instant visual feedback, making aiming feel incredibly fluid and allowing you to run slightly lower, more precise sensitivity profiles.
+          </p>
+          <p className="mb-4">
+            In contrast, standard budget devices operate at a 60Hz refresh rate (16.6ms updates) and a 120Hz touch sampling rate (8.3ms input scans). This introduces significant display lag and input latency. If you copy a high-sensitivity profile designed for a 120Hz device onto a 60Hz screen, your finger's micro-corrections will arrive faster than the screen can render them. This mismatch results in "pixel-skipping" and aim jitter, which makes it impossible to land long-range sprays.
+          </p>
+          <p className="mb-4">
+            Additionally, mobile processors suffer from thermal throttling under sustained gaming loads. When your CPU and GPU heat up, the phone automatically reduces clock speeds to prevent overheating. This drop in frequency causes frame rate dips (from 90 FPS down to 45 FPS) and introduces unpredictable gyroscope latency. AimSync's calculator accounts for this by applying custom damping scales to budget and mid-range devices, keeping your sensitivity stable even during thermal throttling events.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-3">
+            3. The Recoil Control Formula: ADS vs. Gyroscope Multipliers
+          </h3>
+          <p className="mb-4">
+            Vertical weapon climb in PUBG and BGMI is caused by recoil force pushing the barrel upward. To maintain a static point of aim, you must apply a counter-balancing downward movement. This is achieved in one of two ways:
+          </p>
+          <ul className="list-decimal pl-5 space-y-2 mb-4">
+            <li>
+              <strong>ADS (Aim Down Sights) Recoil Control:</strong> Controlling recoil with finger swipes. This requires a balanced multiplier. If it's too high, your crosshair will twitch horizontally with every minor finger shake. If it's too low, you will run out of screen space while pulling down.
+            </li>
+            <li>
+              <strong>Gyroscope Recoil Control:</strong> Controlling recoil by physically tilting the device forward. Because your wrists have a natural, highly precise rotation range, gyroscope sensitivity can be run at maximum values (300% to 400%). This allows you to control recoil effortlessly while freeing up your thumbs for complex movement inputs like jumping, crouching, and peeking.
+            </li>
+          </ul>
+          <p className="mb-4">
+            Our tool calculates the optimal ratio between these two layers. For example, if you enable "Always-On Gyroscope," our configurator reduces your touch ADS multipliers. This prevents accidental finger touches from disrupting your gyroscope aiming while you are holding down the fire button.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-3">
+            4. Step-by-Step Training Ground Calibration Routine
+          </h3>
+          <p className="mb-4">
+            Once AimSync generates your baseline settings profile, you must calibrate them in the training grounds to account for your unique reaction speed. Follow this daily 10-minute routine:
+          </p>
+          <ol className="list-decimal pl-5 space-y-3 mb-4">
+            <li>
+              <strong>Flick Calibration (Camera Sensitivity):</strong> Stand at the center of the training targets. Rapidly flick your crosshair between two targets located 10 meters away. If your crosshair overshoots the target, reduce your 3rd Person No-Scope sensitivity by 5%. If it stops short, increase it by 5%.
+            </li>
+            <li>
+              <strong>Recoil Pull-Down (Touch ADS):</strong> Equip an M416 or SCAR-L with no attachments. Fire a full 40-round magazine at a target board 30 meters away. If the bullet impact marks climb upward, increase your ADS sensitivity. If your crosshair pulls down into the dirt, decrease your ADS sensitivity.
+            </li>
+            <li>
+              <strong>Wrist Rotation Calibration (Gyroscope):</strong> Turn on Always-On Gyroscope. Equip a 3x or 4x scope on your rifle. Aim at a target 50 meters away and fire. Slowly tilt your wrist forward to keep the crosshair locked on the target. Adjust your Gyroscope scope multipliers until the vertical recoil is canceled out with a comfortable, natural wrist tilt.
+            </li>
+            <li>
+              <strong>Micro-Adjustment Calibration (Sniper Scope):</strong> Equip a Bolt-Action Rifle (M24 or AWM) with an 8x scope. Aim at targets 150 meters away. Since sniping requires extreme precision, keep your 8x Gyroscope and Camera sensitivities low (between 50% and 85%) to prevent your breathing or hand tremors from shaking the scope.
+            </li>
+          </ol>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-4">
+            Frequently Asked Questions (FAQ)
+          </h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q1: What is the difference between Camera and ADS sensitivity?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Camera sensitivity dictates how fast your screen moves when you look around, scan the horizon, or track a target without firing. ADS (Aim Down Sights) sensitivity is only active *while shooting*. ADS is the primary mechanic used to drag down and control vertical recoil using your fingers.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q2: Should I play with Always-On Gyroscope?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Yes. Enabling Always-On Gyroscope isolates camera aiming from screen button taps. By tilting your wrists to pull down recoil and track running enemies, you free up your index fingers and thumbs to crouch, jump, peek, and tap scope triggers. It offers the highest skill ceiling in competitive mobile shooters.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q3: How does screen refresh rate (Hz) affect sensitivity?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Higher refresh rates (90Hz or 120Hz) update the image faster, providing instant visual feedback. This makes aiming feel snappier, allowing you to run slightly lower, more precise sensitivity profiles without feeling like your crosshair is heavy or dragging.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q4: What is the ideal finger layout for gyroscope control?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                A 4-finger or 5-finger claw layout is optimal when combined with gyroscope aiming. In these layouts, your index fingers handle shooting and scoping, your thumbs control player movement and character stance (crouch/jump/peek), and your wrists manage target acquisition and recoil pull-down via gyroscope. This layout distribution ensures zero input bottlenecks.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q5: How does aim assist impact my calculated sensitivity?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Aim assist creates a subtle "friction zone" or target-pull when your crosshair passes near an enemy hitbox. If your sensitivity is too high, you will break through this friction zone and overshoot. AimSync calculates baseline multipliers that work in harmony with aim assist, ensuring your crosshair locks on target without resisting micro-adjustments.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q6: Why does my gyroscope feel shaky or drift over time?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Gyroscope drift and jitter are caused by hardware sensor noise or miscalibrated mobile accelerometers. To fix this, place your phone on a flat, level surface, navigate to your phone's system settings (or the in-game sensor calibration menu), and calibrate your gyroscope sensors to reset the baseline calibration data.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q7: How do vertical recoil multipliers differ between 5.56mm and 7.62mm weapons?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                7.62mm weapons like the Beryl M762 and AKM generate significantly higher vertical and horizontal recoil climb than 5.56mm rifles (M416, SCAR-L). If you primarily run 7.62mm rifles, you will need to increase your ADS and Gyroscope scope multipliers by 5% to 10% compared to standard M416-optimized configurations.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-primary-yellow">Q8: What is the difference between Classic and Custom Weapon sensitivity?</h4>
+              <p className="text-xs text-text-muted mt-1">
+                Classic sensitivity applies globally to all weapons when using a specific scope. Custom Weapon sensitivity allows you to override global settings for individual weapons. For example, you can set a higher 3x gyroscope sensitivity specifically for the M416 to control sprays, while keeping a lower global 3x sensitivity for snipers or DMRs.
+              </p>
+            </div>
           </div>
         </div>
 
-        <h3 className="text-md font-bold text-white uppercase tracking-wide">Tactical Resources & Strategy Hubs</h3>
-        <p className="text-xs">
-          Read our detailed, in-depth tutorials to master recoil control, gyroscope calibration, and claw layouts:
-        </p>
-        <ul className="list-disc pl-5 space-y-2 text-xs text-primary-yellow">
-          <li>
-            <a href="/guides/best-sensitivity-pubg-mobile" className="hover:underline font-bold">
-              The Best Sensitivity Settings for PUBG Mobile (2026 Guide)
-            </a>
-          </li>
-          <li>
-            <a href="/guides/gyroscope-settings-explained" className="hover:underline font-bold">
-              Gyroscope Settings Explained: Should You Always On?
-            </a>
-          </li>
-          <li>
-            <a href="/guides/claw-layouts-and-sensitivity" className="hover:underline font-bold">
-              Claw Layouts and Sensitivity: 2, 3, 4, and 5-Finger Settings
-            </a>
-          </li>
-          <li>
-            <a href="/guides/recoil-control-drills" className="hover:underline font-bold">
-              Mastering Recoil Control: Training Drills & Setup
-            </a>
-          </li>
-          <li>
-            <a href="/guides/hardware-impact-on-aim" className="hover:underline font-bold">
-              Touch Latency & Refresh Rate: How Your Phone Affects Aim
-            </a>
-          </li>
-        </ul>
+        <div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-3">
+            Tactical Resources & Strategy Hubs
+          </h3>
+          <p className="text-xs mb-4">
+            Read our detailed, in-depth tutorials to master recoil control, gyroscope calibration, and claw layouts:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-xs text-primary-yellow font-bold">
+            <li>
+              <a href="/guides/best-sensitivity-pubg-mobile" className="hover:underline">
+                The Best Sensitivity Settings for PUBG Mobile (2026 Guide)
+              </a>
+            </li>
+            <li>
+              <a href="/guides/gyroscope-settings-explained" className="hover:underline">
+                Gyroscope Settings Explained: Should You Always On?
+              </a>
+            </li>
+            <li>
+              <a href="/guides/claw-layouts-and-sensitivity" className="hover:underline">
+                Claw Layouts and Sensitivity: 2, 3, 4, and 5-Finger Settings
+              </a>
+            </li>
+            <li>
+              <a href="/guides/recoil-control-drills" className="hover:underline">
+                Mastering Recoil Control: Training Drills & Setup
+              </a>
+            </li>
+            <li>
+              <a href="/guides/hardware-impact-on-aim" className="hover:underline">
+                Touch Latency & Refresh Rate: How Your Phone Affects Aim
+              </a>
+            </li>
+          </ul>
+        </div>
       </section>
     </div>
   );
