@@ -21,11 +21,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const device = result.inputs.deviceTier.toUpperCase();
+  const deviceModel = result.inputs.deviceModel || `${result.inputs.deviceTier.toUpperCase()} TIER DEVICE`;
   const playstyle = result.inputs.playstyle.toUpperCase();
   return {
-    title: `AimSync Optimal Config | ${device} - ${playstyle}`,
-    description: `Optimal sensitivity configurations for PUBG Mobile / BGMI calculated for ${device} at ${result.inputs.fps} FPS. View raw camera, ADS, and gyroscope settings.`,
+    title: `AimSync Optimal Config for ${deviceModel} — ${playstyle} Playstyle`,
+    description: `Optimal sensitivity configurations calculated for ${deviceModel} at ${result.inputs.fps} FPS. View raw camera, ADS, and gyroscope settings.`,
     alternates: {
       canonical: `https://www.gamingsensi.site/r/${slug}`,
     },
@@ -88,12 +88,11 @@ export default async function ResultPage({ params }: PageProps) {
 
   return (
     <div className="flex-1 flex flex-col justify-between max-w-lg mx-auto w-full px-4 pt-6 pb-12 bg-background min-h-screen">
-      {/* Title Header */}
       <header className="flex items-center justify-between border-b border-border-tactical/30 pb-4">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Shield className="w-7 h-7 text-primary-yellow" />
           <div>
-            <h1 className="font-headline text-3xl font-extrabold tracking-tighter text-primary-yellow">AIMSYNC</h1>
+            <span className="font-headline text-3xl font-extrabold tracking-tighter text-primary-yellow block">AIMSYNC</span>
             <p className="font-technical text-[10px] text-text-muted tracking-widest uppercase">PUBG/BGMI Tactical Configurator</p>
           </div>
         </Link>
@@ -104,6 +103,16 @@ export default async function ResultPage({ params }: PageProps) {
           RE-CALCULATE
         </Link>
       </header>
+
+      {/* Unique Dynamic H1 Title for Search Engine Crawl Uniqueness */}
+      <div className="my-6">
+        <h1 className="font-headline text-xl md:text-2xl font-black text-white uppercase tracking-wider mb-2">
+          Sensitivity Config for {result.inputs.deviceModel || `${result.inputs.deviceTier.toUpperCase()} Device`}
+        </h1>
+        <p className="text-xs text-[#cbdbe6]">
+          Dynamic calibration profile calculated at {result.inputs.fps} FPS for a {result.inputs.playstyle} playstyle.
+        </p>
+      </div>
 
       {/* Target Spec Summary Details */}
       <section className="bg-surface-card border border-border-tactical/25 rounded-2xl p-4 my-6">

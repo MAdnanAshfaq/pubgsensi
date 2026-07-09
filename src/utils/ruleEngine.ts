@@ -23,6 +23,7 @@ export interface UserInputs {
   measuredSwipeSpeed?: number;
   measuredLatencyMs?: number;
   gyroStabilityScore?: number;
+  deviceModel?: string;
 }
 
 export type ScopeTier = 'no_scope' | 'red_dot' | 'scope_2x' | 'scope_3x' | 'scope_4x' | 'scope_6x' | 'scope_8x';

@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
       measuredSwipeSpeed:  validatedData.measuredSwipeSpeed,
       measuredLatencyMs:   validatedData.measuredLatencyMs,
       gyroStabilityScore:  validatedData.gyroStabilityScore,
+      deviceModel:         validatedData.deviceModel,
     };
 
     const deviceName = validatedData.deviceModel || '';

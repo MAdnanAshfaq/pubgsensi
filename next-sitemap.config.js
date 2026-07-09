@@ -5,5 +5,5 @@ module.exports = {
   sitemapSize: 7000,
   changefreq: 'weekly',
   priority: 0.7,
-  exclude: ['/api/*'],
+  exclude: ['/api/*', '/icon.svg'],
 }
