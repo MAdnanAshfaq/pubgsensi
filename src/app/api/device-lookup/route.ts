@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { rateLimit } from '@/utils/rateLimit';
+import { validateDeviceLookup } from '@/utils/security';
 
 export const runtime = 'edge';
 
@@ -32,24 +34,55 @@ export interface DeviceLookupResult {
 
 export async function POST(req: NextRequest) {
   try {
-    const { deviceModel } = await req.json();
+    // ── 1. Rate Limiting (IP-based, 10 requests per minute) ──────────────────
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
+    const limitRes = rateLimit(ip, 10, 60 * 1000);
+    
+    const headers = {
+      'X-RateLimit-Limit': limitRes.limit.toString(),
+      'X-RateLimit-Remaining': limitRes.remaining.toString(),
+      'X-RateLimit-Reset': Math.ceil(limitRes.reset / 1000).toString(),
+    };
 
-    if (!deviceModel || typeof deviceModel !== 'string' || deviceModel.trim().length < 2) {
-      return NextResponse.json({ success: false, error: 'Device model is required.' }, { status: 400 });
+    if (!limitRes.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in 1 minute.' },
+        { 
+          status: 429, 
+          headers: {
+            ...headers,
+            'Retry-After': Math.ceil((limitRes.reset - Date.now()) / 1000).toString(),
+          }
+        }
+      );
     }
 
+    // ── 2. Strict Input Validation & Sanitization ───────────────────────────
+    const body = await req.json();
+    const validation = validateDeviceLookup(body);
+    
+    if (!validation.success || !validation.data) {
+      return NextResponse.json(
+        { success: false, error: validation.error || 'Invalid request body.' },
+        { status: 400, headers }
+      );
+    }
+
+    const { deviceModel } = validation.data;
+
+    // ── 3. API Key Check ───────────────────────────────────────────────────
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ success: false, error: 'Gemini API not configured.' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Gemini API not configured.' }, { status: 500, headers });
     }
 
-    const result = await lookupDeviceWithGemini(apiKey, deviceModel.trim());
-    return NextResponse.json({ success: true, device: result });
+    const result = await lookupDeviceWithGemini(apiKey, deviceModel);
+    return NextResponse.json({ success: true, device: result }, { headers });
 
   } catch (error: any) {
     console.error('[DeviceLookup] Error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to look up device.' },
+      { success: false, error: 'Failed to look up device.' },
       { status: 500 }
     );
   }

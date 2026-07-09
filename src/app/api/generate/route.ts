@@ -3,6 +3,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { calculateSensitivity, UserInputs, SensitivityProfile } from '@/utils/ruleEngine';
 import { getFallbackExplanations, FallbackExplanations } from '@/utils/fallbacks';
 import { saveResult } from '@/utils/db';
+import { rateLimit } from '@/utils/rateLimit';
+import { validateGenerate } from '@/utils/security';
 
 export const runtime = 'edge';
 
@@ -44,22 +46,54 @@ interface GeminiFullResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    // ── 1. Rate Limiting (IP-based, 5 requests per minute) ───────────────────
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
+    const limitRes = rateLimit(ip, 5, 60 * 1000);
 
-    const inputs: UserInputs = {
-      deviceTier:          body.deviceTier          || 'mid',
-      fps:                 (Number(body.fps) as any) || 60,
-      gyroMode:            body.gyroMode            || 'always_on',
-      fingerCount:         Number(body.fingerCount)  || 4,
-      playstyle:           body.playstyle            || 'balanced',
-      primaryProblem:      body.primaryProblem       || 'recoil',
-      measuredSwipeSpeed:  body.measuredSwipeSpeed  !== undefined ? Number(body.measuredSwipeSpeed)  : undefined,
-      measuredLatencyMs:   body.measuredLatencyMs   !== undefined ? Number(body.measuredLatencyMs)   : undefined,
-      gyroStabilityScore:  body.gyroStabilityScore  !== undefined ? Number(body.gyroStabilityScore)  : undefined,
+    const headers = {
+      'X-RateLimit-Limit': limitRes.limit.toString(),
+      'X-RateLimit-Remaining': limitRes.remaining.toString(),
+      'X-RateLimit-Reset': Math.ceil(limitRes.reset / 1000).toString(),
     };
 
-    // Device name from AI lookup (passed through from wizard step 7)
-    const deviceName: string = body.deviceModel || body.deviceInput || '';
+    if (!limitRes.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in 1 minute.' },
+        {
+          status: 429,
+          headers: {
+            ...headers,
+            'Retry-After': Math.ceil((limitRes.reset - Date.now()) / 1000).toString(),
+          }
+        }
+      );
+    }
+
+    // ── 2. Strict Input Validation & Sanitization ───────────────────────────
+    const body = await req.json();
+    const validation = validateGenerate(body);
+
+    if (!validation.success || !validation.data) {
+      return NextResponse.json(
+        { success: false, error: validation.error || 'Invalid request body.' },
+        { status: 400, headers }
+      );
+    }
+
+    const validatedData = validation.data;
+    const inputs: UserInputs = {
+      deviceTier:          validatedData.deviceTier,
+      fps:                 validatedData.fps,
+      gyroMode:            validatedData.gyroMode,
+      fingerCount:         validatedData.fingerCount,
+      playstyle:           validatedData.playstyle,
+      primaryProblem:      validatedData.primaryProblem,
+      measuredSwipeSpeed:  validatedData.measuredSwipeSpeed,
+      measuredLatencyMs:   validatedData.measuredLatencyMs,
+      gyroStabilityScore:  validatedData.gyroStabilityScore,
+    };
+
+    const deviceName = validatedData.deviceModel || '';
     const apiKey = process.env.GEMINI_API_KEY;
 
     let sensitivity: SensitivityProfile;
@@ -99,12 +133,12 @@ export async function POST(req: NextRequest) {
     const slug = Array.from(randomArray, (b) => b.toString(16).padStart(2, '0')).join('');
     const saved = await saveResult(slug, inputs, sensitivity, explanations);
 
-    return NextResponse.json({ success: true, slug: saved.slug, result: saved });
+    return NextResponse.json({ success: true, slug: saved.slug, result: saved }, { headers });
 
   } catch (error: any) {
     console.error('[AimSync] Fatal error in /api/generate:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: 'Internal Server Error' },
       { status: 500 }
     );
   }
