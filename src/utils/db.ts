@@ -44,7 +44,7 @@ const getPaths = () => {
   const pathModule = getPath();
   if (!pathModule) return { DATA_DIR: '', FILE_PATH: '', FEEDBACK_FILE_PATH: '' };
   
-  const DATA_DIR = process.env.DATA_DIR || pathModule.join(process.cwd(), 'data');
+  const DATA_DIR = process.env.DATA_DIR || pathModule.join((process as any)['cwd'](), 'data');
   const FILE_PATH = pathModule.join(DATA_DIR, 'results.json');
   const FEEDBACK_FILE_PATH = pathModule.join(DATA_DIR, 'feedback.json');
   
