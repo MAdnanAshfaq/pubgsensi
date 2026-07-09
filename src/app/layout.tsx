@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
+import CookieConsent from "@/components/CookieConsent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
             <div className="text-[#a0b0c0] text-sm text-center md:text-left">
               <p>&copy; {new Date().getFullYear()} AimSync. All rights reserved.</p>
               <p className="text-xs mt-1">Not affiliated with PUBG Mobile, BGMI, Tencent, or Krafton.</p>
+              <p className="text-xs mt-1">Contact: support@gamingsensi.site</p>
             </div>
             <div className="flex flex-wrap justify-center gap-4 text-sm font-technical uppercase tracking-widest">
               <a href="/guides" className="text-primary-yellow hover:text-white transition-colors">Guides</a>
@@ -58,6 +60,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        <CookieConsent />
       </body>
     </html>
   );

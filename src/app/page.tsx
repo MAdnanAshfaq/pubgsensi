@@ -720,6 +720,98 @@ export default function OnboardingWizard() {
           </div>
         </div>
       )}
+
+      {/* ── Technical SEO: WebApplication JSON-LD Schema ────────────────────── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "AimSync Sensitivity Generator",
+            "url": "https://www.gamingsensi.site",
+            "description": "AI-powered PUBG Mobile and BGMI sensitivity calculator based on device touch latency, FPS, and player layouts.",
+            "applicationCategory": "Esports Utility Tool",
+            "operatingSystem": "iOS, Android, Mobile",
+            "browserRequirements": "Requires JavaScript. Requires HTML5."
+          })
+        }}
+      />
+
+      {/* ── On-Page SEO: 800+ Words Topical Content Block ────────────────────── */}
+      <section className="border-t border-border-tactical/30 pt-12 mt-12 text-[#cbdbe6] font-body text-sm space-y-6 leading-relaxed">
+        <h2 className="text-xl font-headline font-black text-primary-yellow uppercase tracking-wider">
+          AimSync Sensitivity Calculator: Optimize Your PUBG Mobile & BGMI Settings
+        </h2>
+        <p>
+          Welcome to AimSync, the ultimate AI-driven sensitivity configurator designed specifically for competitive mobile shooters like PUBG Mobile and Battlegrounds Mobile India (BGMI). If you have ever copied a professional player's sensitivity code only to find your crosshair bouncing or aiming feeling sluggish, you are experiencing the realities of hardware mismatch.
+        </p>
+        <p>
+          AimSync solves this by using local device testing and specs mapping to compute personalized baseline values for your Camera, ADS (Aim Down Sights), and Gyroscope settings. By analyzing your display refresh rate, touch sampling rate, layout (claw vs thumbs), and playstyle, we deliver a zero-recoil configuration that matches your phone digitizer's exact specs.
+        </p>
+
+        <h3 className="text-md font-bold text-white uppercase tracking-wide">Why Standard Pro Codes Fail</h3>
+        <p>
+          A pro player playing at 120 FPS on an iPad Pro has significantly less input delay and display latency than a player on a 60Hz mid-range Android phone. If you copy their high gyroscope multipliers (300%-400%) on a low touch-precision device, the noisy accelerometer inputs will cause pixel-skipping, making it impossible to control mid-range sprays with the M416 or Beryl M762.
+        </p>
+        <p>
+          Our tool computes offsets. For budget devices, we damp the high-end multipliers and scale up standard ADS values, giving your thumbs the extra physical reaction speed needed to control recoil before your finger swipes off the screen bounds.
+        </p>
+
+        <h3 className="text-md font-bold text-white uppercase tracking-wide">Frequently Asked Questions (FAQ)</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-bold text-primary-yellow">Q1: What is the difference between Camera and ADS sensitivity?</h4>
+            <p className="text-xs text-text-muted mt-1">
+              Camera sensitivity dictates how fast your screen moves when you look around or track a target without firing. ADS (Aim Down Sights) sensitivity is only active *while shooting*. ADS is the primary mechanic used to drag down and control vertical recoil using your fingers.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-primary-yellow">Q2: Should I play with Always-On Gyroscope?</h4>
+            <p className="text-xs text-text-muted mt-1">
+              Yes. Enabling Always-On Gyroscope isolates camera aiming from screen button taps. By tilting your wrists to pull down recoil and track running enemies, you free up your index fingers and thumbs to crouch, jump, peek, and tap scope triggers.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-primary-yellow">Q3: How does screen refresh rate (Hz) affect sensitivity?</h4>
+            <p className="text-xs text-text-muted mt-1">
+              Higher refresh rates (90Hz or 120Hz) update the image faster, providing instant visual feedback. This makes aiming feel snappier, allowing you to run slightly lower, more precise sensitivity profiles without feeling like your crosshair is heavy or dragging.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-md font-bold text-white uppercase tracking-wide">Tactical Resources & Strategy Hubs</h3>
+        <p className="text-xs">
+          Read our detailed, in-depth tutorials to master recoil control, gyroscope calibration, and claw layouts:
+        </p>
+        <ul className="list-disc pl-5 space-y-2 text-xs text-primary-yellow">
+          <li>
+            <a href="/guides/best-sensitivity-pubg-mobile" className="hover:underline font-bold">
+              The Best Sensitivity Settings for PUBG Mobile (2026 Guide)
+            </a>
+          </li>
+          <li>
+            <a href="/guides/gyroscope-settings-explained" className="hover:underline font-bold">
+              Gyroscope Settings Explained: Should You Always On?
+            </a>
+          </li>
+          <li>
+            <a href="/guides/claw-layouts-and-sensitivity" className="hover:underline font-bold">
+              Claw Layouts and Sensitivity: 2, 3, 4, and 5-Finger Settings
+            </a>
+          </li>
+          <li>
+            <a href="/guides/recoil-control-drills" className="hover:underline font-bold">
+              Mastering Recoil Control: Training Drills & Setup
+            </a>
+          </li>
+          <li>
+            <a href="/guides/hardware-impact-on-aim" className="hover:underline font-bold">
+              Touch Latency & Refresh Rate: How Your Phone Affects Aim
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }
