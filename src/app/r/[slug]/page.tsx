@@ -26,6 +26,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `AimSync Optimal Config | ${device} - ${playstyle}`,
     description: `Optimal sensitivity configurations for PUBG Mobile / BGMI calculated for ${device} at ${result.inputs.fps} FPS. View raw camera, ADS, and gyroscope settings.`,
+    alternates: {
+      canonical: `https://www.gamingsensi.site/r/${slug}`,
+    },
   };
 }
 

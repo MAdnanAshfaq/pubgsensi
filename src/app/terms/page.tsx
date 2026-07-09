@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: "Terms of Service — AimSync Sensitivity Configurator",
   description: "Terms of service and non-affiliation disclaimers for using the AimSync PUBG Mobile and BGMI sensitivity generation tool.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/terms",
+  },
   openGraph: {
     title: "Terms of Service — AimSync Sensitivity Configurator",
     description: "Terms of service and non-affiliation disclaimers for using the AimSync PUBG Mobile and BGMI sensitivity generation tool.",

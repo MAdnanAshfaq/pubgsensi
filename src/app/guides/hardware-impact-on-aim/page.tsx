@@ -5,6 +5,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: "How Phone Hardware Affects Aim and Sensitivity — AimSync",
   description: "Learn how display refresh rate (Hz), touch sampling rate, and processor input latency affect your aiming sensitivity in PUBG Mobile & BGMI.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/guides/hardware-impact-on-aim",
+  },
   openGraph: {
     title: "How Phone Hardware Affects Aim and Sensitivity — AimSync",
     description: "Learn how display refresh rate (Hz), touch sampling rate, and processor input latency affect your aiming sensitivity in PUBG Mobile & BGMI.",

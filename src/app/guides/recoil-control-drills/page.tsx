@@ -5,6 +5,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
   description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/guides/recoil-control-drills",
+  },
   openGraph: {
     title: "Weapon Recoil Control Drills — PUBG Mobile & BGMI Guide",
     description: "Improve your mid and long-range sprays in PUBG Mobile and BGMI with these aim and recoil control training drills, sensitivity adjustments, and gyroscope tips.",

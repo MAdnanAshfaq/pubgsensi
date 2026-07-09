@@ -5,6 +5,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
   description: "A deep dive into 2-finger, 3-finger, 4-finger, and 5-finger claw layouts for PUBG Mobile, detailing how layouts dictate your camera and ADS sensitivity requirements.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/guides/claw-layouts-and-sensitivity",
+  },
   openGraph: {
     title: "Claw Layouts and Sensitivity Guide — PUBG Mobile & BGMI",
     description: "A deep dive into 2-finger, 3-finger, 4-finger, and 5-finger claw layouts for PUBG Mobile, detailing how layouts dictate your camera and ADS sensitivity requirements.",

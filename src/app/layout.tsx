@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AimSync — PUBG Mobile & BGMI Sensitivity Generator",
   description: "Get your perfect PUBG Mobile and BGMI sensitivity settings in seconds. AI-powered and personalized for your device, playstyle, and FPS.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site",
+  },
   openGraph: {
     title: "AimSync — PUBG Mobile & BGMI Sensitivity Generator",
     description: "Free AI-powered sensitivity calculator for PUBG Mobile and BGMI.",

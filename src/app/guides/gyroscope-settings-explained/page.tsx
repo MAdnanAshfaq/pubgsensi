@@ -5,6 +5,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: "PUBG Mobile Gyroscope Settings Explained: Full Guide",
   description: "Improve your aiming with the best PUBG Mobile gyroscope settings. Learn the difference between Always-On and Scope-On, and how to calibrate it.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/guides/gyroscope-settings-explained",
+  },
   openGraph: {
     title: "PUBG Mobile Gyroscope Settings Explained: Full Guide",
     description: "Improve your aiming with the best PUBG Mobile gyroscope settings. Learn the difference between Always-On and Scope-On, and how to calibrate it.",

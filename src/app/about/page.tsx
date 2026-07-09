@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: "About AimSync — AI-Powered PUBG & BGMI Sensitivity Calculator",
   description: "Learn how AimSync calculates optimal gyroscope, camera, and ADS sensitivity settings for PUBG Mobile and BGMI based on your device specifications and playstyle.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/about",
+  },
   openGraph: {
     title: "About AimSync — AI-Powered PUBG & BGMI Sensitivity Calculator",
     description: "Learn how AimSync calculates optimal gyroscope, camera, and ADS sensitivity settings for PUBG Mobile and BGMI based on your device specifications and playstyle.",

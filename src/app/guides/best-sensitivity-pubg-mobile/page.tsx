@@ -5,6 +5,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: "Best PUBG Mobile Sensitivity Settings (2026 Guide)",
   description: "Find the absolute best PUBG Mobile sensitivity settings for zero recoil. Comprehensive guide on camera, ADS, and gyroscope settings.",
+  alternates: {
+    canonical: "https://www.gamingsensi.site/guides/best-sensitivity-pubg-mobile",
+  },
   openGraph: {
     title: "Best PUBG Mobile Sensitivity Settings (2026 Guide)",
     description: "Find the absolute best PUBG Mobile sensitivity settings for zero recoil. Comprehensive guide on camera, ADS, and gyroscope settings.",
