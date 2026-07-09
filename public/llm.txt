@@ -1,0 +1,58 @@
+# GamingSensi — PUBG Mobile & BGMI Sensitivity Configurator
+
+AimSync (GamingSensi) is an AI-powered tactical sensitivity settings generator for PUBG Mobile and BGMI (Battlegrounds Mobile India). It helps mobile gamers calculate optimal camera, ADS (Aim Down Sights), and gyroscope sensitivity multipliers based on device hardware profiles, screen touch response latencies, finger control claw layouts, and combat roles.
+
+---
+
+## 🛠️ Main Features & Capabilities
+
+- **Interactive Calibration Wizard**: A 7-step onboarding configurator that maps user profiles:
+  1. *Hardware Tier*: Flagship, Mid-Range, or Budget/Entry.
+  2. *FPS Targets*: 40 FPS, 60 FPS, 90 FPS, or 120 FPS.
+  3. *Gyroscope Preferences*: Always-On, Scope-On, or swipe-only (Off).
+  4. *Finger Layout*: 2-Finger Thumbs, 3-Finger Claw, 4-Finger Claw, or 5-Finger Claw.
+  5. *Combat Role*: Entry Rusher, Mid-Assaulter, Bolt Sniper, or Flex Player.
+  6. *Aim Obstacle Correction*: Recoil Control, Close Range Tracking, Horizontal Spray Transfer, Hipfire Reaction Speed, or Long Range Precision.
+  7. *Device Spec research*: Automatic AI-based specs calibration (screen Hz, touch sampling rate, sensor analysis) for specified phone models.
+- **Dynamic Configuration Profile Dashboard**: Generates precise sensitivity sliders for:
+  - *Camera Sensitivity (No Firing)*: No scope, Red Dot/Holo, 2x, 3x, 4x, 6x, 8x.
+  - *ADS Sensitivity (Firing recoil)*: Adjusts sliders dynamically based on claw layouts.
+  - *Gyroscope Sensitivity*: High-velocity multipliers (up to 400%) with vertical scaling adjustments.
+- **Weekly Tactical Training Plans**: Automatically generated routines for recoil control drills.
+
+---
+
+## 🔗 Core Sitemap Navigation
+
+All pages are pre-rendered statically (SSR) for search engine and crawler accessibility.
+
+- **Configurator Home**: [https://www.gamingsensi.site/](https://www.gamingsensi.site/) (Start the sensitivity setup wizard)
+- **About AimSync**: [https://www.gamingsensi.site/about](https://www.gamingsensi.site/about) (Technical engine details)
+- **Guides Directory**: [https://www.gamingsensi.site/guides](https://www.gamingsensi.site/guides) (Tactical hubs and articles list)
+- **Privacy Policy**: [https://www.gamingsensi.site/privacy-policy](https://www.gamingsensi.site/privacy-policy) (Compliance and Cookie disclosures)
+- **Terms of Service**: [https://www.gamingsensi.site/terms](https://www.gamingsensi.site/terms) (krafton/Tencent non-affiliation statements)
+
+---
+
+## 📚 Deep-Dive Tactical Guides Directory
+
+1. **Best Sensitivity Settings**: [https://www.gamingsensi.site/guides/best-sensitivity-pubg-mobile](https://www.gamingsensi.site/guides/best-sensitivity-pubg-mobile)
+   * *Synopsis*: How display refresh rate, touch sampling rate, and player layouts dictate zero-recoil settings.
+2. **Gyroscope Controls explained**: [https://www.gamingsensi.site/guides/gyroscope-settings-explained](https://www.gamingsensi.site/guides/gyroscope-settings-explained)
+   * *Synopsis*: Always-On vs Scope-On gyroscope configurations and ADS gyroscope multipliers.
+3. **Claw Layout Configurations**: [https://www.gamingsensi.site/guides/claw-layouts-and-sensitivity](https://www.gamingsensi.site/guides/claw-layouts-and-sensitivity)
+   * *Synopsis*: Comparative analysis of 2-finger, 3-finger, 4-finger, and 5-finger claw control nodes.
+4. **Recoil Control Training**: [https://www.gamingsensi.site/guides/recoil-control-drills](https://www.gamingsensi.site/guides/recoil-control-drills)
+   * *Synopsis*: Horizontal vs vertical bullet dispersion and Training Grounds practice targets.
+5. **Hardware Latency Impact**: [https://www.gamingsensi.site/guides/hardware-impact-on-aim](https://www.gamingsensi.site/guides/hardware-impact-on-aim)
+   * *Synopsis*: Display Hz visual rendering vs Touch Sampling digitizer rate aiming calculations.
+
+---
+
+## ⚡ Technical Summary for Crawlers
+
+- **Framework**: Next.js 16 (App Router)
+- **Hosting**: Vercel (Edge Runtime)
+- **Database**: PostgreSQL (Neon Database Serverless) / Local Filesystem fallback
+- **Sitemap Location**: `https://www.gamingsensi.site/sitemap.xml`
+- **Robots Config**: `User-agent: * Allow: /`
