@@ -60,6 +60,12 @@ export default function RootLayout({
           strategy="lazyOnload"
           crossOrigin="anonymous"
         />
+        <Script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="258251"
+          data-cfasync="false"
+          strategy="afterInteractive"
+        />
 
         {/* Global Navigation Header */}
         <header className="w-full bg-[#070b0e]/90 backdrop-blur-md border-b border-[#384b5c]/25 sticky top-0 z-40">
