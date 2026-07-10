@@ -207,8 +207,13 @@ export default function OnboardingWizard() {
         </div>
       </header>
 
+      {/* Prominent Non-Affiliation Disclaimer Bar */}
+      <div className="w-full bg-[#1b2836]/30 border border-[#384b5c]/25 rounded-lg p-2.5 my-2 text-[10px] text-center text-[#a0b0c0] leading-tight font-technical uppercase">
+        <span className="text-primary-yellow font-bold">Disclaimer:</span> AimSync is an independent config tool and is not affiliated with, sponsored by, or endorsed by Tencent Games, Krafton, or PUBG Mobile/BGMI.
+      </div>
+
       {/* Progress Bar */}
-      <div className="w-full bg-surface-dark h-1.5 rounded-full overflow-hidden my-4 border border-border-tactical/10">
+      <div className="w-full bg-surface-dark h-1.5 rounded-full overflow-hidden my-2 border border-border-tactical/10">
         <div
           className="bg-primary-yellow h-full transition-all duration-300"
           style={{ width: `${(step / 7) * 100}%` }}

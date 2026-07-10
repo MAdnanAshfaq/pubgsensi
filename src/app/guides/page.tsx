@@ -39,6 +39,21 @@ export default function GuidesHub() {
       title: "Touch Latency & Refresh Rate: How Your Phone Affects Aim",
       slug: "hardware-impact-on-aim",
       description: "Understand the correlation between display Hz, touch sampling rates, thermal throttling, and aim stability."
+    },
+    {
+      title: "Aim Assist Mechanics & Sensitivity Calibration",
+      slug: "aim-assist-mechanics-and-sensitivity",
+      description: "Learn how the aiming mechanics and dynamic assist bubbles work in PUBG Mobile / BGMI, and how to calibrate your settings."
+    },
+    {
+      title: "Custom Overrides for DMRs & Snipers",
+      slug: "custom-overrides-for-dmrs-and-snipers",
+      description: "Learn how to configure custom sensitivity overrides for designated marksman rifles (DMRs) and bolt-action sniper rifles."
+    },
+    {
+      title: "Tablet vs Phone: Screen Size Calibration",
+      slug: "screen-size-impact-tablet-vs-phone",
+      description: "Learn how screen size, pixel density, and aspect ratio aspect differences between phones and tablets affect your aiming."
     }
   ];
 

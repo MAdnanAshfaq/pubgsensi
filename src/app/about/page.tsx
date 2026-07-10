@@ -16,7 +16,17 @@ export default function About() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 text-white">
       <h1 className="text-3xl font-headline font-bold text-primary-yellow mb-6 uppercase tracking-wider">About AimSync</h1>
-      
+
+      {/* Prominent Non-Affiliation Disclaimer */}
+      <div className="bg-[#1b2836]/50 border border-[#384b5c]/45 rounded-xl p-4 my-6 text-sm text-[#cbdbe6] space-y-2">
+        <p className="font-technical text-xs text-primary-yellow uppercase tracking-widest font-bold">
+          ⚠️ Important Trademark & Non-Affiliation Notice
+        </p>
+        <p className="leading-relaxed text-xs sm:text-sm">
+          AimSync is a community-driven, independent hardware calibration tool and resource platform. This website is <strong>not affiliated with, sponsored by, or endorsed by</strong> Krafton, Tencent Games, PUBG Corporation, or any of their licensed video game properties (including PUBG Mobile and Battlegrounds Mobile India). All game trademarks, logos, weapon/gear designations, and imagery referenced remain the sole intellectual property of their respective owners.
+        </p>
+      </div>
+
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed">
         <p>AimSync was created to solve one of the most frustrating problems in mobile esports: finding the perfect sensitivity settings.</p>
         
