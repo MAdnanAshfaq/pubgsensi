@@ -160,7 +160,7 @@ export default async function ResultPage({ params }: PageProps) {
 
       {/* AdSense Banner — between profile specs and sensitivity dashboard */}
       <AdUnit
-        slot="6068297962050182"
+        slot="8085223740"
         format="auto"
         className="my-4"
       />

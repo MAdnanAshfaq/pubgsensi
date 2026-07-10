@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "About AimSync — AI-Powered PUBG & BGMI Sensitivity Calculator",
@@ -45,6 +46,8 @@ export default function About() {
         <h2 className="text-xl font-bold text-white mt-8 mb-2">Contact Us</h2>
         <p>For support, business inquiries, or general feedback about the sensitivity generation algorithms, please contact our team directly at:</p>
         <p className="font-technical text-primary-yellow">Email: adnanchy083@gmail.com</p>
+        
+        <AdUnit slot="8085223740" format="auto" className="mt-8" />
       </div>
     </main>
   );

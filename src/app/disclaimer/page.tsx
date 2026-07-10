@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "Disclaimer — AimSync PUBG/BGMI Sensitivity Configurator",
@@ -78,6 +79,8 @@ export default function Disclaimer() {
           </p>
         </div>
       </section>
+      
+      <AdUnit slot="8085223740" format="auto" className="mt-8" />
     </main>
   );
 }

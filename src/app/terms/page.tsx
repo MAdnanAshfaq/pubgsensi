@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "Terms of Service — AimSync Sensitivity Configurator",
@@ -30,6 +31,8 @@ export default function Terms() {
         
         <h2 className="text-xl font-bold text-white mt-8 mb-2">4. Disclaimer of Warranties</h2>
         <p>The materials on AimSync's website are provided on an 'as is' basis. AimSync makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability.</p>
+        
+        <AdUnit slot="8085223740" format="auto" className="mt-8" />
       </div>
     </main>
   );

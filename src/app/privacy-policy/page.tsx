@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "Privacy Policy — AimSync PUBG/BGMI Sensitivity Generator",
@@ -33,6 +34,8 @@ export default function PrivacyPolicy() {
         
         <h2 className="text-xl font-bold text-white mt-8 mb-2">5. Contact Us</h2>
         <p>If you have any questions about this Privacy Policy, please contact us via our official support channels.</p>
+        
+        <AdUnit slot="8085223740" format="auto" className="mt-8" />
       </div>
     </main>
   );

@@ -222,7 +222,7 @@ export default function OnboardingWizard() {
 
       {/* AdSense Banner — shown on all wizard steps */}
       <AdUnit
-        slot="6068297962050182"
+        slot="8085223740"
         format="horizontal"
         className="my-2"
       />

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "Tactical Sensitivity Guides — AimSync",
@@ -73,6 +74,8 @@ export default function GuidesHub() {
           </Link>
         ))}
       </div>
+
+      <AdUnit slot="8085223740" format="auto" className="my-8" />
 
       {/* ── Additional Content to prevent Thin Content Warning (450+ words) ── */}
       <section className="border-t border-border-tactical/30 pt-12 space-y-6 text-[#cbdbe6] font-body text-base leading-relaxed">

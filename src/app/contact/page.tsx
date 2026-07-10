@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdUnit from '@/components/AdUnit';
 
 export const metadata: Metadata = {
   title: "Contact Us — AimSync PUBG/BGMI Sensitivity Configurator",
@@ -96,6 +97,8 @@ export default function Contact() {
           </button>
         </form>
       </section>
+      
+      <AdUnit slot="8085223740" format="auto" className="mt-8" />
     </main>
   );
 }
