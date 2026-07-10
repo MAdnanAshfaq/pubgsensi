@@ -41,6 +41,7 @@ export default function RootLayout({
       <head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <meta name="google-site-verification" content="24d6e45a3eb11ffe" />
+        <script src="https://quge5.com/88/tag.min.js" data-zone="258251" async data-cfasync="false"></script>
       </head>
       <body className="min-h-full flex flex-col bg-[#070b0e]">
         <Script
@@ -59,12 +60,6 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6068297962050182"
           strategy="lazyOnload"
           crossOrigin="anonymous"
-        />
-        <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="258251"
-          data-cfasync="false"
-          strategy="afterInteractive"
         />
 
         {/* Global Navigation Header */}
