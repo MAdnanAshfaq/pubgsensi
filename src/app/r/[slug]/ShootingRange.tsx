@@ -943,13 +943,13 @@ function GameInstance({
         <div className="flex justify-between items-start pointer-events-auto">
           <div className="flex flex-col gap-1.5">
             <button
-              onClick={() => { posRef.current = { x: 0, y: 0 }; }}
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); posRef.current = { x: 0, y: 0 }; }}
               className="px-3 py-1.5 bg-black/60 text-white border border-white/20 hover:bg-white/10 rounded font-bold uppercase text-xs tracking-wider"
             >
               CENTER AIM
             </button>
           </div>
-          <button onClick={onExit} className="bg-red-500/80 text-white p-2 rounded font-bold hover:bg-red-600">
+          <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); onExit(); }} className="bg-red-500/80 text-white p-2 rounded font-bold hover:bg-red-600">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -962,7 +962,7 @@ function GameInstance({
               {(Object.entries(RANGE_CONFIGS) as [RangeMode, any][]).map(([mode, cfg]) => (
                 <button
                   key={mode}
-                  onClick={() => setRangeMode(mode)}
+                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setRangeMode(mode); }}
                   className={`px-3 py-1 rounded text-[9px] font-black uppercase transition-colors ${
                     rangeMode === mode ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white/70 hover:bg-white/20'
                   }`}
@@ -980,7 +980,7 @@ function GameInstance({
             <div className="text-[8px] text-primary-yellow tracking-widest uppercase">Optic</div>
             <div className="flex gap-1">
               {(['no_scope','red_dot','scope_3x','scope_4x','scope_6x'] as OpticType[]).map(o => (
-                <button key={o} onClick={() => setOptic(o)}
+                <button key={o} onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOptic(o); }}
                   className={`px-2 py-1.5 rounded text-[9px] font-black uppercase transition-colors ${optic === o ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
                 >
                   {o.replace('scope_','').replace('_',' ')}
@@ -993,7 +993,7 @@ function GameInstance({
             <div className="text-[8px] text-primary-yellow tracking-widest uppercase">Gear</div>
             <div className="flex gap-1">
               {(['m416','akm','uzi','awm'] as GearType[]).map(w => (
-                <button key={w} onClick={() => setGear(w)}
+                <button key={w} onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGear(w); }}
                   className={`px-2 py-1.5 rounded text-[9px] font-black uppercase transition-colors ${gear === w ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
                 >
                   {GEARS[w].name}
@@ -1005,7 +1005,7 @@ function GameInstance({
 
           {/* Reload */}
           {bulletsLeft <= 0 && !scoreSummary && (
-            <button onClick={resetTarget}
+            <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); resetTarget(); }}
               className="bg-primary-yellow text-black px-4 py-2 rounded-full font-black animate-pulse shadow-[0_0_20px_rgba(255,215,0,0.5)] flex items-center gap-1.5 text-sm"
             >
               <RefreshCw className="w-4 h-4" /> RELOAD
@@ -1050,6 +1050,7 @@ function GameInstance({
           onMouseDown={startFiring}
           onMouseUp={stopFiring}
           onMouseLeave={stopFiring}
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
           className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center font-black text-lg transition-all shadow-xl select-none touch-none ${
             bulletsLeft <= 0
               ? 'bg-zinc-800 border-zinc-600 text-zinc-500'
@@ -1092,10 +1093,10 @@ function GameInstance({
             <p className="text-white/70 text-xs leading-relaxed">{scoreSummary.advice}</p>
 
             <div className="flex gap-2">
-              <button onClick={resetTarget} className="flex-1 bg-primary-yellow text-black font-black py-3 rounded-xl hover:bg-white transition-colors text-sm">
+              <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); resetTarget(); }} className="flex-1 bg-primary-yellow text-black font-black py-3 rounded-xl hover:bg-white transition-colors text-sm">
                 PRACTICE AGAIN
               </button>
-              <button onClick={onExit} className="px-4 py-3 border border-white/20 text-white/60 rounded-xl hover:bg-white/10 text-sm">
+              <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); onExit(); }} className="px-4 py-3 border border-white/20 text-white/60 rounded-xl hover:bg-white/10 text-sm">
                 EXIT
               </button>
             </div>
