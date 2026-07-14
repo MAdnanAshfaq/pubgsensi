@@ -195,11 +195,10 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
         const perm = await (DeviceOrientationEvent as any).requestPermission();
         if (perm !== 'granted') alert('Gyroscope permission denied. Swipe to aim instead.');
       }
-      const el = containerRef.current;
-      if (!el) return;
+      setIsFullscreen(true);
+      const el = document.documentElement;
       if (el.requestFullscreen) await el.requestFullscreen();
       else if ((el as any).webkitRequestFullscreen) await (el as any).webkitRequestFullscreen();
-      setIsFullscreen(true);
     } catch {
       setIsFullscreen(true);
     }
