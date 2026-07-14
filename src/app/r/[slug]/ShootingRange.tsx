@@ -189,6 +189,18 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  // Dynamically add/remove range-active class to hide ads when range is active
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.classList.add('range-active');
+    } else {
+      document.body.classList.remove('range-active');
+    }
+    return () => {
+      document.body.classList.remove('range-active');
+    };
+  }, [isFullscreen]);
+
   const enterFullscreen = async () => {
     try {
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
@@ -291,6 +303,13 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
         <div
           ref={containerRef}
           className="fixed inset-0 z-50 bg-[#0c0e10] flex items-center justify-center overflow-hidden touch-none"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
         >
           {isPortrait ? (
             <div className="text-center space-y-4 p-6 flex flex-col items-center">

@@ -245,3 +245,19 @@ input[type="range"].pubg-slider::-moz-range-thumb {
   border: none;
   box-shadow: 0 0 4px rgba(0,0,0,0.5);
 }
+
+/* Dynamically hide all Google and layout ads when shooting range is active */
+body.range-active .adsbygoogle,
+body.range-active ins.adsbygoogle,
+body.range-active [class*="google-ads"],
+body.range-active [id*="google-ads"],
+body.range-active iframe[id*="google_ads"],
+body.range-active iframe[src*="googlesyndication"],
+body.range-active iframe[src*="googleadservices"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
