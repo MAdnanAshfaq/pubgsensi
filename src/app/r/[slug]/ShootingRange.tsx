@@ -266,7 +266,7 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
           {(Object.entries(RANGE_CONFIGS) as [RangeMode, typeof RANGE_CONFIGS[RangeMode]][]).map(([mode, cfg]) => (
             <button
               key={mode}
-              onClick={() => handleModeChange(mode)}
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleModeChange(mode); }}
               className={`py-2 px-1 rounded text-center text-[9px] font-headline font-black uppercase transition-all ${
                 rangeMode === mode
                   ? 'bg-primary-yellow text-black shadow-[0_0_8px_rgba(255,215,0,0.3)]'
@@ -281,7 +281,7 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
       </div>
 
       <button
-        onClick={enterFullscreen}
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); enterFullscreen(); }}
         className="w-full bg-primary-yellow text-background font-headline font-bold py-4 rounded-xl shadow-[0_4px_16px_rgba(255,215,0,0.25)] hover:bg-white active:scale-95 transition-all uppercase tracking-wide border border-primary-yellow/20 cursor-pointer flex items-center justify-center gap-2"
       >
         ENTER SHOOTING RANGE
