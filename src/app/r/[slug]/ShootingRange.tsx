@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Target, RefreshCw, X, Smartphone, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Target, RefreshCw, X, Smartphone, ChevronRight } from 'lucide-react';
+import { UserInputs } from '@/utils/ruleEngine';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface ScopeState {
   no_scope_3rd: number;
@@ -21,10 +24,12 @@ interface ShootingRangeProps {
     gyro: ScopeState | null;
     adsGyro: ScopeState | null;
   };
+  playerInputs?: Partial<UserInputs>;
 }
 
-type GearType = 'm416' | 'akm' | 'awm';
-type OpticType = 'red_dot' | 'scope_3x' | 'scope_4x' | 'scope_6x';
+type GearType = 'm416' | 'akm' | 'awm' | 'uzi';
+type OpticType = 'no_scope' | 'red_dot' | 'scope_3x' | 'scope_4x' | 'scope_6x';
+type RangeMode = 'cqb' | 'standard' | 'mid' | 'long' | 'spray';
 
 interface Hit {
   x: number;
@@ -34,70 +39,163 @@ interface Hit {
   timestamp: number;
 }
 
-export default function ShootingRange({ sensValues }: ShootingRangeProps) {
+interface WorldTarget {
+  worldX: number;   // position in virtual world space (centered at 0)
+  worldY: number;
+  scale: number;    // size relative to base (1.0 = 10m standard)
+  moving: boolean;
+  moveDir: number;  // 1 or -1 for left/right drift
+  moveSpeed: number;
+}
+
+// ─── Gear definitions ─────────────────────────────────────────────────────────
+const GEARS: Record<GearType, { name: string; magSize: number; fireRate: number; vKick: number; hJitter: number; spread: number }> = {
+  m416: { name: 'M416', magSize: 30, fireRate: 95,   vKick: 9,   hJitter: 3.5, spread: 3 },
+  akm:  { name: 'AKM',  magSize: 30, fireRate: 115,  vKick: 14,  hJitter: 6,   spread: 5 },
+  uzi:  { name: 'UZI',  magSize: 25, fireRate: 65,   vKick: 5.5, hJitter: 4.5, spread: 7 },
+  awm:  { name: 'AWM',  magSize: 5,  fireRate: 1500, vKick: 55,  hJitter: 1,   spread: 1 },
+};
+
+// ─── Range mode configs ───────────────────────────────────────────────────────
+const RANGE_CONFIGS: Record<RangeMode, {
+  label: string;
+  desc: string;
+  defaultOptic: OpticType;
+  targets: WorldTarget[];
+  defaultGear: GearType;
+  showMoving: boolean;
+}> = {
+  cqb: {
+    label: 'CQB 5m',
+    desc: 'Close-quarters hipfire. No scope. Fast flicks.',
+    defaultOptic: 'no_scope',
+    defaultGear: 'uzi',
+    showMoving: false,
+    targets: [
+      { worldX: 0,   worldY: 0, scale: 1.8, moving: false, moveDir: 1, moveSpeed: 0 },
+      { worldX: 260, worldY: 0, scale: 1.8, moving: false, moveDir: 1, moveSpeed: 0 },
+      { worldX:-260, worldY: 0, scale: 1.8, moving: false, moveDir: 1, moveSpeed: 0 },
+    ],
+  },
+  standard: {
+    label: 'Mid 15m',
+    desc: 'Red-Dot standard. Aim transfer practice.',
+    defaultOptic: 'red_dot',
+    defaultGear: 'm416',
+    showMoving: true,
+    targets: [
+      { worldX: 0,   worldY: 0, scale: 1.2, moving: false, moveDir: 1, moveSpeed: 0 },
+      { worldX: 300, worldY: 0, scale: 1.1, moving: true,  moveDir: 1, moveSpeed: 0.9 },
+      { worldX:-300, worldY: 0, scale: 1.1, moving: true,  moveDir:-1, moveSpeed: 0.9 },
+    ],
+  },
+  mid: {
+    label: '3x Spray',
+    desc: '3x scope M416 spray. Test recoil control.',
+    defaultOptic: 'scope_3x',
+    defaultGear: 'm416',
+    showMoving: false,
+    targets: [
+      { worldX:  0,   worldY: 0, scale: 0.85, moving: false, moveDir: 1, moveSpeed: 0 },
+      { worldX: 380,  worldY: 0, scale: 0.82, moving: false, moveDir: 1, moveSpeed: 0 },
+    ],
+  },
+  long: {
+    label: '6x Long',
+    desc: '6x scope precision. Small head zones.',
+    defaultOptic: 'scope_6x',
+    defaultGear: 'awm',
+    showMoving: true,
+    targets: [
+      { worldX:  0,   worldY: 0, scale: 0.55, moving: false, moveDir: 1, moveSpeed: 0 },
+      { worldX: 500,  worldY: 0, scale: 0.50, moving: true,  moveDir: 1, moveSpeed: 0.45 },
+    ],
+  },
+  spray: {
+    label: 'Recoil Wall',
+    desc: 'Full mag spray. Track bullet grouping.',
+    defaultOptic: 'red_dot',
+    defaultGear: 'akm',
+    showMoving: false,
+    targets: [
+      { worldX: 0, worldY: 0, scale: 2.5, moving: false, moveDir: 1, moveSpeed: 0 },
+    ],
+  },
+};
+
+// ─── Main Export ─────────────────────────────────────────────────────────────
+
+export default function ShootingRange({ sensValues, playerInputs }: ShootingRangeProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   const [gear, setGear] = useState<GearType>('m416');
   const [optic, setOptic] = useState<OpticType>('red_dot');
-  
+  const [rangeMode, setRangeMode] = useState<RangeMode>('standard');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Check orientation
+  // Pre-select default gear/optic based on player's playstyle
   useEffect(() => {
-    const handleResize = () => {
-      setIsPortrait(window.innerHeight > window.innerWidth);
-    };
-    handleResize(); // Initial check
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    if (!playerInputs?.playstyle) return;
+    if (playerInputs.playstyle === 'rusher') {
+      setRangeMode('cqb'); setGear('uzi'); setOptic('no_scope');
+    } else if (playerInputs.playstyle === 'sniper') {
+      setRangeMode('long'); setGear('awm'); setOptic('scope_6x');
+    } else if (playerInputs.playstyle === 'assaulter') {
+      setRangeMode('mid'); setGear('m416'); setOptic('scope_3x');
+    }
+  }, [playerInputs?.playstyle]);
+
+  useEffect(() => {
+    const check = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   const enterFullscreen = async () => {
     try {
-      // Request gyro permission for iOS 13+
       if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-        const permissionState = await (DeviceOrientationEvent as any).requestPermission();
-        if (permissionState !== 'granted') {
-          alert('Gyroscope permission denied. You can still play with touch swipe.');
-        }
+        const perm = await (DeviceOrientationEvent as any).requestPermission();
+        if (perm !== 'granted') alert('Gyroscope permission denied. Swipe to aim instead.');
       }
-      
-      if (containerRef.current?.requestFullscreen) {
-        await containerRef.current.requestFullscreen();
-      } else if ((containerRef.current as any)?.webkitRequestFullscreen) {
-        await (containerRef.current as any).webkitRequestFullscreen();
-      }
+      const el = containerRef.current;
+      if (!el) return;
+      if (el.requestFullscreen) await el.requestFullscreen();
+      else if ((el as any).webkitRequestFullscreen) await (el as any).webkitRequestFullscreen();
       setIsFullscreen(true);
-    } catch (e) {
-      console.error('Fullscreen request failed', e);
-      setIsFullscreen(true); // Fallback to simulated fullscreen (fixed positioning)
+    } catch {
+      setIsFullscreen(true);
     }
   };
 
   const exitFullscreen = async () => {
     try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else if ((document as any).webkitFullscreenElement) {
-        await (document as any).webkitExitFullscreen();
-      }
-    } catch (e) {}
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else if ((document as any).webkitFullscreenElement) await (document as any).webkitExitFullscreen();
+    } catch {}
     setIsFullscreen(false);
   };
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
+    const onChange = () => {
       if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
         setIsFullscreen(false);
       }
     };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('fullscreenchange', onChange);
+    document.addEventListener('webkitfullscreenchange', onChange);
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('fullscreenchange', onChange);
+      document.removeEventListener('webkitfullscreenchange', onChange);
     };
   }, []);
+
+  const handleModeChange = (mode: RangeMode) => {
+    setRangeMode(mode);
+    const cfg = RANGE_CONFIGS[mode];
+    setOptic(cfg.defaultOptic);
+    setGear(cfg.defaultGear);
+  };
 
   return (
     <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-5 space-y-4">
@@ -106,48 +204,78 @@ export default function ShootingRange({ sensValues }: ShootingRangeProps) {
           <Target className="w-5 h-5 text-primary-yellow animate-pulse" />
           IMMERSIVE SHOOTING RANGE
         </h3>
+        <span className="text-[9px] font-technical text-primary-yellow/60 uppercase tracking-widest">PUBG Training Grounds Simulator</span>
       </div>
+
       <p className="text-xs text-[#cbdbe6] leading-relaxed">
-        Test your actual sensitivity configuration in a simulated 3D environment. Includes real swipe scaling and gyroscope tracking.
+        Test your sensitivity with real recoil simulation. Gyro pull-down counteracts recoil — tilt your phone DOWN while firing. Swipe anywhere on canvas to aim.
       </p>
+
+      {/* Range Mode Selector */}
+      <div className="space-y-2">
+        <div className="text-[10px] font-technical text-primary-yellow uppercase tracking-widest">SELECT RANGE MODE:</div>
+        <div className="grid grid-cols-5 gap-1">
+          {(Object.entries(RANGE_CONFIGS) as [RangeMode, typeof RANGE_CONFIGS[RangeMode]][]).map(([mode, cfg]) => (
+            <button
+              key={mode}
+              onClick={() => handleModeChange(mode)}
+              className={`py-2 px-1 rounded text-center text-[9px] font-headline font-black uppercase transition-all ${
+                rangeMode === mode
+                  ? 'bg-primary-yellow text-black shadow-[0_0_8px_rgba(255,215,0,0.3)]'
+                  : 'bg-black/40 text-white/60 hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              {cfg.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-white/40 font-technical">{RANGE_CONFIGS[rangeMode].desc}</p>
+      </div>
 
       <button
         onClick={enterFullscreen}
-        className="w-full bg-primary-yellow text-background font-headline font-bold py-4 rounded-xl shadow-[0_4px_16px_rgba(255,215,0,0.25)] hover:bg-white active:scale-95 transition-all uppercase tracking-wide border border-primary-yellow/20 cursor-pointer"
+        className="w-full bg-primary-yellow text-background font-headline font-bold py-4 rounded-xl shadow-[0_4px_16px_rgba(255,215,0,0.25)] hover:bg-white active:scale-95 transition-all uppercase tracking-wide border border-primary-yellow/20 cursor-pointer flex items-center justify-center gap-2"
       >
         ENTER SHOOTING RANGE
+        <ChevronRight className="w-5 h-5" />
       </button>
+
+      <div className="bg-black/20 border border-white/5 rounded-lg p-3 text-[10px] font-technical text-white/40 space-y-1">
+        <div className="text-primary-yellow/60 font-black uppercase tracking-widest text-[9px]">How to use:</div>
+        <div>• <span className="text-white/60">Swipe anywhere</span> to aim (full canvas)</div>
+        <div>• <span className="text-white/60">Tap FIRE</span> to shoot — hold for auto-fire</div>
+        {playerInputs?.gyroMode !== 'off' && (
+          <div>• <span className="text-white/60">Tilt phone DOWN</span> while firing to counteract recoil (gyro)</div>
+        )}
+        <div>• <span className="text-white/60">Rotate landscape</span> for dual-thumb experience</div>
+      </div>
 
       {/* Fullscreen Overlay */}
       {isFullscreen && (
-        <div 
+        <div
           ref={containerRef}
           className="fixed inset-0 z-50 bg-[#0c0e10] flex items-center justify-center overflow-hidden touch-none"
         >
           {isPortrait ? (
             <div className="text-center space-y-4 p-6 flex flex-col items-center">
               <Smartphone className="w-16 h-16 text-primary-yellow animate-pulse -rotate-90" />
-              <h2 className="text-2xl font-headline font-black text-white uppercase tracking-widest">
-                Rotate Your Device
-              </h2>
-              <p className="text-text-muted text-sm font-technical">
-                The shooting range requires landscape orientation for dual-thumb control and accurate gyroscope mapping.
-              </p>
-              <button 
-                onClick={exitFullscreen}
-                className="mt-4 px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10"
-              >
+              <h2 className="text-2xl font-headline font-black text-white uppercase tracking-widest">Rotate Your Device</h2>
+              <p className="text-text-muted text-sm font-technical">Landscape mode for accurate dual-thumb control</p>
+              <button onClick={exitFullscreen} className="mt-4 px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10">
                 Exit Range
               </button>
             </div>
           ) : (
-            <GameInstance 
-              sensValues={sensValues} 
+            <GameInstance
+              sensValues={sensValues}
+              playerInputs={playerInputs}
               gear={gear}
               setGear={setGear}
               optic={optic}
               setOptic={setOptic}
-              onExit={exitFullscreen} 
+              rangeMode={rangeMode}
+              setRangeMode={handleModeChange}
+              onExit={exitFullscreen}
             />
           )}
         </div>
@@ -156,170 +284,188 @@ export default function ShootingRange({ sensValues }: ShootingRangeProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Game Instance Component (Only renders when in fullscreen landscape)
-// ─────────────────────────────────────────────────────────────────────────────
-function GameInstance({ 
-  sensValues, 
-  gear, 
+// ─── Game Instance ────────────────────────────────────────────────────────────
+
+function GameInstance({
+  sensValues,
+  playerInputs,
+  gear,
   setGear,
-  optic, 
+  optic,
   setOptic,
-  onExit 
-}: { 
-  sensValues: ShootingRangeProps['sensValues'], 
-  gear: GearType, 
-  setGear: (w: GearType) => void,
-  optic: OpticType, 
-  setOptic: (o: OpticType) => void,
-  onExit: () => void 
+  rangeMode,
+  setRangeMode,
+  onExit,
+}: {
+  sensValues: ShootingRangeProps['sensValues'];
+  playerInputs?: Partial<UserInputs>;
+  gear: GearType;
+  setGear: (g: GearType) => void;
+  optic: OpticType;
+  setOptic: (o: OpticType) => void;
+  rangeMode: RangeMode;
+  setRangeMode: (m: RangeMode) => void;
+  onExit: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
-  const [bulletsLeft, setBulletsLeft] = useState(30);
+
+  const [bulletsLeft, setBulletsLeft] = useState(GEARS[gear].magSize);
   const [isFiring, setIsFiring] = useState(false);
   const [hits, setHits] = useState<Hit[]>([]);
   const [scoreSummary, setScoreSummary] = useState<any>(null);
-  
-  // Custom HUD positioning
-  const [isEditingHUD, setIsEditingHUD] = useState(false);
-  const [fireBtnPos, setFireBtnPos] = useState({ x: 60, y: typeof window !== 'undefined' ? window.innerHeight - 150 : 200 });
+
+  // Fire button position (draggable)
+  const [fireBtnPos, setFireBtnPos] = useState({ x: 60, y: typeof window !== 'undefined' ? window.innerHeight - 170 : 200 });
   const isDraggingFireBtnRef = useRef(false);
 
-  // Crosshair position (virtual world space)
+  // World position of crosshair center
   const posRef = useRef({ x: 0, y: 0 });
-  
-  // Touch tracking for right half of screen
-  const touchRef = useRef({ active: false, lastX: 0, lastY: 0, id: -1 });
-  
-  // Gyro tracking
-  const lastGyroRef = useRef<{ alpha: number, beta: number, gamma: number } | null>(null);
 
-  // Game loop & recoil
+  // Active aim touch tracking
+  const aimTouchRef = useRef<{ active: boolean; lastX: number; lastY: number; id: number }>({
+    active: false, lastX: 0, lastY: 0, id: -1,
+  });
+
+  // Fire button touch id (separate from aim touch)
+  const fireTouchIdRef = useRef<number>(-1);
+
+  // Gyro
+  const lastGyroRef = useRef<{ alpha: number; beta: number; gamma: number } | null>(null);
+
+  // Game loop
   const gameLoopRef = useRef<number>(0);
   const lastFireTimeRef = useRef<number>(0);
   const isFiringRef = useRef(false);
 
-  const gears = {
-    m416: { name: 'M416', magSize: 30, fireRate: 95, vKick: 8.5, hJitter: 3.5, spread: 4 },
-    akm: { name: 'AKM', magSize: 30, fireRate: 115, vKick: 13.5, hJitter: 5.5, spread: 6 },
-    awm: { name: 'AWM', magSize: 5, fireRate: 1200, vKick: 50, hJitter: 1, spread: 1 },
-  };
+  // Moving target state
+  const targetPosRef = useRef<{ x: number; dir: number; speed: number }[]>(
+    RANGE_CONFIGS[rangeMode].targets.map(t => ({ x: t.worldX, dir: t.moveDir, speed: t.moveSpeed }))
+  );
 
-  const getOpticKey = (): keyof ScopeState => {
+  // Reset on range mode change
+  useEffect(() => {
+    setBulletsLeft(GEARS[gear].magSize);
+    setHits([]);
+    posRef.current = { x: 0, y: 0 };
+    setScoreSummary(null);
+    targetPosRef.current = RANGE_CONFIGS[rangeMode].targets.map(t => ({
+      x: t.worldX, dir: t.moveDir, speed: t.moveSpeed,
+    }));
+  }, [rangeMode]);
+
+  // Reset on gear change
+  useEffect(() => {
+    setBulletsLeft(GEARS[gear].magSize);
+    setHits([]);
+    posRef.current = { x: 0, y: 0 };
+    setScoreSummary(null);
+  }, [gear]);
+
+  // ── Optic utilities ──────────────────────────────────────────────────────────
+  const getOpticKey = useCallback((): keyof ScopeState => {
     switch (optic) {
-      case 'red_dot': return 'red_dot';
+      case 'no_scope': return 'no_scope_3rd';
+      case 'red_dot':  return 'red_dot';
       case 'scope_3x': return 'scope_3x';
       case 'scope_4x': return 'scope_4x';
       case 'scope_6x': return 'scope_6x';
-      default: return 'red_dot';
+      default:         return 'red_dot';
     }
-  };
+  }, [optic]);
 
-  const getOpticZoom = () => {
+  const getOpticZoom = useCallback(() => {
     switch (optic) {
-      case 'red_dot': return 1.2;
-      case 'scope_3x': return 0.75;
-      case 'scope_4x': return 0.55;
-      case 'scope_6x': return 0.38;
-      default: return 1.0;
+      case 'no_scope': return 1.0;
+      case 'red_dot':  return 1.25;
+      case 'scope_3x': return 0.72;
+      case 'scope_4x': return 0.54;
+      case 'scope_6x': return 0.36;
+      default:         return 1.0;
     }
-  };
+  }, [optic]);
 
-  // ── DEVICE ORIENTATION (GYRO) ──────────────────────────────────────────────
+  // ── GYRO — device orientation for recoil pull-down ──────────────────────────
   useEffect(() => {
-    const handleOrientation = (e: DeviceOrientationEvent) => {
+    if (!playerInputs?.gyroMode || playerInputs.gyroMode === 'off') return;
+
+    const handle = (e: DeviceOrientationEvent) => {
       if (e.alpha === null || e.beta === null || e.gamma === null) return;
-      
       const current = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
-      
+
       if (lastGyroRef.current) {
-        // Calculate delta (rough approximation, assuming landscape orientation)
-        // In landscape, beta is tilt forward/back (vertical aim), gamma is twist (horizontal aim)
-        // NOTE: DeviceOrientation math can get complex with quaternions, but for a 2D canvas 
-        // simple deltas work okay for demonstration if device doesn't pass gimbal lock.
-        
-        let dBeta = current.beta - lastGyroRef.current.beta;
+        let dBeta  = current.beta  - lastGyroRef.current.beta;
         let dGamma = current.gamma - lastGyroRef.current.gamma;
         let dAlpha = current.alpha - lastGyroRef.current.alpha;
 
-        // Handle wrap-around
-        if (dBeta > 180) dBeta -= 360; else if (dBeta < -180) dBeta += 360;
+        if (dBeta  > 180) dBeta  -= 360; else if (dBeta  < -180) dBeta  += 360;
         if (dGamma > 180) dGamma -= 360; else if (dGamma < -180) dGamma += 360;
         if (dAlpha > 180) dAlpha -= 360; else if (dAlpha < -180) dAlpha += 360;
 
-        // Ignore massive jumps (prevents the target from flying off-screen when entering fullscreen)
+        // Ignore massive jumps
         if (Math.abs(dBeta) > 30 || Math.abs(dGamma) > 30 || Math.abs(dAlpha) > 30) {
           lastGyroRef.current = current;
           return;
         }
 
-        // Apply sensitivity
         const opticKey = getOpticKey();
-        let gyroSens = 0;
-        if (sensValues.gyro) {
-          gyroSens = isFiringRef.current 
-            ? (sensValues.adsGyro?.[opticKey] ?? 0) 
-            : (sensValues.gyro?.[opticKey] ?? 0);
-        }
 
-        // Only apply if gyro is enabled and > 0
+        // Use adsGyro when firing (recoil compensation), free gyro otherwise
+        const gyroSens = isFiringRef.current
+          ? (sensValues.adsGyro?.[opticKey] ?? 0)
+          : (sensValues.gyro?.[opticKey] ?? 0);
+
         if (gyroSens > 0) {
-          // PUBG gyro scaling factor (tune this so 300% sens feels realistic)
-          const gyroScale = (gyroSens / 100) * 8.0; 
-          
-          // In landscape, combine alpha (flat yaw) and beta (upright roll) for horizontal aim
-          const deltaX = dAlpha + dBeta;
-          const deltaY = dGamma; // Up/down pitch
-          
-          posRef.current.x += deltaX * gyroScale; 
-          posRef.current.y += deltaY * gyroScale; 
-          
-          // Clamp to virtual world bounds
-          posRef.current.x = Math.max(-1000, Math.min(1000, posRef.current.x));
-          posRef.current.y = Math.max(-1000, Math.min(1000, posRef.current.y));
+          // Scale: gyro value 200 = moderately sensitive. 400 = very sensitive.
+          // We need ~200 to move about 15px per degree. Calibrated: scale = gyroSens / 1400
+          const gyroScale = (gyroSens / 1400) * (1 / getOpticZoom());
+
+          // Landscape: alpha = horizontal yaw, gamma = vertical pitch (tilt forward/back)
+          const dX = dAlpha + dBeta * 0.3;
+          const dY = dGamma;
+
+          posRef.current.x += dX * gyroScale * 60; // *60 ≈ normalizing to 60fps
+          posRef.current.y += dY * gyroScale * 60;
+
+          posRef.current.x = Math.max(-1200, Math.min(1200, posRef.current.x));
+          posRef.current.y = Math.max(-800,  Math.min(800,  posRef.current.y));
         }
       }
-      
+
       lastGyroRef.current = current;
     };
 
-    window.addEventListener('deviceorientation', handleOrientation);
-    return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, [sensValues, optic]);
+    window.addEventListener('deviceorientation', handle);
+    return () => window.removeEventListener('deviceorientation', handle);
+  }, [sensValues, optic, playerInputs?.gyroMode, getOpticKey, getOpticZoom]);
 
+  // ── TOUCH — full canvas aim tracking ────────────────────────────────────────
+  // Unlike before, the entire canvas is the aim zone. The fire button
+  // captures its own touches via stopPropagation, leaving canvas for aiming.
 
-  // ── TOUCH / MOUSE SWIPE (CAMERA/ADS) ────────────────────────────────────────
-  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
-    let clientX = 0, clientY = 0, id = -1;
+  const handleCanvasTouchStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
     if ('touches' in e) {
-      // Find a touch on the right half of the screen
-      const w = window.innerWidth;
       for (let i = 0; i < e.changedTouches.length; i++) {
         const t = e.changedTouches[i];
-        if (t.clientX > w / 2) {
-          clientX = t.clientX;
-          clientY = t.clientY;
-          id = t.identifier;
+        // Skip if this is already the fire button touch
+        if (t.identifier === fireTouchIdRef.current) continue;
+        // Track first untracked touch as aim
+        if (!aimTouchRef.current.active) {
+          aimTouchRef.current = { active: true, lastX: t.clientX, lastY: t.clientY, id: t.identifier };
           break;
         }
       }
-      if (id === -1) return; // No touch on right half
     } else {
-      clientX = (e as React.MouseEvent).clientX;
-      clientY = (e as React.MouseEvent).clientY;
-      id = 0;
+      const m = e as React.MouseEvent;
+      aimTouchRef.current = { active: true, lastX: m.clientX, lastY: m.clientY, id: 0 };
     }
+  }, []);
 
-    touchRef.current = { active: true, lastX: clientX, lastY: clientY, id };
-  };
+  const handleCanvasTouchMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+    if (!aimTouchRef.current.active) return;
 
-  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (!touchRef.current.active) return;
-    
     let clientX = 0, clientY = 0;
     if ('touches' in e) {
-      const t = Array.from(e.changedTouches).find(t => t.identifier === touchRef.current.id);
+      const t = Array.from(e.changedTouches).find(t => t.identifier === aimTouchRef.current.id);
       if (!t) return;
       clientX = t.clientX;
       clientY = t.clientY;
@@ -328,144 +474,180 @@ function GameInstance({
       clientY = (e as React.MouseEvent).clientY;
     }
 
-    const dx = clientX - touchRef.current.lastX;
-    const dy = clientY - touchRef.current.lastY;
+    const dx = clientX - aimTouchRef.current.lastX;
+    const dy = clientY - aimTouchRef.current.lastY;
+    aimTouchRef.current.lastX = clientX;
+    aimTouchRef.current.lastY = clientY;
 
-    touchRef.current.lastX = clientX;
-    touchRef.current.lastY = clientY;
-
-    // Apply sensitivity
     const opticKey = getOpticKey();
-    const swipeSens = isFiringRef.current 
-      ? sensValues.ads[opticKey] 
-      : sensValues.camera[opticKey];
+    // Use ADS sensitivity while firing, camera sensitivity otherwise
+    const rawSens = isFiringRef.current ? sensValues.ads[opticKey] : sensValues.camera[opticKey];
 
-    // Swipe scaling factor
-    const swipeScale = (swipeSens / 100) * 1.5;
+    // FIXED scaling: sens value maps directly to in-game feel.
+    // At sens=100, 1mm of swipe = ~0.6px world movement.
+    // At sens=50, 1mm of swipe = ~0.3px world movement.
+    // Scale calibrated to match real PUBG feel at 60fps mid device.
+    const swipeScale = (rawSens / 100) * 0.65 * (1 / getOpticZoom());
 
     posRef.current.x += dx * swipeScale;
     posRef.current.y += dy * swipeScale;
 
-    // Clamp
-    posRef.current.x = Math.max(-1000, Math.min(1000, posRef.current.x));
-    posRef.current.y = Math.max(-1000, Math.min(1000, posRef.current.y));
-  };
+    posRef.current.x = Math.max(-1200, Math.min(1200, posRef.current.x));
+    posRef.current.y = Math.max(-800,  Math.min(800,  posRef.current.y));
+  }, [sensValues, getOpticKey, getOpticZoom]);
 
-  const handleTouchEnd = (e: React.TouchEvent | React.MouseEvent) => {
+  const handleCanvasTouchEnd = useCallback((e: React.TouchEvent | React.MouseEvent) => {
     if ('touches' in e) {
-      const t = Array.from(e.changedTouches).find(t => t.identifier === touchRef.current.id);
-      if (t) touchRef.current.active = false;
+      const t = Array.from(e.changedTouches).find(t => t.identifier === aimTouchRef.current.id);
+      if (t) aimTouchRef.current.active = false;
     } else {
-      touchRef.current.active = false;
+      aimTouchRef.current.active = false;
     }
-  };
+  }, []);
 
+  // ── FIRE BUTTON — captures its own touch, does NOT propagate to canvas ──────
 
-  // ── FIRING & RECOIL LOGIC ──────────────────────────────────────────────────
-  const startFiring = (e?: React.TouchEvent | React.MouseEvent) => {
-    if (e && e.cancelable) e.preventDefault(); // Prevent text selection and zoom
+  const startFiring = useCallback((e?: React.TouchEvent | React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      if (e.cancelable) e.preventDefault();
+      if ('touches' in e && e.changedTouches.length > 0) {
+        fireTouchIdRef.current = e.changedTouches[0].identifier;
+      }
+    }
     if (bulletsLeft <= 0 || scoreSummary) return;
     setIsFiring(true);
     isFiringRef.current = true;
     lastFireTimeRef.current = performance.now();
     fireBullet();
-  };
+  }, [bulletsLeft, scoreSummary]);
 
-  const stopFiring = (e?: React.TouchEvent | React.MouseEvent) => {
-    if (e && e.cancelable) e.preventDefault();
+  const stopFiring = useCallback((e?: React.TouchEvent | React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      if (e.cancelable) e.preventDefault();
+      fireTouchIdRef.current = -1;
+    }
     setIsFiring(false);
     isFiringRef.current = false;
-  };
+  }, []);
 
-  const fireBullet = () => {
-    setBulletsLeft((prev) => {
-      if (prev <= 0) {
-        if (prev === 1) finishMag(hits); // Calculate score if mag just emptied
-        return 0;
+  // ── BULLET LOGIC ─────────────────────────────────────────────────────────────
+
+  const fireBullet = useCallback(() => {
+    setBulletsLeft(prev => {
+      if (prev <= 0) return 0;
+
+      const specs = GEARS[gear];
+      const zoom  = getOpticZoom();
+      const rangeCfg = RANGE_CONFIGS[rangeMode];
+      const opticKey = getOpticKey();
+
+      // Get current ADS sensitivity for recoil compensation calculation
+      const adsSens    = sensValues.ads[opticKey];
+      const adsGyroSens = sensValues.adsGyro?.[opticKey] ?? 0;
+
+      // Effective gyro sensitivity reduces the perceived recoil kick:
+      // Higher ADS-Gyro = player can tilt more efficiently = less net visual kick
+      const gyroEnabled = (playerInputs?.gyroMode !== 'off') && adsGyroSens > 0;
+      const gyroCompFactor = gyroEnabled ? Math.min(0.65, adsGyroSens / 420) : 0;
+
+      // Raw recoil kick — adjusted by zoom (scoped = less physical movement)
+      const rawKick = specs.vKick * (1 / zoom);
+      // Effective kick shown in simulator = raw kick minus what gyro neutralizes
+      const effectiveKick = rawKick * (1 - gyroCompFactor);
+
+      // Bullet spread adjusted for zoom and weapon
+      const spreadX = (Math.random() - 0.5) * specs.spread * 4 * (1 / zoom);
+      const spreadY = (Math.random() - 0.5) * specs.spread * 3 * (1 / zoom);
+
+      // Check hit on ALL targets in range
+      const newHits: Hit[] = [];
+      for (let ti = 0; ti < rangeCfg.targets.length; ti++) {
+        const targetCfg = rangeCfg.targets[ti];
+        const movX = targetPosRef.current[ti]?.x ?? targetCfg.worldX;
+
+        const scale = targetCfg.scale * zoom;
+        const headRadius = 22 * scale;
+        const bodyWidth  = 55 * scale;
+        const bodyHeight = 110 * scale;
+        const headYOffset = -bodyHeight / 2 - headRadius + 8 * scale;
+
+        // Hit position in world (crosshair pos + spread, relative to this target)
+        const relX = -posRef.current.x - (movX - targetCfg.worldX) + spreadX;
+        const relY = -posRef.current.y + targetCfg.worldY + spreadY;
+
+        let region: 'head' | 'body' | 'miss' = 'miss';
+        let score = 0;
+
+        if (Math.hypot(relX, relY - headYOffset) <= headRadius) {
+          region = 'head'; score = 10;
+        } else if (relX >= -bodyWidth/2 && relX <= bodyWidth/2 && relY >= -bodyHeight/2 && relY <= bodyHeight/2) {
+          region = 'body'; score = 5;
+        }
+
+        if (score > 0) {
+          newHits.push({ x: relX, y: relY, score, region, timestamp: performance.now() });
+        }
       }
 
-      const specs = gears[gear];
-      const zoom = getOpticZoom();
-      
-      // Calculate hit location (center of screen, offset by base inaccuracy)
-      const hitX = -posRef.current.x + (Math.random() - 0.5) * specs.spread * 6 * (1 / zoom);
-      const hitY = -posRef.current.y + (Math.random() - 0.5) * specs.spread * 6 * (1 / zoom);
-
-      // Human dummy dimensions
-      const headRadius = 25 * zoom;
-      const bodyWidth = 60 * zoom;
-      const bodyHeight = 120 * zoom;
-      const headYOffset = -bodyHeight / 2 - headRadius + 10 * zoom;
-
-      let region: 'head' | 'body' | 'miss' = 'miss';
-      let score = 0;
-
-      if (Math.hypot(hitX, hitY - headYOffset) <= headRadius) {
-        region = 'head';
-        score = 10;
-      } else if (hitX >= -bodyWidth/2 && hitX <= bodyWidth/2 && hitY >= -bodyHeight/2 && hitY <= bodyHeight/2) {
-        region = 'body';
-        score = 5;
+      if (newHits.length === 0) {
+        // Miss — still record for accuracy
+        newHits.push({ x: spreadX, y: spreadY, score: 0, region: 'miss', timestamp: performance.now() });
       }
 
-      const newHit: Hit = { x: hitX, y: hitY, score, region, timestamp: performance.now() };
-      
       setHits(h => {
-        const newHits = [...h, newHit];
-        if (prev - 1 === 0) finishMag(newHits);
-        return newHits;
+        const updated = [...h, ...newHits];
+        if (prev - 1 === 0) finishMag(updated);
+        return updated;
       });
 
-      // Apply Recoil (pushes reticle UP, which means virtual world moves DOWN relative to screen)
-      const kickY = specs.vKick * (1 / zoom);
-      const jitterX = (Math.random() - 0.5) * specs.hJitter * 2.5 * (1 / zoom);
-
+      // Apply recoil — vertical kick (world moves DOWN = crosshair rises)
+      const jitterX = (Math.random() - 0.5) * specs.hJitter * 2.0 * (1 / zoom);
       posRef.current.x += jitterX;
-      posRef.current.y -= kickY; // Move view UP
+      posRef.current.y -= effectiveKick; // Kick UP (y decreases = world moves down)
 
       return prev - 1;
     });
-  };
+  }, [gear, optic, rangeMode, sensValues, playerInputs?.gyroMode, getOpticKey, getOpticZoom]);
 
   const finishMag = (finalHits: Hit[]) => {
     stopFiring();
-    if (finalHits.length === 0) return;
+    const onTarget  = finalHits.filter(h => h.score > 0).length;
+    const headshots = finalHits.filter(h => h.region === 'head').length;
+    const accuracy  = Math.round((onTarget / Math.max(1, finalHits.length)) * 100);
+    const avgDist   = finalHits.reduce((acc, h) => acc + Math.sqrt(h.x*h.x + h.y*h.y), 0) / Math.max(1, finalHits.length);
 
-    const avgDist = finalHits.reduce((acc, h) => acc + Math.sqrt(h.x * h.x + h.y * h.y), 0) / finalHits.length;
-    const onTarget = finalHits.filter(h => h.score > 0).length;
-    const accuracy = Math.round((onTarget / finalHits.length) * 100);
+    let grade = 'D';
+    let advice = 'Missed most bullets — crosshair lifted too high. Increase Gyro 3x/4x by 10, or pull down harder with your finger during spray.';
 
-    let grade = 'C';
-    let advice = 'Heavy recoil climb. Pull down harder or increase ADS/Gyro sensitivity.';
-    if (accuracy >= 85 && avgDist < 40) {
-      grade = 'SSS'; advice = 'Perfect spray control! Settings are locked in.';
-    } else if (accuracy >= 65 && avgDist < 70) {
-      grade = 'S'; advice = 'Excellent control. Minor horizontal jitter remaining.';
-    } else if (accuracy >= 45 && avgDist < 100) {
-      grade = 'A'; advice = 'Good grouping. Slight vertical climb detected.';
-    } else if (accuracy >= 25 && avgDist < 150) {
-      grade = 'B'; advice = 'Moderate climb. Try increasing ADS/Gyro by 5-10%.';
+    if (accuracy >= 85 && avgDist < 35) {
+      grade = 'SSS'; advice = '🔥 Elite spray control! Your sensitivity is perfectly dialed in. Keep it consistent.';
+    } else if (accuracy >= 70 && avgDist < 60) {
+      grade = 'S';   advice = 'Excellent control. Tiny horizontal jitter left — try reducing H-recoil by 1-2.';
+    } else if (accuracy >= 55 && avgDist < 90) {
+      grade = 'A';   advice = 'Good grouping. Slight vertical climb — increase Gyro 3x/4x by 5-10.';
+    } else if (accuracy >= 38 && avgDist < 130) {
+      grade = 'B';   advice = 'Moderate drift. Increase ADS-Gyro by 10-15 and practice tilt pull-down.';
+    } else if (accuracy >= 20) {
+      grade = 'C';   advice = 'Heavy recoil climb. Lower your Camera No-Scope by 5 and increase Gyro 2x/3x by 15-20.';
     }
 
-    setScoreSummary({ show: true, grade, accuracy, avgDist: Math.round(avgDist), advice });
+    setScoreSummary({ show: true, grade, accuracy, avgDist: Math.round(avgDist), headshots, advice });
   };
 
   const resetTarget = () => {
-    setBulletsLeft(gears[gear].magSize);
+    setBulletsLeft(GEARS[gear].magSize);
     setHits([]);
     posRef.current = { x: 0, y: 0 };
     setScoreSummary(null);
+    targetPosRef.current = RANGE_CONFIGS[rangeMode].targets.map(t => ({
+      x: t.worldX, dir: t.moveDir, speed: t.moveSpeed,
+    }));
   };
 
-  // Draggable Fire Button Logic
-  const handleFireBtnTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
-    // We only want to drag if we are touching a specific "drag handle" or maybe just two-finger drag?
-    // Let's make it so if we hold it, it fires. If we want to move it, we drag a small handle next to it.
-    // Or, we can just track touch move on the fire button.
-  };
+  // ── RENDER LOOP ──────────────────────────────────────────────────────────────
 
-
-  // ── RENDER LOOP ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -473,316 +655,395 @@ function GameInstance({
     if (!ctx) return;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
     const render = (time: number) => {
-      // Fire logic check
+      // Auto-fire
       if (isFiringRef.current && gear !== 'awm') {
-        const timeSinceFire = time - lastFireTimeRef.current;
-        if (timeSinceFire > gears[gear].fireRate) {
+        if (time - lastFireTimeRef.current > GEARS[gear].fireRate) {
           fireBullet();
           lastFireTimeRef.current = time;
         }
       }
 
-      ctx.fillStyle = '#1e242a'; // Sky/background
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width;
+      const H = canvas.height;
+      const cx = W / 2;
+      const cy = H / 2;
 
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
+      // ── Background sky gradient
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, '#1a2030');
+      sky.addColorStop(0.6, '#1e2a35');
+      sky.addColorStop(1, '#28343c');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
 
-      // Draw virtual world (target and hits)
-      // They move opposite to camera position
-      const targetX = cx + posRef.current.x;
-      const targetY = cy + posRef.current.y;
+      // ── Training Ground grid (floor)
+      const groundY = cy + posRef.current.y + 200;
+      ctx.fillStyle = '#2a3540';
+      ctx.fillRect(0, groundY, W, H - groundY);
+
+      // Grid lines on floor
+      ctx.strokeStyle = '#344050';
+      ctx.lineWidth = 0.5;
+      for (let gx = (posRef.current.x % 80); gx < W; gx += 80) {
+        ctx.beginPath(); ctx.moveTo(gx, groundY); ctx.lineTo(gx - 60, H); ctx.stroke();
+      }
 
       const zoom = getOpticZoom();
-      const headRadius = 25 * zoom;
-      const bodyWidth = 60 * zoom;
-      const bodyHeight = 120 * zoom;
-      const headYOffset = -bodyHeight / 2 - headRadius + 10 * zoom;
+      const rangeCfg = RANGE_CONFIGS[rangeMode];
 
-      // Draw ground
-      ctx.fillStyle = '#2a3138';
-      ctx.beginPath();
-      ctx.moveTo(0, cy + posRef.current.y + (bodyHeight / 2) + 10);
-      ctx.lineTo(canvas.width, cy + posRef.current.y + (bodyHeight / 2) + 10);
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
-      ctx.fill();
+      // ── Update moving targets
+      for (let ti = 0; ti < rangeCfg.targets.length; ti++) {
+        const tcfg = rangeCfg.targets[ti];
+        if (!tcfg.moving) continue;
+        const tp = targetPosRef.current[ti];
+        tp.x += tp.dir * tp.speed;
+        const bound = 200;
+        if (tp.x > tcfg.worldX + bound || tp.x < tcfg.worldX - bound) tp.dir *= -1;
+      }
 
-      // Draw Human Dummy
-      ctx.fillStyle = '#64748b';
-      ctx.strokeStyle = '#475569';
-      ctx.lineWidth = 2;
+      // ── Draw each target
+      for (let ti = 0; ti < rangeCfg.targets.length; ti++) {
+        const tcfg = rangeCfg.targets[ti];
+        const tp   = targetPosRef.current[ti];
 
-      // Body
-      ctx.beginPath();
-      ctx.roundRect(targetX - bodyWidth/2, targetY - bodyHeight/2, bodyWidth, bodyHeight, 10 * zoom);
-      ctx.fill();
-      ctx.stroke();
+        const tWorldX = tp.x;
+        const tWorldY = tcfg.worldY;
 
-      // Head
-      ctx.beginPath();
-      ctx.arc(targetX, targetY + headYOffset, headRadius, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
+        // Target screen position = screen center + world pos + camera offset
+        const tScreenX = cx + posRef.current.x + tWorldX;
+        const tScreenY = cy + posRef.current.y + tWorldY;
 
-      // Draw Hits (fixed to target)
-      hits.forEach((hit) => {
-        if (hit.region !== 'miss') {
-          const hX = targetX + hit.x;
-          const hY = targetY + hit.y;
-          ctx.beginPath();
-          ctx.arc(hX, hY, 3, 0, 2 * Math.PI);
-          ctx.fillStyle = hit.region === 'head' ? '#ef4444' : '#ffffff';
-          ctx.fill();
+        const scale      = tcfg.scale * zoom;
+        const headR      = 22 * scale;
+        const bodyW      = 55 * scale;
+        const bodyH      = 110 * scale;
+        const headYOff   = -bodyH / 2 - headR + 8 * scale;
+
+        // Target shadow
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(tScreenX, tScreenY + bodyH/2 + 6, bodyW * 0.7, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Body
+        ctx.fillStyle = '#4a6070';
+        ctx.strokeStyle = '#5a7088';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(tScreenX - bodyW/2, tScreenY - bodyH/2, bodyW, bodyH, 8 * scale);
+        ctx.fill(); ctx.stroke();
+
+        // Body detail (PUBG target coloring)
+        const bodyGrad = ctx.createLinearGradient(tScreenX - bodyW/2, 0, tScreenX + bodyW/2, 0);
+        bodyGrad.addColorStop(0, 'rgba(100,140,160,0.3)');
+        bodyGrad.addColorStop(1, 'rgba(60,90,110,0.1)');
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.roundRect(tScreenX - bodyW/2, tScreenY - bodyH/2, bodyW, bodyH, 8 * scale);
+        ctx.fill();
+
+        // Head
+        ctx.fillStyle = '#4a6070';
+        ctx.strokeStyle = '#5a7088';
+        ctx.beginPath();
+        ctx.arc(tScreenX, tScreenY + headYOff, headR, 0, 2 * Math.PI);
+        ctx.fill(); ctx.stroke();
+
+        // Head zone indicator (subtle red outline for headshot zone)
+        ctx.strokeStyle = 'rgba(239,68,68,0.25)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(tScreenX, tScreenY + headYOff, headR, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Moving target indicator
+        if (tcfg.moving) {
+          ctx.fillStyle = 'rgba(255,215,0,0.6)';
+          ctx.font = `bold ${Math.round(9 * scale)}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.fillText('◄ MOVING ►', tScreenX, tScreenY - bodyH/2 - headR * 2 - 4);
         }
+      }
+
+      // ── Draw hits (fixed to respective targets)
+      hits.forEach(hit => {
+        if (hit.region === 'miss') return;
+        // Hits are stored relative to world center for the primary target
+        const hScreenX = cx + posRef.current.x + hit.x;
+        const hScreenY = cy + posRef.current.y + hit.y;
+        const age = time - hit.timestamp;
+        const alpha = Math.max(0, 1 - age / 8000);
+        ctx.beginPath();
+        ctx.arc(hScreenX, hScreenY, 3.5, 0, 2 * Math.PI);
+        ctx.fillStyle = hit.region === 'head' ? `rgba(239,68,68,${alpha})` : `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+        // Bullet hole ring
+        ctx.strokeStyle = hit.region === 'head' ? `rgba(239,68,68,${alpha * 0.5})` : `rgba(200,200,200,${alpha * 0.4})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.arc(hScreenX, hScreenY, 5, 0, 2 * Math.PI);
+        ctx.stroke();
       });
 
-      // Draw Crosshair (Fixed in center of screen)
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 2;
-      const gap = 6;
-      const len = 12;
+      // ── Scope overlay
+      if (optic !== 'no_scope' && optic !== 'red_dot') {
+        const vignette = ctx.createRadialGradient(cx, cy, cy * 0.55, cx, cy, cy * 1.15);
+        vignette.addColorStop(0, 'rgba(0,0,0,0)');
+        vignette.addColorStop(1, 'rgba(0,0,0,0.97)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, W, H);
+        // Scope circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, cy * 0.88, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 50;
+        ctx.stroke();
+        // Reticle lines
+        ctx.strokeStyle = 'rgba(200,200,200,0.5)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(cx - cy * 0.8, cy); ctx.lineTo(cx + cy * 0.8, cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy - cy * 0.8); ctx.lineTo(cx, cy + cy * 0.8); ctx.stroke();
+      }
 
+      // ── Crosshair (always centered)
+      const chColor = isFiringRef.current ? '#ff6b35' : '#22c55e';
+      ctx.strokeStyle = chColor;
+      ctx.lineWidth = 1.5;
+      const gap = optic === 'no_scope' ? 5 : 8;
+      const len = optic === 'no_scope' ? 12 : 10;
       ctx.beginPath(); ctx.moveTo(cx - gap - len, cy); ctx.lineTo(cx - gap, cy); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(cx + gap, cy); ctx.lineTo(cx + gap + len, cy); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(cx, cy - gap - len); ctx.lineTo(cx, cy - gap); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(cx, cy + gap); ctx.lineTo(cx, cy + gap + len); ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2 * Math.PI); ctx.fillStyle = '#22c55e'; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 1.5, 0, 2 * Math.PI); ctx.fillStyle = chColor; ctx.fill();
 
-      // Draw Hit Marker (at center screen like PUBG)
+      // ── Hit marker
       const recentHit = hits.length > 0 ? hits[hits.length - 1] : null;
       if (recentHit && recentHit.region !== 'miss') {
         const age = time - recentHit.timestamp;
-        if (age < 300) {
-          const alpha = 1 - (age / 300);
-          ctx.strokeStyle = recentHit.region === 'head' ? `rgba(239, 68, 68, ${alpha})` : `rgba(255, 255, 255, ${alpha})`;
+        if (age < 280) {
+          const alpha = 1 - age / 280;
+          ctx.strokeStyle = recentHit.region === 'head' ? `rgba(239,68,68,${alpha})` : `rgba(255,255,255,${alpha})`;
           ctx.lineWidth = 2;
-          const m = 8;
-          const d = 16;
+          const m = 8, d = 16;
           ctx.beginPath();
-          ctx.moveTo(cx - m, cy - m); ctx.lineTo(cx - d, cy - d);
-          ctx.moveTo(cx + m, cy + m); ctx.lineTo(cx + d, cy + d);
-          ctx.moveTo(cx - m, cy + m); ctx.lineTo(cx - d, cy + d);
-          ctx.moveTo(cx + m, cy - m); ctx.lineTo(cx + d, cy - d);
+          ctx.moveTo(cx-m, cy-m); ctx.lineTo(cx-d, cy-d);
+          ctx.moveTo(cx+m, cy+m); ctx.lineTo(cx+d, cy+d);
+          ctx.moveTo(cx-m, cy+m); ctx.lineTo(cx-d, cy+d);
+          ctx.moveTo(cx+m, cy-m); ctx.lineTo(cx+d, cy-d);
           ctx.stroke();
         }
       }
 
-      // Scope Overlay
-      if (optic !== 'red_dot') {
-        const grad = ctx.createRadialGradient(cx, cy, cy * 0.6, cx, cy, cy * 1.2);
-        grad.addColorStop(0, 'rgba(0,0,0,0)');
-        grad.addColorStop(1, 'rgba(0,0,0,0.95)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, cy * 0.9, 0, 2 * Math.PI);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 40;
-        ctx.stroke();
+      // ── Gyro recoil pull indicator (shows direction to tilt for recoil control)
+      if (playerInputs?.gyroMode !== 'off' && isFiringRef.current) {
+        ctx.fillStyle = 'rgba(255,215,0,0.7)';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('↓ TILT DOWN to counter recoil', cx, H - 80);
       }
 
       gameLoopRef.current = requestAnimationFrame(render);
     };
 
     gameLoopRef.current = requestAnimationFrame(render);
-
     return () => {
       cancelAnimationFrame(gameLoopRef.current);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [optic, gear, hits]);
+  }, [optic, gear, hits, rangeMode, playerInputs?.gyroMode, fireBullet, getOpticZoom]);
 
+  // ── UI ───────────────────────────────────────────────────────────────────────
 
   return (
     <div className="w-full h-full relative font-headline select-none touch-none">
-      {/* Background Canvas */}
+      {/* Canvas — full-screen aim zone */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 z-0 touch-none"
-        onMouseDown={handleTouchStart}
-        onMouseMove={handleTouchMove}
-        onMouseUp={handleTouchEnd}
-        onMouseLeave={handleTouchEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
+        onMouseDown={handleCanvasTouchStart}
+        onMouseMove={handleCanvasTouchMove}
+        onMouseUp={handleCanvasTouchEnd}
+        onMouseLeave={handleCanvasTouchEnd}
+        onTouchStart={handleCanvasTouchStart}
+        onTouchMove={handleCanvasTouchMove}
+        onTouchEnd={handleCanvasTouchEnd}
+        onTouchCancel={handleCanvasTouchEnd}
       />
 
-      {/* UI Overlay */}
-      <div className="absolute inset-0 z-10 pointer-events-none p-4">
-        
-        {/* Top Bar - Edit Controls & Exit */}
+      {/* HUD Overlay */}
+      <div className="absolute inset-0 z-10 pointer-events-none p-3">
+
+        {/* Top bar */}
         <div className="flex justify-between items-start pointer-events-auto">
-          <div className="flex flex-col gap-2">
-            <button 
-              onClick={() => setIsEditingHUD(!isEditingHUD)}
-              className={`px-4 py-2 rounded font-bold uppercase shadow-lg transition-colors text-xs sm:text-sm tracking-wider ${isEditingHUD ? 'bg-primary-yellow text-black border border-primary-yellow' : 'bg-black/50 text-white border border-white/20 hover:bg-white/10'}`}
-            >
-              {isEditingHUD ? 'SAVE CONTROLS' : 'EDIT CONTROLS'}
-            </button>
-            <button 
+          <div className="flex flex-col gap-1.5">
+            <button
               onClick={() => { posRef.current = { x: 0, y: 0 }; }}
-              className="px-4 py-2 bg-black/50 text-white border border-white/20 hover:bg-white/10 rounded font-bold uppercase shadow-lg transition-colors text-xs sm:text-sm tracking-wider"
+              className="px-3 py-1.5 bg-black/60 text-white border border-white/20 hover:bg-white/10 rounded font-bold uppercase text-xs tracking-wider"
             >
               CENTER AIM
             </button>
           </div>
-          
-          <button 
-            onClick={onExit}
-            className="bg-red-500/80 text-white p-2 rounded font-bold uppercase hover:bg-red-600 shadow-lg"
-          >
-            <X className="w-6 h-6" />
+          <button onClick={onExit} className="bg-red-500/80 text-white p-2 rounded font-bold hover:bg-red-600">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Action Controls */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Bottom Right - Gear & Optic & Reload */}
-          <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 pointer-events-auto flex flex-col items-end gap-3 z-20">
-            {/* Gear & Optic Selectors */}
-            <div className={`flex flex-col gap-2 transition-opacity duration-300 ${isEditingHUD ? 'opacity-30 pointer-events-none' : 'opacity-80 hover:opacity-100'}`}>
-              <div className="bg-black/60 p-2 rounded-lg border border-white/10 backdrop-blur-md flex flex-col items-end">
-                <div className="text-[9px] text-primary-yellow tracking-widest uppercase mb-1">Optic</div>
-                <div className="flex gap-1">
-                  {(['red_dot', 'scope_3x', 'scope_4x', 'scope_6x'] as OpticType[]).map(o => (
-                    <button 
-                      key={o}
-                      onClick={() => setOptic(o)}
-                      className={`px-3 py-2 rounded text-xs font-black uppercase transition-colors ${optic === o ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                    >
-                      {o.replace('scope_', '').replace('_', ' ')}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-black/60 p-2 rounded-lg border border-white/10 backdrop-blur-md flex flex-col items-end">
-                <div className="text-[9px] text-primary-yellow tracking-widest uppercase mb-1">Gear</div>
-                <div className="flex gap-1">
-                  {(['m416', 'akm', 'awm'] as GearType[]).map(w => (
-                    <button 
-                      key={w}
-                      onClick={() => setGear(w)}
-                      className={`px-4 py-2 rounded text-xs font-black uppercase transition-colors ${gear === w ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                    >
-                      {gears[w].name}
-                    </button>
-                  ))}
-                </div>
-                <div className="text-xs text-white/70 mt-1">{bulletsLeft} / {gears[gear].magSize} Ammo</div>
-              </div>
+        {/* Mode selector (bottom left) */}
+        <div className="absolute bottom-4 left-3 pointer-events-auto">
+          <div className="bg-black/70 border border-white/10 rounded-lg p-2 backdrop-blur space-y-1.5">
+            <div className="text-[8px] text-primary-yellow font-black uppercase tracking-widest">Mode</div>
+            <div className="flex flex-col gap-1">
+              {(Object.entries(RANGE_CONFIGS) as [RangeMode, any][]).map(([mode, cfg]) => (
+                <button
+                  key={mode}
+                  onClick={() => setRangeMode(mode)}
+                  className={`px-3 py-1 rounded text-[9px] font-black uppercase transition-colors ${
+                    rangeMode === mode ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white/70 hover:bg-white/20'
+                  }`}
+                >
+                  {cfg.label}
+                </button>
+              ))}
             </div>
-
-            {/* Reload Button */}
-            {bulletsLeft <= 0 && !scoreSummary && (
-              <button 
-                onClick={resetTarget}
-                className="bg-primary-yellow text-black px-6 py-3 rounded-full font-black animate-pulse shadow-[0_0_20px_rgba(255,215,0,0.5)] flex items-center gap-2 mt-4"
-              >
-                <RefreshCw className="w-5 h-5" /> RELOAD
-              </button>
-            )}
-          </div>
-          {/* Draggable Fire Button Container */}
-          <div 
-            className={`absolute pointer-events-auto flex flex-col items-center gap-2 ${isEditingHUD ? 'z-50' : 'z-10'}`}
-            style={{ left: fireBtnPos.x, top: fireBtnPos.y }}
-          >
-            {/* Drag Handle */}
-            {isEditingHUD && (
-              <div 
-                className="w-20 h-8 bg-primary-yellow rounded-full cursor-move touch-none flex items-center justify-center animate-pulse shadow-lg"
-                onPointerDown={(e) => {
-                  const target = e.currentTarget;
-                  target.setPointerCapture(e.pointerId);
-                  isDraggingFireBtnRef.current = true;
-                }}
-                onPointerMove={(e) => {
-                  if (isDraggingFireBtnRef.current) {
-                    setFireBtnPos(prev => ({
-                      x: prev.x + e.movementX,
-                      y: prev.y + e.movementY
-                    }));
-                  }
-                }}
-                onPointerUp={(e) => {
-                  isDraggingFireBtnRef.current = false;
-                  e.currentTarget.releasePointerCapture(e.pointerId);
-                }}
-                onPointerCancel={(e) => {
-                  isDraggingFireBtnRef.current = false;
-                  e.currentTarget.releasePointerCapture(e.pointerId);
-                }}
-              >
-                <span className="text-[10px] font-black text-black">DRAG</span>
-              </div>
-            )}
-            
-            {/* The Fire Button itself */}
-            <button
-              onTouchStart={startFiring}
-              onTouchEnd={stopFiring}
-              onTouchCancel={stopFiring}
-              onMouseDown={startFiring}
-              onMouseUp={stopFiring}
-              onMouseLeave={stopFiring}
-              className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 flex items-center justify-center font-black text-xl sm:text-2xl transition-all shadow-xl select-none touch-none ${
-                bulletsLeft <= 0 ? 'bg-zinc-800 border-zinc-600 text-zinc-500' :
-                isFiring ? 'bg-white border-red-500 text-red-500 scale-95' : 'bg-white/20 border-white text-white hover:bg-white/30'
-              } ${isEditingHUD ? 'ring-4 ring-primary-yellow ring-offset-4 ring-offset-black/50' : ''}`}
-              style={{ backdropFilter: 'blur(4px)', WebkitUserSelect: 'none' }}
-            >
-              FIRE
-            </button>
-          </div>
-
-
-
-          <div className="text-white/30 text-xs tracking-[0.2em] pointer-events-none absolute bottom-4 right-1/4 sm:right-1/3">
-            SWIPE RIGHT HALF TO AIM
           </div>
         </div>
+
+        {/* Optic + Gear + Ammo (bottom right) */}
+        <div className="absolute bottom-4 right-3 pointer-events-auto flex flex-col items-end gap-2">
+          <div className="bg-black/70 p-2 rounded-lg border border-white/10 backdrop-blur flex flex-col items-end gap-1">
+            <div className="text-[8px] text-primary-yellow tracking-widest uppercase">Optic</div>
+            <div className="flex gap-1">
+              {(['no_scope','red_dot','scope_3x','scope_4x','scope_6x'] as OpticType[]).map(o => (
+                <button key={o} onClick={() => setOptic(o)}
+                  className={`px-2 py-1.5 rounded text-[9px] font-black uppercase transition-colors ${optic === o ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
+                  {o.replace('scope_','').replace('_',' ')}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-black/70 p-2 rounded-lg border border-white/10 backdrop-blur flex flex-col items-end gap-1">
+            <div className="text-[8px] text-primary-yellow tracking-widest uppercase">Gear</div>
+            <div className="flex gap-1">
+              {(['m416','akm','uzi','awm'] as GearType[]).map(w => (
+                <button key={w} onClick={() => setGear(w)}
+                  className={`px-2 py-1.5 rounded text-[9px] font-black uppercase transition-colors ${gear === w ? 'bg-primary-yellow text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
+                  {GEARS[w].name}
+                </button>
+              ))}
+            </div>
+            <div className="text-[9px] text-white/60">{bulletsLeft} / {GEARS[gear].magSize}</div>
+          </div>
+
+          {/* Reload */}
+          {bulletsLeft <= 0 && !scoreSummary && (
+            <button onClick={resetTarget}
+              className="bg-primary-yellow text-black px-4 py-2 rounded-full font-black animate-pulse shadow-[0_0_20px_rgba(255,215,0,0.5)] flex items-center gap-1.5 text-sm"
+            >
+              <RefreshCw className="w-4 h-4" /> RELOAD
+            </button>
+          )}
+        </div>
+
+        {/* Aim hint */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/25 text-[10px] tracking-[0.15em] pointer-events-none text-center">
+          SWIPE ANYWHERE TO AIM
+        </div>
+      </div>
+
+      {/* Draggable Fire Button */}
+      <div
+        className="absolute z-20 pointer-events-auto"
+        style={{ left: fireBtnPos.x, top: fireBtnPos.y }}
+      >
+        {/* Drag handle */}
+        <div
+          className="w-16 h-4 bg-white/20 rounded-full cursor-move flex items-center justify-center mb-1"
+          onPointerDown={e => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            isDraggingFireBtnRef.current = true;
+          }}
+          onPointerMove={e => {
+            if (!isDraggingFireBtnRef.current) return;
+            setFireBtnPos(p => ({ x: p.x + e.movementX, y: p.y + e.movementY }));
+          }}
+          onPointerUp={e => {
+            isDraggingFireBtnRef.current = false;
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          }}
+        >
+          <span className="text-[7px] text-white/50 font-black">DRAG</span>
+        </div>
+
+        <button
+          onTouchStart={startFiring}
+          onTouchEnd={stopFiring}
+          onTouchCancel={stopFiring}
+          onMouseDown={startFiring}
+          onMouseUp={stopFiring}
+          onMouseLeave={stopFiring}
+          className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center font-black text-lg transition-all shadow-xl select-none touch-none ${
+            bulletsLeft <= 0
+              ? 'bg-zinc-800 border-zinc-600 text-zinc-500'
+              : isFiring
+              ? 'bg-red-500 border-red-300 text-white scale-95'
+              : 'bg-white/25 border-white text-white hover:bg-white/35'
+          }`}
+          style={{ backdropFilter: 'blur(4px)', WebkitUserSelect: 'none' }}
+        >
+          FIRE
+        </button>
       </div>
 
       {/* Score Modal */}
       {scoreSummary?.show && (
-        <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center pointer-events-auto backdrop-blur-sm">
-          <div className="bg-[#1b2836] border border-primary-yellow/50 rounded-xl p-8 max-w-md text-center shadow-2xl space-y-6">
-            <div className="space-y-2">
-              <div className="text-primary-yellow text-sm font-black tracking-widest uppercase">Spray Analysis</div>
-              <div className="text-6xl font-black text-white">{scoreSummary.grade}</div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 text-left bg-black/30 p-4 rounded-lg">
-              <div>
-                <div className="text-white/50 text-xs">ACCURACY</div>
-                <div className="text-white font-bold text-xl">{scoreSummary.accuracy}%</div>
-              </div>
-              <div>
-                <div className="text-white/50 text-xs">DRIFT</div>
-                <div className="text-white font-bold text-xl">{scoreSummary.avgDist}px</div>
+        <div className="absolute inset-0 z-50 bg-black/85 flex items-center justify-center pointer-events-auto backdrop-blur-sm">
+          <div className="bg-[#1b2836] border border-primary-yellow/50 rounded-2xl p-6 max-w-sm w-[90%] text-center space-y-4">
+            <div>
+              <div className="text-primary-yellow text-xs font-black tracking-widest uppercase mb-1">Spray Analysis</div>
+              <div className={`text-5xl font-black ${scoreSummary.grade === 'SSS' ? 'text-primary-yellow' : scoreSummary.grade === 'S' ? 'text-green-400' : scoreSummary.grade === 'A' ? 'text-blue-400' : 'text-white'}`}>
+                {scoreSummary.grade}
               </div>
             </div>
 
-            <p className="text-white/80 text-sm">{scoreSummary.advice}</p>
+            <div className="grid grid-cols-3 gap-3 text-left bg-black/30 p-3 rounded-xl">
+              <div>
+                <div className="text-white/40 text-[10px]">ACCURACY</div>
+                <div className="text-white font-bold text-lg">{scoreSummary.accuracy}%</div>
+              </div>
+              <div>
+                <div className="text-white/40 text-[10px]">DRIFT</div>
+                <div className="text-white font-bold text-lg">{scoreSummary.avgDist}px</div>
+              </div>
+              <div>
+                <div className="text-white/40 text-[10px]">HEADSHOTS</div>
+                <div className="text-yellow-400 font-bold text-lg">{scoreSummary.headshots}</div>
+              </div>
+            </div>
 
-            <button
-              onClick={resetTarget}
-              className="w-full bg-primary-yellow text-black font-black py-4 rounded-lg hover:bg-white transition-colors"
-            >
-              PRACTICE AGAIN
-            </button>
+            <p className="text-white/70 text-xs leading-relaxed">{scoreSummary.advice}</p>
+
+            <div className="flex gap-2">
+              <button onClick={resetTarget} className="flex-1 bg-primary-yellow text-black font-black py-3 rounded-xl hover:bg-white transition-colors text-sm">
+                PRACTICE AGAIN
+              </button>
+              <button onClick={onExit} className="px-4 py-3 border border-white/20 text-white/60 rounded-xl hover:bg-white/10 text-sm">
+                EXIT
+              </button>
+            </div>
           </div>
         </div>
       )}

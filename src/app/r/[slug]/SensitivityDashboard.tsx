@@ -53,11 +53,17 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
     gyro: ScopeState | null;
     adsGyro: ScopeState | null;
   }>(() => {
-    const initCategory = (catValues: any) => {
+    // For camera and ADS: 1st-person no-scope is ~15% lower than 3rd-person.
+    // YouTube guide: "FPP sensitivity should be ~10-15% lower than TPP for precision."
+    const initCategory = (catValues: any, apply1stPersonOffset = false) => {
       if (!catValues) return null;
+      const noScope3rd = catValues.no_scope;
+      const noScope1st = apply1stPersonOffset
+        ? Math.max(1, Math.round(noScope3rd * 0.85))
+        : noScope3rd;
       return {
-        no_scope_3rd: catValues.no_scope,
-        no_scope_1st: catValues.no_scope,
+        no_scope_3rd: noScope3rd,
+        no_scope_1st: noScope1st,
         red_dot: catValues.red_dot,
         scope_2x: catValues.scope_2x,
         scope_3x: catValues.scope_3x,
@@ -68,8 +74,8 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
     };
 
     return {
-      camera: initCategory(result.values.camera)!,
-      ads: initCategory(result.values.ads)!,
+      camera: initCategory(result.values.camera, true)!,
+      ads: initCategory(result.values.ads, true)!,
       gyro: initCategory(result.values.gyro),
       adsGyro: initCategory(result.values.adsGyro),
     };
@@ -474,7 +480,7 @@ export default function SensitivityDashboard({ result }: SensitivityDashboardPro
       </div>
 
       {/* Interactive Shooting Range Simulator */}
-      <ShootingRange sensValues={sensValues} />
+      <ShootingRange sensValues={sensValues} playerInputs={result.inputs} />
 
       {/* AimSync Calibration Engine Feedback Control */}
       <div className="bg-[#1b2836]/75 border border-[#384b5c]/40 rounded-sm p-5 space-y-4">
