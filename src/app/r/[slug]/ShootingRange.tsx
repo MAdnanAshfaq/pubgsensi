@@ -4,6 +4,43 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Target, RefreshCw, X, Smartphone, ChevronRight } from 'lucide-react';
 import { UserInputs } from '@/utils/ruleEngine';
 
+// Polyfill for CanvasRenderingContext2D.prototype.roundRect for older devices/browsers
+if (typeof window !== 'undefined' && typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function (
+    this: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    radii?: number | number[]
+  ) {
+    let r = [0, 0, 0, 0];
+    if (typeof radii === 'number') {
+      r = [radii, radii, radii, radii];
+    } else if (Array.isArray(radii)) {
+      if (radii.length === 1) {
+        r = [radii[0], radii[0], radii[0], radii[0]];
+      } else if (radii.length === 2) {
+        r = [radii[0], radii[1], radii[0], radii[1]];
+      } else if (radii.length === 3) {
+        r = [radii[0], radii[1], radii[2], radii[1]];
+      } else if (radii.length >= 4) {
+        r = [radii[0], radii[1], radii[2], radii[3]];
+      }
+    }
+    this.moveTo(x + r[0], y);
+    this.lineTo(x + w - r[1], y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r[1]);
+    this.lineTo(x + w, y + h - r[2]);
+    this.quadraticCurveTo(x + w, y + h, x + w - r[2], y + h);
+    this.lineTo(x + r[3], y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r[3]);
+    this.lineTo(x, y + r[0]);
+    this.quadraticCurveTo(x, y, x + r[0], y);
+    return this;
+  };
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface ScopeState {
@@ -154,7 +191,7 @@ export default function ShootingRange({ sensValues, playerInputs }: ShootingRang
 
   const enterFullscreen = async () => {
     try {
-      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
         const perm = await (DeviceOrientationEvent as any).requestPermission();
         if (perm !== 'granted') alert('Gyroscope permission denied. Swipe to aim instead.');
       }
