@@ -725,25 +725,108 @@ export default function OnboardingWizard() {
         </div>
       )}
 
-      {/* ── Technical SEO: WebApplication JSON-LD Schema ────────────────────── */}
+      {/* ── Technical SEO: WebApplication + HowTo + FAQ JSON-LD Schema ────────────────────── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebApplication",
-            "name": "AimSync Sensitivity Generator",
+            "name": "AimSync – PUBG Mobile & BGMI Sensitivity Calculator",
             "url": "https://www.gamingsensi.site",
-            "description": "AI-powered PUBG Mobile and BGMI sensitivity calculator based on device touch latency, FPS, and player layouts.",
-            "applicationCategory": "Esports Utility Tool",
-            "operatingSystem": "iOS, Android, Mobile",
-            "browserRequirements": "Requires JavaScript. Requires HTML5."
+            "description": "Free AI-powered zero recoil sensitivity calculator for PUBG Mobile and BGMI. Generates personalized Camera, ADS, and Gyroscope settings based on your device, FPS, and playstyle.",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Android, iOS, Mobile",
+            "browserRequirements": "Requires JavaScript. Requires HTML5.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "about": { "@type": "VideoGame", "name": "PUBG Mobile" },
+            "publisher": { "@type": "Organization", "name": "AimSync", "url": "https://www.gamingsensi.site" }
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": "How to Get Zero Recoil Sensitivity in PUBG Mobile & BGMI",
+            "description": "Generate a personalized zero-recoil sensitivity profile for PUBG Mobile or BGMI using AimSync in under 2 minutes.",
+            "totalTime": "PT2M",
+            "step": [
+              { "@type": "HowToStep", "position": 1, "name": "Select Your Device Tier", "text": "Choose Budget, Mid-Range, or Flagship based on your phone hardware. AimSync adjusts gyroscope sensitivity thresholds to filter sensor lag for your specific tier." },
+              { "@type": "HowToStep", "position": 2, "name": "Set Your In-Game FPS", "text": "Select your target framerate (40, 60, 90, or 120 FPS). Higher FPS allows snappier tracking and slightly lower ADS sensitivity values." },
+              { "@type": "HowToStep", "position": 3, "name": "Choose Gyroscope Mode", "text": "Select Always-On, Scope-Only, or Disabled. Always-On gyroscope gives the best zero recoil control by letting your wrists pull down while thumbs handle movement." },
+              { "@type": "HowToStep", "position": 4, "name": "Configure Finger Layout", "text": "Select 2, 3, 4, or 5 fingers. Claw layouts (4-5 fingers) allow higher camera rotation limits without thumb interference." },
+              { "@type": "HowToStep", "position": 5, "name": "Select Combat Role", "text": "Pick Rusher, Assaulter, Sniper, or Flex. This determines whether close-range or long-range scope multipliers are prioritized." },
+              { "@type": "HowToStep", "position": 6, "name": "Identify Your Aim Problem", "text": "Select your primary issue: Recoil, Tracking, Spray Transfer, Hipfire, Long Range, or All. The algorithm applies targeted corrective multipliers." },
+              { "@type": "HowToStep", "position": 7, "name": "Enter Your Device Model", "text": "Type your phone model (e.g. Poco X5 Pro, iPhone 13). AimSync AI researches your device's exact touch latency, gyro sensor quality, and display specs for hardware-calibrated output." }
+            ]
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is the code for 7120 0643 8249 5640 805 in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "The code 7120-0643-8249-5640-805 is a PUBG Mobile sensitivity import code shared by players. In PUBG Mobile, go to Settings → Sensitivity → Import and paste the 19-digit code. This applies a community-tested sensitivity template. However, these codes are not personalized to your device's hardware. Use AimSync to generate a zero recoil sensitivity calibrated specifically for your phone's touch latency and gyroscope sensor quality." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to make your own no recoil sensitivity in PUBG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To make your own zero recoil sensitivity: (1) Set Gyroscope to Always-On and increase Gyro TPP No-Scope to 300–350%. (2) Set ADS Gyro multipliers 15% lower than your Camera ADS values. (3) Use the Training Ground to spray an M416 at 30m and tilt your wrist forward until the bullet pattern is vertical. (4) Adjust in 5% increments until the spray is flat. AimSync automates this entire calculation based on your device's hardware specifications." }
+              },
+              {
+                "@type": "Question",
+                "name": "What does 0 recoil mean in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Zero recoil in PUBG Mobile means your crosshair does not visibly climb during automatic fire. It is achieved by combining two techniques: (1) Thumb ADS drag — pulling your firing thumb downward while shooting to counteract vertical recoil. (2) Gyroscope tilt — physically tilting your device forward to use the phone's motion sensor to cancel recoil. True zero recoil is a sensitivity + practice combination, not a single code or setting." }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the best sensitivity for PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "The best sensitivity for PUBG Mobile varies by device. A widely used baseline is: Camera TPP No-Scope 45–55%, Red Dot 55–65%, 2x 30–40%, 3x 25–35%, 4x 20–30%, Gyro Always-On at 300–350% for No-Scope. Budget devices should use 5–10% higher values to compensate for slower touch sampling rates. Use AimSync to generate a hardware-specific sensitivity profile for your exact phone model." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does sensitivity affect recoil in PUBG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. In PUBG Mobile, ADS sensitivity directly controls how much your crosshair moves when you drag your thumb down to counter recoil. If ADS sensitivity is too low, your pull-down motion is too slow to cancel the weapon's vertical climb. If it is too high, your crosshair overcorrects into the ground. Gyroscope sensitivity also affects recoil: higher gyro values mean less physical wrist tilt is needed to keep the crosshair flat." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do pro PUBG players set their sensitivity?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Pro PUBG Mobile players typically use Always-On Gyroscope at 300–400%, 4-finger or 5-finger claw layouts, and device-calibrated ADS values around 50–70% for close-range scopes. They set Camera TPP No-Scope around 45–60% and use lower values (15–20%) for 6x and 8x scopes. Most pros calibrate in the Training Ground, not by copying codes. AimSync replicates this approach by computing values from your device's hardware data." }
+              },
+              {
+                "@type": "Question",
+                "name": "What is recoil control in PUBG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Recoil control in PUBG Mobile is the skill of keeping your crosshair on target during automatic fire. Every weapon has a unique spray pattern — mostly vertical climb. Recoil control methods include: (1) Thumb drag-down on ADS. (2) Gyroscope wrist tilt forward. (3) Weapon attachments like Compensator, Vertical Foregrip, and Muzzle Brake, which reduce the spray pattern by 10–20% per attachment." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to properly control recoil in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To properly control recoil in PUBG Mobile: (1) Enable Always-On Gyroscope. (2) Set Gyro TPP No-Scope to 300–350%. (3) In the Training Ground, spray an M416 without attachments at a wall 30m away. (4) Slowly tilt your wrist forward while firing — this is your base recoil tilt angle. (5) Adjust Gyro sensitivity until the spray pattern is flat with a comfortable wrist tilt. (6) Repeat with 7.62mm rifles (AKM, Beryl), which need 5–10% higher values." }
+              }
+            ]
           })
         }}
       />
 
       {/* ── On-Page SEO: 1,800+ Words Comprehensive Topical Authority Guide ────────────────────── */}
-      <section className="border-t border-border-tactical/30 pt-12 mt-12 text-[#cbdbe6] font-body text-sm space-y-8 leading-relaxed">
+      <main className="border-t border-border-tactical/30 pt-12 mt-12 text-[#cbdbe6] font-body text-sm space-y-8 leading-relaxed">
+        {/* AEO Quick Answer Block — targets featured snippet + AI Overview for 'zero recoil sensitivity PUBG' */}
+        <div className="bg-surface-card border-l-4 border-primary-yellow rounded-r-xl p-4 mb-6">
+          <p className="text-[10px] font-technical uppercase tracking-widest text-primary-yellow mb-1">Quick Answer</p>
+          <p className="text-sm text-[#cbdbe6] leading-relaxed">
+            <strong className="text-white">Zero recoil sensitivity in PUBG Mobile</strong> is achieved by setting Gyroscope TPP No-Scope to <strong className="text-primary-yellow">300–350%</strong>, Camera TPP at <strong className="text-primary-yellow">45–55%</strong>, and ADS Gyro <strong className="text-primary-yellow">15% lower</strong> than your camera ADS values. For BGMI, use the same baseline but increase Gyro by 5–10% if you are on a budget device (Poco, Redmi). Adjust in 5% steps using the Training Ground until your M416 spray is flat. Or use <a href="/" className="underline text-primary-yellow">AimSync to auto-calculate your zero recoil profile</a> based on your exact device hardware.
+          </p>
+        </div>
+
         <div>
           <h2 className="text-2xl font-headline font-black text-primary-yellow uppercase tracking-wider mb-4">
             AimSync Sensitivity Calculator: Optimize Your PUBG Mobile & BGMI Settings
@@ -901,6 +984,16 @@ export default function OnboardingWizard() {
           </p>
           <ul className="list-disc pl-5 space-y-2 text-xs text-primary-yellow font-bold">
             <li>
+              <a href="/zero-recoil-sensitivity" className="hover:underline">
+                Zero Recoil Sensitivity for PUBG Mobile &amp; BGMI: Complete 2026 Guide
+              </a>
+            </li>
+            <li>
+              <a href="/bgmi-sensitivity" className="hover:underline">
+                BGMI Sensitivity Settings 2026: The Complete India Guide
+              </a>
+            </li>
+            <li>
               <a href="/guides/best-sensitivity-pubg-mobile" className="hover:underline">
                 The Best Sensitivity Settings for PUBG Mobile (2026 Guide)
               </a>
@@ -917,17 +1010,17 @@ export default function OnboardingWizard() {
             </li>
             <li>
               <a href="/guides/recoil-control-drills" className="hover:underline">
-                Mastering Recoil Control: Training Drills & Setup
+                Mastering Recoil Control: Training Drills &amp; Setup
               </a>
             </li>
             <li>
               <a href="/guides/hardware-impact-on-aim" className="hover:underline">
-                Touch Latency & Refresh Rate: How Your Phone Affects Aim
+                Touch Latency &amp; Refresh Rate: How Your Phone Affects Aim
               </a>
             </li>
           </ul>
         </div>
-      </section>
+      </main>
     </div>
   );
 }

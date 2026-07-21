@@ -41,7 +41,7 @@ export default function RootLayout({
       <head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <meta name="google-site-verification" content="24d6e45a3eb11ffe" />
-        <script src="https://quge5.com/88/tag.min.js" data-zone="258251" async data-cfasync="false"></script>
+        <meta name="keywords" content="zero recoil sensitivity, PUBG Mobile sensitivity, BGMI sensitivity settings, no recoil code, gyroscope sensitivity PUBG, PUBG sensitivity calculator, BGMI zero recoil code, best PUBG sensitivity 2026" />
       </head>
       <body className="min-h-full flex flex-col bg-[#070b0e]">
         <Script
