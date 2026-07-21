@@ -3,14 +3,14 @@ import AdUnit from '@/components/AdUnit';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: "Best PUBG Mobile Sensitivity Settings (2026 Guide)",
-  description: "Find the absolute best PUBG Mobile sensitivity settings for zero recoil. Comprehensive guide on camera, ADS, and gyroscope settings.",
+  title: "Best PUBG Mobile Sensitivity Settings (2026 Master Guide)",
+  description: "The ultimate 2026 PUBG Mobile & BGMI sensitivity guide. Calibrated baseline values for Camera, ADS, and Gyroscope across 60, 90, and 120 FPS setups.",
   alternates: {
     canonical: "https://www.gamingsensi.site/guides/best-sensitivity-pubg-mobile",
   },
   openGraph: {
-    title: "Best PUBG Mobile Sensitivity Settings (2026 Guide)",
-    description: "Find the absolute best PUBG Mobile sensitivity settings for zero recoil. Comprehensive guide on camera, ADS, and gyroscope settings.",
+    title: "Best PUBG Mobile Sensitivity Settings (2026 Master Guide)",
+    description: "The ultimate 2026 PUBG Mobile & BGMI sensitivity guide. Calibrated baseline values for Camera, ADS, and Gyroscope across 60, 90, and 120 FPS setups.",
   },
 };
 
@@ -40,7 +40,7 @@ export default function Guide1() {
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-12 text-white">
+    <main className="max-w-4xl mx-auto px-4 py-12 text-[#cbdbe6] font-body text-sm leading-relaxed">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -55,176 +55,163 @@ export default function Guide1() {
               {
                 "@type": "Question",
                 "name": "What is the best sensitivity for PUBG Mobile in 2026?",
-                "acceptedAnswer": { "@type": "Answer", "text": "The best PUBG Mobile sensitivity in 2026: Camera TPP No-Scope 45–55%, Camera Red Dot 60–70%, 2x 32–42%, 3x 25–35%, 4x 18–28%. Gyroscope Always-On: No-Scope 300–350%, Red Dot 290–340%, 3x 120–160%, 4x 80–120%. Adjust in 5% steps using Training Ground. Budget devices (Poco, Redmi) need 5–10% higher Gyro values." }
-              },
-              {
-                "@type": "Question",
-                "name": "What does 0 recoil mean in PUBG Mobile?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Zero recoil in PUBG Mobile means your crosshair does not visibly climb during automatic fire. It is achieved by combining gyroscope wrist tilt (Always-On at 300–350%), ADS drag-down with your thumb, and weapon attachments (Compensator + Vertical Foregrip). No single sensitivity code gives literal zero recoil — it requires calibration and practice." }
-              },
-              {
-                "@type": "Question",
-                "name": "Does sensitivity affect recoil in PUBG Mobile?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Yes. ADS sensitivity controls how fast your crosshair moves during your thumb drag-down. If ADS is too low, your recoil correction is too slow and the spray climbs. If too high, you overcorrect into the ground. Gyroscope sensitivity controls how much tilt is needed to pull the crosshair down. Both must be calibrated together." }
-              },
-              {
-                "@type": "Question",
-                "name": "How do pro PUBG players set their sensitivity?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Pro PUBG Mobile players use Always-On Gyroscope at 300–400%, 4F or 5F claw layouts, Camera TPP 45–60%, and ADS values 10–20% below Camera values. They calibrate in Training Ground by spraying at walls, then adjust in 5% increments. They do not copy community codes — they build from hardware baselines." }
+                "acceptedAnswer": { "@type": "Answer", "text": "The best PUBG Mobile sensitivity in 2026: Camera TPP No-Scope 45–55%, Red Dot ADS 55–65%, 3x ADS 25–35%, and Gyroscope Always-On at 300–350% for No-Scope." }
               },
               {
                 "@type": "Question",
                 "name": "How to make your own no recoil sensitivity in PUBG?",
-                "acceptedAnswer": { "@type": "Answer", "text": "To create your own zero recoil sensitivity: enable Always-On Gyroscope, set Gyro TPP No-Scope to 300–350%, spray an M416 at 30m in Training Ground while tilting your wrist forward. If spray climbs, increase Gyro by 10%. If it drops, decrease by 10%. Repeat in 5% steps until flat. Then repeat with AKM (needs +8–12% Gyro)." }
+                "acceptedAnswer": { "@type": "Answer", "text": "Enable Always-On Gyroscope at 300-350%, spray an M416 at 30m target walls, and adjust Gyro ADS in 5% increments until horizontal/vertical climb is zero." }
               }
             ]
           })
         }}
       />
-      <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
-        The Best PUBG Mobile Sensitivity Settings: Complete 2026 Tuning Manual
-      </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
-        <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
-        <span>•</span>
-        <span>Published: July 9, 2026</span>
-        <span>•</span>
-        <span>12 Min Read</span>
+
+      {/* Header */}
+      <div className="border-b border-[#384b5c]/40 pb-6 mb-8">
+        <p className="text-xs font-technical uppercase tracking-widest text-[#ffd700] mb-2">
+          AimSync Blueprint · 2026 Sensitivity Tuning Manual
+        </p>
+        <h1 className="text-3xl md:text-5xl font-headline font-black text-white uppercase tracking-wider leading-tight mb-4">
+          The Best PUBG Mobile Sensitivity Settings: Complete 2026 Tuning Manual
+        </h1>
+        <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-[#a0b0c0] uppercase tracking-widest">
+          <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
+          <span>•</span>
+          <span>Updated: July 21, 2026</span>
+          <span>•</span>
+          <span>15 Min Read</span>
+        </div>
       </div>
 
       {/* AEO Quick Answer Block */}
-      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
-        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-5 mb-10 shadow-lg">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer &amp; Benchmark</p>
         <p className="text-sm text-[#cbdbe6] leading-relaxed">
-          <strong className="text-white">Best PUBG Mobile sensitivity 2026</strong>: Camera TPP{' '}
-          <strong className="text-[#ffd700]">45–55%</strong>, Red Dot ADS{' '}
-          <strong className="text-[#ffd700]">55–65%</strong>, Gyro Always-On at{' '}
-          <strong className="text-[#ffd700]">300–350%</strong>. Budget devices add 5–10% to Gyro. Calibrate in Training Ground: spray M416 at 30m, tilt wrist forward, adjust in 5% steps until flat. Use{' '}
-          <a href="/" className="underline text-[#ffd700]">AimSync</a> to auto-generate a hardware-specific profile.
+          <strong className="text-white">Best PUBG Mobile &amp; BGMI Sensitivity 2026</strong>: Set Camera TPP No-Scope to{' '}
+          <strong className="text-[#ffd700]">45–55%</strong>, Red Dot ADS to{' '}
+          <strong className="text-[#ffd700]">55–65%</strong>, 3x ADS to{' '}
+          <strong className="text-[#ffd700]">25–35%</strong>, and Always-On Gyroscope No-Scope to{' '}
+          <strong className="text-[#ffd700]">300–350%</strong>. Copying pro codes directly fails because touch digitizer sampling rates vary by phone model. Use hardware-calibrated baselines and fine-tune in 5% steps.
         </p>
       </div>
 
-      <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
-        <p>
-          Mastering your close-range tracking and long-range sprays requires finding the perfect **PUBG Mobile sensitivity settings**. In mobile battle royale gaming, having slightly miscalibrated sliders can make the difference between securing a chicken dinner and returning to the lobby. While many players copy configuration codes directly from professional esports athletes, they quickly discover that those settings fail to deliver the same precision on their own devices.
-        </p>
+      <div className="space-y-8 text-base leading-relaxed font-body">
 
-        <p>
-          The truth is that optimal sensitivity is highly dependent on your specific hardware specifications, display size, and control layout. In this comprehensive guide, we will analyze every component of the setting sliders, provide mathematical tuning formulas, detail recoil control tips, and provide optimized baseline configurations to help you establish a zero-recoil profile. For official updates and game news, check the <a href="https://www.pubgmobile.com" target="_blank" rel="noopener noreferrer" className="text-primary-yellow hover:underline">Official PUBG Mobile Website</a>.
-        </p>
+        {/* Section 1 */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-headline font-black text-[#ffd700] uppercase tracking-wide">
+            1. Why Copying Pro Codes Fails on Different Devices
+          </h2>
+          <p>
+            The single biggest myth in mobile gaming is that importing a famous streamer&apos;s or esports pro&apos;s sensitivity code will instantly make your aim flawless. In reality, sensitivity is deeply tethered to physical hardware specs:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-sm text-[#cbdbe6]">
+            <li><strong className="text-white">Touch Sampling Rate (Hz):</strong> A phone with 480Hz touch sampling registers finger motion twice as fast as a 240Hz screen, making the exact same slider value feel twice as fast.</li>
+            <li><strong className="text-white">FPS / Frame Time:</strong> 120 FPS displays render updates every 8.3ms, allowing snappier tracking compared to 60 FPS (16.6ms frame latency).</li>
+            <li><strong className="text-white">Screen Physical Dimensions:</strong> Swiping 1 inch on a 6.1-inch iPhone covers a larger screen percentage than swiping 1 inch on an 11-inch iPad.</li>
+          </ul>
 
-        <div className="relative w-full h-[350px] my-8 rounded-xl overflow-hidden border border-[#384b5c]/30">
-          <Image
-            src="/images/sensi_chart_comparison.png"
-            alt="PUBG Mobile Sensitivity Settings Chart"
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 800px"
-          />
+          <div className="relative w-full h-[320px] my-6 rounded-xl overflow-hidden border border-[#384b5c]/40">
+            <Image
+              src="/images/sensi_chart_comparison.png"
+              alt="PUBG Mobile Sensitivity Chart Comparison"
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
+        </section>
+
+        {/* Section 2: Complete Calibration Table */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-headline font-black text-[#ffd700] uppercase tracking-wide">
+            2. Master 2026 Sensitivity Baseline Table
+          </h2>
+          <p>
+            Use this benchmark calibration matrix across Camera, ADS (Touch Firing), and Gyroscope:
+          </p>
+
+          <div className="bg-[#0d1a1f] border border-[#384b5c]/40 rounded-xl overflow-hidden my-4">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-[#111d24] border-b border-[#384b5c]/40 text-[#ffd700] font-technical uppercase">
+                <tr>
+                  <th className="px-4 py-3">Scope Tier</th>
+                  <th className="px-4 py-3">Camera (Swipe)</th>
+                  <th className="px-4 py-3">ADS (Touch Fire)</th>
+                  <th className="px-4 py-3">Gyro (Always-On)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#384b5c]/20">
+                {[
+                  { scope: "TPP No-Scope", cam: "45% – 55%", ads: "50% – 60%", gyro: "300% – 350%" },
+                  { scope: "FPP No-Scope", cam: "40% – 50%", ads: "45% – 55%", gyro: "280% – 320%" },
+                  { scope: "Red Dot / Holo", cam: "55% – 65%", ads: "55% – 65%", gyro: "300% – 350%" },
+                  { scope: "2x Scope", cam: "30% – 40%", ads: "32% – 42%", gyro: "200% – 250%" },
+                  { scope: "3x Scope", cam: "22% – 30%", ads: "25% – 35%", gyro: "140% – 180%" },
+                  { scope: "4x Scope", cam: "16% – 24%", ads: "18% – 28%", gyro: "100% – 140%" },
+                  { scope: "6x Scope", cam: "10% – 16%", ads: "12% – 20%", gyro: "120% – 160% (3x)" },
+                  { scope: "8x Scope", cam: "8% – 12%", ads: "10% – 15%", gyro: "45% – 70%" }
+                ].map((row) => (
+                  <tr key={row.scope}>
+                    <td className="px-4 py-3 font-bold text-white">{row.scope}</td>
+                    <td className="px-4 py-3 text-[#cbdbe6] font-mono">{row.cam}</td>
+                    <td className="px-4 py-3 text-[#cbdbe6] font-mono">{row.ads}</td>
+                    <td className="px-4 py-3 text-[#ffd700] font-mono font-bold">{row.gyro}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Section 3: Hardware Tuning Rules */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-headline font-black text-[#ffd700] uppercase tracking-wide">
+            3. Hardware-Specific Tuning Rules
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+            <div className="bg-[#0d1a1f] border border-[#384b5c]/40 p-4 rounded-xl space-y-2">
+              <span className="text-xs font-technical text-[#ffd700] uppercase">Rule #1 · FPS</span>
+              <h3 className="font-bold text-white">60 FPS vs 90/120 FPS</h3>
+              <p className="text-xs text-[#a0b0c0]">
+                If playing on 60 FPS (budget phone), increase Camera and Gyro sensitivity by +5% to +10% to make up for frame delay.
+              </p>
+            </div>
+            <div className="bg-[#0d1a1f] border border-[#384b5c]/40 p-4 rounded-xl space-y-2">
+              <span className="text-xs font-technical text-[#ffd700] uppercase">Rule #2 · Layout</span>
+              <h3 className="font-bold text-white">2-Finger vs 4-Finger Claw</h3>
+              <p className="text-xs text-[#a0b0c0]">
+                4-finger claw players should run higher Camera TPP (55–65%) because their thumbs aren&apos;t occupied with trigger buttons.
+              </p>
+            </div>
+            <div className="bg-[#0d1a1f] border border-[#384b5c]/40 p-4 rounded-xl space-y-2">
+              <span className="text-xs font-technical text-[#ffd700] uppercase">Rule #3 · Screen</span>
+              <h3 className="font-bold text-white">Tablet / iPad Adjustment</h3>
+              <p className="text-xs text-[#a0b0c0]">
+                Reduce all Camera and ADS values by 10%–20% on tablets to account for the larger physical swipe distance.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <div className="bg-[#0d1a1f] border border-[#ffd700]/30 rounded-2xl p-6 text-center my-8 shadow-xl">
+          <h3 className="font-headline text-xl font-black text-white uppercase mb-2">
+            Generate Your Personal Sensitivity Code
+          </h3>
+          <p className="text-xs text-[#a0b0c0] mb-4 max-w-md mx-auto">
+            Input your exact phone model, FPS, and claw layout into AimSync AI to get a hardware-tuned zero recoil code.
+          </p>
+          <a
+            href="/"
+            className="inline-block bg-[#ffd700] text-black font-headline font-black text-xs uppercase px-6 py-3 rounded-lg hover:bg-[#ffd700]/90 transition-all shadow-md"
+          >
+            Generate Sensitivity Code →
+          </a>
         </div>
 
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">1. Understanding the Sensitivity Layers</h2>
-        <p>
-          Before adjusting your settings, you must understand the distinction between the three primary sensitivity categories inside PUBG Mobile and BGMI:
-        </p>
-
-        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">A. Camera Sensitivity (Screen Swipe / Free Look)</h3>
-        <p>
-          This controls how fast your camera turns when you swipe the screen without firing your gear. It determines your target acquisition speed. If this is too low, you will struggle to turn 180 degrees when attacked from behind. If it is too high, you will overshoot your targets while scanning.
-        </p>
-
-        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">B. ADS (Aim Down Sights) Sensitivity</h3>
-        <p>
-          This controls the speed of your camera *while you are shooting* with your fingers. This is the primary mechanic non-gyroscope players use to drag down and control vertical recoil. It is only active during active firing sequences.
-        </p>
-
-        <h3 className="text-xl font-bold text-primary-yellow mt-6 mb-2">C. Gyroscope Sensitivity</h3>
-        <p>
-          This controls the camera rotation when you tilt your device physically. Gyroscope aiming utilizes internal sensors (the mobile accelerometer and gyro) to track movement, allowing you to control recoil and track enemies by tilting your wrists, leaving your fingers free to crouch, scope, and jump.
-        </p>
-
-        <AdUnit slot="1234567890" format="auto" className="my-8" />
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">2. The Best No-Gyro Sensitivity Configurations</h2>
-        <p>
-          If you play with the gyroscope completely disabled, your fingers must handle all camera and recoil controls. Since your thumbs have a limited physical space to swipe, you need higher overall values.
-        </p>
-
-        <h3 className="text-lg font-bold text-white mt-6 mb-2">Camera Sensitivity (Standard View)</h3>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>3rd Person No Scope: 120% - 135%</li>
-          <li>1st Person No Scope: 110% - 125%</li>
-          <li>Red Dot, Holographic, Aim Assist: 50% - 60%</li>
-          <li>2x Scope: 30% - 40%</li>
-          <li>3x Scope: 20% - 25%</li>
-          <li>4x Scope: 15% - 18%</li>
-          <li>6x Scope: 10% - 12%</li>
-          <li>8x Scope: 8% - 10%</li>
-        </ul>
-
-        <h3 className="text-lg font-bold text-white mt-6 mb-2">ADS Sensitivity (Recoil Correction)</h3>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>3rd Person No Scope: 125% - 140%</li>
-          <li>1st Person No Scope: 115% - 130%</li>
-          <li>Red Dot, Holographic, Aim Assist: 55% - 65%</li>
-          <li>2x Scope: 35% - 45%</li>
-          <li>3x Scope: 25% - 30%</li>
-          <li>4x Scope: 18% - 22%</li>
-          <li>6x Scope: 12% - 15%</li>
-          <li>8x Scope: 10% - 12%</li>
-        </ul>
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">3. The Best Gyroscope Sensitivity Settings (Always-On)</h2>
-        <p>
-          Always-On Gyroscope is highly recommended for competitive PUBG Mobile sensitivity settings. By using wrist tilts for micro-aiming, your overall spray accuracy doubles.
-        </p>
-
-        <h3 className="text-lg font-bold text-white mt-6 mb-2">Camera & ADS Gyroscope Settings</h3>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>3rd Person No Scope: 300% - 350%</li>
-          <li>1st Person No Scope: 280% - 320%</li>
-          <li>Red Dot, Holographic, Aim Assist: 300% - 350%</li>
-          <li>2x Scope: 250% - 300%</li>
-          <li>3x Scope: 180% - 240%</li>
-          <li>4x Scope: 160% - 200%</li>
-          <li>6x Scope: 90% - 120%</li>
-          <li>8x Scope: 60% - 85%</li>
-        </ul>
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">4. Device Specific Calibrations (Damping Formulas)</h2>
-        <p>
-          Why do these baselines need further adjustments? It comes down to screen density and digitizer latency. We use specific calibration rules to adjust these settings:
-        </p>
-        <p>
-          * **High-End Flagships (e.g., iPhone 15 Pro, ROG Phone):** These screens support 240Hz+ touch sampling rates. Aiming is highly responsive, allowing you to decrease your sensitivities by **5% to 10%** for tighter groupings.
-        </p>
-        <p>
-          * **Budget Devices (e.g., under $250):** Lower processing speeds introduce touch latency. Swipes feel delayed. To compensate, you must increase camera and ADS values by **10% to 15%** to make the controls react quicker.
-        </p>
-
-        <AdUnit slot="0987654321" format="rectangle" className="my-8" />
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">5. Step-by-Step Training Ground Tuning Routine</h2>
-        <p>
-          To fine-tune your configuration, dedicate 10 minutes to this routine daily:
-        </p>
-        <ol className="list-decimal pl-6 space-y-3">
-          <li>
-            <strong>Adjust 3rd Person No-Scope:</strong> Stand at the center of the training grounds. Rapidly flick your crosshair between two targets located 10 meters away. If your crosshair lands past the target, reduce your sensitivity by 5%. If it stops short, increase it by 5%.
-          </li>
-          <li>
-            <strong>Tune Your 3x Scope (Rifle sprays):</strong> Equip an M416 with only a 3x scope (no attachments). Shoot at a 50m target board. Adjust your ADS or Gyroscope sensitivity until the horizontal bullet bounce is minimized and you can easily drag down.
-          </li>
-          <li>
-            <strong>Sniper Tuning:</strong> Equip an AWM with an 8x scope. Try to quick-scope target boards at 150m. Since sniper scopes require extreme precision, keep your 8x gyroscope sensitivity below 85% to prevent breathing movements from shaking your crosshair.
-          </li>
-        </ol>
-
-        <h2 className="text-2xl font-bold text-white mt-10 mb-4">6. Conclusion</h2>
-        <p>
-          Establishing optimal PUBG Mobile sensitivity settings is a continuous process of calibration. Instead of copying codes that don't match your device, understand how touch latency and layout dictate your sliders. Start with the baseline settings provided above, run the training ground routine, and enjoy zero-recoil performance.
-        </p>
       </div>
     </main>
   );
