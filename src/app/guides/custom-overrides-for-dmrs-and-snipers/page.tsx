@@ -33,7 +33,10 @@ export default function Guide7() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-10"
+    "datePublished": "2026-07-10",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/custom-overrides-for-dmrs-and-snipers",
+    "keywords": "DMR sensitivity PUBG Mobile, sniper sensitivity BGMI, custom gear sensitivity overrides, SKS sensitivity PUBG, AWM sensitivity settings"
   };
 
   return (
@@ -42,16 +45,59 @@ export default function Guide7() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What sensitivity should I use for snipers in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "For bolt-action snipers (AWM, M24) in PUBG Mobile: 6x ADS 10–18%, 8x ADS 8–15%, Gyro 6x 40–60%, Gyro 8x 28–45%. These low values prevent hand tremors and small movements from shaking your scope at long range. Enable Custom Gear Sensitivity in your settings to apply these values specifically to bolt-actions without affecting your AR spray settings." }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the best sensitivity for DMRs (SKS, Mini-14) in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "For DMRs (SKS, Mini-14, MK14) in PUBG Mobile: 3x ADS 22–32%, 4x ADS 16–26%, 6x ADS 12–20%, Gyro 3x 110–150%, Gyro 4x 75–110%. DMRs are semi-auto, so you do not need drag-down recoil control. Focus on stability: lower gyro values allow precise single-shot tracking without accidental drift between shots." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I set custom gear sensitivity in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To set Custom Gear Sensitivity in PUBG Mobile: Settings → Sensitivity → scroll to Custom Weapon Sensitivity → enable the toggle for each weapon you want to override. Then set individual ADS and Gyroscope values for that specific weapon. This lets you have high Gyro settings for M416 sprays and low settings for AWM sniping without changing your global profile." }
+              },
+              {
+                "@type": "Question",
+                "name": "Should snipers use gyroscope in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes, but with very low gyroscope values for high-magnification scopes. For 6x and 8x scopes, set Gyro to 40–60% and 28–45% respectively. This gives just enough gyro response to make fine tracking adjustments during a target's movement without shaking the crosshair at long range. Use Custom Gear Sensitivity to keep high Gyro for ARs while having low Gyro for bolt-actions." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Custom Overrides for DMRs & Snipers
       </h1>
 
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 10, 2026</span>
         <span>•</span>
         <span>9 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Sniper sensitivity in PUBG Mobile</strong>: AWM/M24 6x ADS{' '}
+          <strong className="text-[#ffd700]">10–18%</strong>, 8x ADS{' '}
+          <strong className="text-[#ffd700]">8–15%</strong>, Gyro 8x{' '}
+          <strong className="text-[#ffd700]">28–45%</strong>. Use Custom Gear Sensitivity to set these per weapon without changing your AR profile. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to generate custom overrides per weapon category.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

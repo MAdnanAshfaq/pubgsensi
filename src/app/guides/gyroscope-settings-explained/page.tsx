@@ -33,7 +33,10 @@ export default function Guide2() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-09"
+    "datePublished": "2026-07-09",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/gyroscope-settings-explained",
+    "keywords": "PUBG Mobile gyroscope settings, BGMI gyroscope, always on gyroscope, scope on gyroscope, gyroscope sensitivity"
   };
 
   return (
@@ -42,15 +45,61 @@ export default function Guide2() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Should I use Always-On or Scope-On gyroscope in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Always-On Gyroscope is recommended for competitive PUBG Mobile play. It lets your wrists control recoil and micro-adjustments continuously, freeing your thumbs for movement, crouching, and jumping. Scope-On is suitable for sniper-only players who want gyro only during ADS. Always-On gives the highest skill ceiling for recoil control." }
+              },
+              {
+                "@type": "Question",
+                "name": "What gyroscope sensitivity should I use in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Recommended PUBG Mobile gyroscope sensitivity: TPP No-Scope 300–350%, Red Dot 290–340%, 2x 180–230%, 3x 120–160%, 4x 80–120%, 6x 55–75%, 8x 35–50%. Budget devices (Poco, Redmi) should add 5–10% to compensate for slower gyroscope sensor response. Calibrate in Training Ground using M416 spray at 30m." }
+              },
+              {
+                "@type": "Question",
+                "name": "Why does my gyroscope drift or shake in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Gyroscope drift in PUBG Mobile is caused by miscalibrated accelerometer sensors. To fix it: place your phone on a flat surface and calibrate the gyroscope in your phone's system settings or PUBG Mobile's in-game calibration menu. Also check that your phone temperature is normal — overheating causes sensor noise and drift." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does sensitivity affect recoil in PUBG when using gyroscope?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Gyroscope sensitivity determines how much crosshair movement occurs per degree of device tilt. If Gyro sensitivity is too low, your wrist tilt does not cancel the weapon's vertical climb fast enough. If it is too high, a small wrist movement overcorrects downward. Calibrate by spraying at a wall and adjusting until the spray pattern is flat." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do pro PUBG players use gyroscope?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Pro PUBG Mobile players use Always-On Gyroscope at 300–400% for No-Scope values and lower values (40–80%) for long-range scopes. They combine 4F or 5F claw layouts so their index fingers handle fire triggers while wrists control recoil via gyro. They calibrate in Training Ground daily rather than copying community codes." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         PUBG Mobile Gyroscope Settings Explained: The Complete Masterclass
       </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 9, 2026</span>
         <span>•</span>
         <span>11 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Gyroscope sensitivity for PUBG Mobile</strong>: Use{' '}
+          <strong className="text-[#ffd700]">Always-On Gyroscope at 300–350%</strong> for No-Scope. Set Gyro 3x to 120–160%, Gyro 4x to 80–120%. Enable Always-On (not Scope-On) for the highest recoil control ceiling. Calibrate by spraying an M416 at 30m in Training Ground while tilting your wrist forward — adjust in 5% steps until the spray is flat. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to generate a device-calibrated gyroscope profile.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

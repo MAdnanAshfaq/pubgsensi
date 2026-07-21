@@ -33,7 +33,10 @@ export default function RecoilControlDrills() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-09"
+    "datePublished": "2026-07-09",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/recoil-control-drills",
+    "keywords": "recoil control PUBG, how to control recoil PUBG Mobile, BGMI recoil drills, zero recoil training, spray control PUBG"
   };
 
   return (
@@ -42,15 +45,62 @@ export default function RecoilControlDrills() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is recoil control in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Recoil control in PUBG Mobile is the technique of keeping your crosshair on target during automatic fire. Every weapon has a predictable spray pattern — mostly vertical climb. Recoil control uses gyroscope wrist tilt, ADS thumb drag-down, and weapon attachments to cancel this vertical rise and keep the crosshair flat." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to properly control recoil in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To properly control recoil: (1) Enable Always-On Gyroscope at 300–350%. (2) Equip Compensator + Vertical Foregrip on M416. (3) In Training Ground, spray at a wall 30m away while tilting your wrist forward. (4) Observe the bullet pattern — if it climbs, increase Gyro by 10%. If it drops, decrease by 10%. (5) Adjust in 5% steps until the spray is a vertical flat line." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to get 0 recoil in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Zero recoil in PUBG Mobile requires: Always-On Gyroscope at 300–350%, Compensator + Vertical Foregrip attachments, and daily Training Ground practice for 15 minutes. Spray at a 30m wall, tilt wrist forward while firing, and adjust Gyro sensitivity in 5% steps until the pattern is flat. 7.62mm rifles (AKM, Beryl) need 8–12% more Gyro than 5.56mm rifles." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to get 0 recoil in Warzone or PUBG without gyroscope?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Without gyroscope, control recoil by: setting ADS sensitivity 10–15% lower than Camera values, using 4F claw layout so index fingers handle fire triggers while thumbs focus on pull-down drag, equipping Compensator + Vertical Foregrip, and practicing the pull-down drag at 30m targets daily. AimSync generates recoil-optimized sensitivity without gyroscope if you select the Disabled Gyro option." }
+              },
+              {
+                "@type": "Question",
+                "name": "Which weapon has the most recoil in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "The Beryl M762 has the highest recoil of all ARs in PUBG Mobile, followed by the AKM. Both are 7.62mm caliber and require 8–15% higher Gyro and ADS values than the M416 baseline. The M416 and SCAR-L (5.56mm) have the most manageable recoil and are the standard calibration weapons for Training Ground drills." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Mastering Recoil Control: Training Drills & Setup Manual
       </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 9, 2026</span>
         <span>•</span>
         <span>12 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">How to control recoil in PUBG Mobile</strong>: Enable{' '}
+          <strong className="text-[#ffd700]">Always-On Gyroscope at 300–350%</strong>. Spray M416 at 30m in Training Ground while tilting wrist forward. Adjust in 5% steps until flat. 7.62mm rifles (AKM, Beryl) need{' '}
+          <strong className="text-[#ffd700]">+8–12% more Gyro</strong>. Use Compensator + Vertical Foregrip on all ARs. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to auto-generate recoil-optimized values.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

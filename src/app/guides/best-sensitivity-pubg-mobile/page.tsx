@@ -33,7 +33,10 @@ export default function Guide1() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-09"
+    "datePublished": "2026-07-09",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/best-sensitivity-pubg-mobile",
+    "keywords": "best PUBG Mobile sensitivity settings, best sensitivity PUBG 2026, zero recoil sensitivity, PUBG camera settings, ADS sensitivity PUBG"
   };
 
   return (
@@ -42,15 +45,63 @@ export default function Guide1() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is the best sensitivity for PUBG Mobile in 2026?",
+                "acceptedAnswer": { "@type": "Answer", "text": "The best PUBG Mobile sensitivity in 2026: Camera TPP No-Scope 45–55%, Camera Red Dot 60–70%, 2x 32–42%, 3x 25–35%, 4x 18–28%. Gyroscope Always-On: No-Scope 300–350%, Red Dot 290–340%, 3x 120–160%, 4x 80–120%. Adjust in 5% steps using Training Ground. Budget devices (Poco, Redmi) need 5–10% higher Gyro values." }
+              },
+              {
+                "@type": "Question",
+                "name": "What does 0 recoil mean in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Zero recoil in PUBG Mobile means your crosshair does not visibly climb during automatic fire. It is achieved by combining gyroscope wrist tilt (Always-On at 300–350%), ADS drag-down with your thumb, and weapon attachments (Compensator + Vertical Foregrip). No single sensitivity code gives literal zero recoil — it requires calibration and practice." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does sensitivity affect recoil in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. ADS sensitivity controls how fast your crosshair moves during your thumb drag-down. If ADS is too low, your recoil correction is too slow and the spray climbs. If too high, you overcorrect into the ground. Gyroscope sensitivity controls how much tilt is needed to pull the crosshair down. Both must be calibrated together." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do pro PUBG players set their sensitivity?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Pro PUBG Mobile players use Always-On Gyroscope at 300–400%, 4F or 5F claw layouts, Camera TPP 45–60%, and ADS values 10–20% below Camera values. They calibrate in Training Ground by spraying at walls, then adjust in 5% increments. They do not copy community codes — they build from hardware baselines." }
+              },
+              {
+                "@type": "Question",
+                "name": "How to make your own no recoil sensitivity in PUBG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To create your own zero recoil sensitivity: enable Always-On Gyroscope, set Gyro TPP No-Scope to 300–350%, spray an M416 at 30m in Training Ground while tilting your wrist forward. If spray climbs, increase Gyro by 10%. If it drops, decrease by 10%. Repeat in 5% steps until flat. Then repeat with AKM (needs +8–12% Gyro)." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         The Best PUBG Mobile Sensitivity Settings: Complete 2026 Tuning Manual
       </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 9, 2026</span>
         <span>•</span>
         <span>12 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Best PUBG Mobile sensitivity 2026</strong>: Camera TPP{' '}
+          <strong className="text-[#ffd700]">45–55%</strong>, Red Dot ADS{' '}
+          <strong className="text-[#ffd700]">55–65%</strong>, Gyro Always-On at{' '}
+          <strong className="text-[#ffd700]">300–350%</strong>. Budget devices add 5–10% to Gyro. Calibrate in Training Ground: spray M416 at 30m, tilt wrist forward, adjust in 5% steps until flat. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to auto-generate a hardware-specific profile.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

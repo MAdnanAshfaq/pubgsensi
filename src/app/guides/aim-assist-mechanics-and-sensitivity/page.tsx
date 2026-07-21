@@ -33,7 +33,10 @@ export default function Guide6() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-10"
+    "datePublished": "2026-07-10",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/aim-assist-mechanics-and-sensitivity",
+    "keywords": "aim assist PUBG Mobile, aim assist BGMI, how aim assist works PUBG, sensitivity aim assist, aim assist sensitivity calibration"
   };
 
   return (
@@ -42,16 +45,58 @@ export default function Guide6() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How does aim assist work in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Aim assist in PUBG Mobile creates a friction zone around enemy hitboxes. When your crosshair passes near a target, movement slows slightly to help you lock on. This assist is strongest during ADS (Aim Down Sights) and weakest during hipfire. The friction radius depends on the scope type: larger radius for Red Dot, smaller for 4x and 6x scopes." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does sensitivity affect aim assist in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. If your sensitivity is too high, your crosshair moves through the aim assist friction zone too fast to benefit from it. AimSync calibrates sensitivity so your crosshair speed aligns with the aim assist radius, letting you lock on targets naturally without fighting against the assist zone. Lower ADS values (50–65%) typically work best with aim assist." }
+              },
+              {
+                "@type": "Question",
+                "name": "Should I turn off aim assist in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No, do not turn off aim assist in PUBG Mobile. Aim assist is beneficial for all player levels. It reduces the number of micro-adjustments needed during spray fights. The key is calibrating your sensitivity to work with the assist zone, not against it. Sensitivity values that are too high cause you to skip over the assist bubble." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does aim assist work with gyroscope in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Aim assist works with gyroscope in PUBG Mobile. The friction zone activates regardless of whether your crosshair movement comes from touch drag or gyroscope tilt. Always-On Gyroscope combined with calibrated ADS sensitivity provides the smoothest interaction with aim assist during sustained sprays." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Aim Assist Mechanics & Sensitivity Calibration
       </h1>
       
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 10, 2026</span>
         <span>•</span>
         <span>10 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Aim assist in PUBG Mobile</strong> creates a friction zone around enemy hitboxes when aiming.
+          It works best with <strong className="text-[#ffd700]">ADS sensitivity of 50–65%</strong> — if your sensitivity is too high, your crosshair passes through the assist zone without benefiting.
+          Always-On Gyroscope works naturally with aim assist. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to calibrate sensitivity that aligns with the assist bubble.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

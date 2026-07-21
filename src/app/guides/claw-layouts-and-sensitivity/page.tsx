@@ -33,7 +33,10 @@ export default function ClawLayoutsGuide() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-09"
+    "datePublished": "2026-07-09",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/claw-layouts-and-sensitivity",
+    "keywords": "claw layout PUBG Mobile, 4 finger claw PUBG, 3 finger layout BGMI, claw sensitivity settings, finger layout sensitivity"
   };
 
   return (
@@ -42,15 +45,58 @@ export default function ClawLayoutsGuide() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is 4 finger claw better than 3 finger in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes, 4-finger claw is better than 3-finger for most competitive PUBG Mobile players. With 4F, your left and right index fingers handle fire and scope triggers, while both thumbs focus exclusively on movement and camera. This eliminates input bottlenecks during spray fights. 3F is easier to learn but limits your multitasking speed in close-range engagements." }
+              },
+              {
+                "@type": "Question",
+                "name": "What sensitivity should I use for 4 finger claw in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "For 4-finger claw in PUBG Mobile: Camera TPP 50–60%, Camera FPP 45–55%, Red Dot ADS 60–70%, 3x ADS 28–38%. Since your thumbs are free from fire triggers, you can run slightly higher camera sensitivity values than 2F thumb layouts. Always-On Gyroscope at 300–360% for No-Scope is standard for 4F players." }
+              },
+              {
+                "@type": "Question",
+                "name": "How many fingers do pro PUBG players use?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Most professional PUBG Mobile players use 4-finger or 5-finger claw layouts. 4F is the most popular because it gives dedicated fire and scope triggers to both index fingers while thumbs handle movement, peeking, and camera. 5F adds a fifth finger for additional buttons like smoke grenades or prone, used by elite-level players." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I switch from 2 finger to 4 finger claw PUBG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "To switch from 2F to 4F claw: (1) Remap your fire button to an index-finger trigger position in the HUD editor. (2) Add a scope/ADS button for your right index finger. (3) Lower your camera sensitivity by 10–15% initially since 4F allows faster movement. (4) Practice in Training Ground for 1–2 weeks before ranked matches. Your muscle memory needs 2–3 weeks to adapt." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Claw Layouts & Sensitivity: The Definitive 2, 3, 4, and 5-Finger Tuning Guide
       </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 9, 2026</span>
         <span>•</span>
         <span>12 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">4-finger claw sensitivity for PUBG Mobile</strong>: Camera TPP{' '}
+          <strong className="text-[#ffd700]">50–60%</strong>, Red Dot ADS{' '}
+          <strong className="text-[#ffd700]">60–70%</strong>, Gyro Always-On{' '}
+          <strong className="text-[#ffd700]">300–360%</strong>. 4F allows higher camera values than 2F since index fingers handle firing. Most pro PUBG Mobile players use 4F or 5F. Use{' '}
+          <a href="/" className="underline text-[#ffd700]">AimSync</a> to generate layout-specific sensitivity.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

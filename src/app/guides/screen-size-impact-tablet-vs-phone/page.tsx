@@ -33,7 +33,10 @@ export default function Guide8() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-10"
+    "datePublished": "2026-07-10",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/screen-size-impact-tablet-vs-phone",
+    "keywords": "tablet PUBG Mobile sensitivity, iPad BGMI sensitivity, phone vs tablet PUBG, screen size sensitivity, pixel density sensitivity PUBG"
   };
 
   return (
@@ -42,16 +45,58 @@ export default function Guide8() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is PUBG Mobile easier to play on a tablet?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Tablets have advantages in PUBG Mobile: larger screens give more screen real estate for HUD buttons, wider field of view detection, and larger target hitboxes on screen. However, tablets are heavier, making gyroscope wrist tilt harder to sustain. Tablets also typically run at lower frame rates (40–60 FPS) than flagship phones (90–120 FPS). Overall, phones are preferred for competitive play." }
+              },
+              {
+                "@type": "Question",
+                "name": "What sensitivity should I use on a tablet for PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Tablet sensitivity in PUBG Mobile should be 10–20% lower than phone values because the screen is larger, meaning the same percentage of screen movement covers more physical distance. For a tablet: Camera TPP 35–45%, Red Dot ADS 45–55%, Gyro No-Scope 230–280%. Use AimSync and select your specific tablet model for hardware-calibrated values." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does screen size affect sensitivity in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Screen size and pixel density directly affect how large a percentage of sensitivity feels. On a 6.5-inch phone, 50% Camera sensitivity produces a certain movement arc. On a 10-inch tablet at the same 50%, the physical arc is proportionally larger because the display covers more physical space. Tablet players typically need 10–20% lower sensitivity than phone players." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use the same PUBG sensitivity code on a tablet and phone?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Sensitivity codes do not scale for screen size. A code designed for a 6.7-inch phone will feel too fast on a tablet because the same percentage controls a physically larger swipe distance. You need to reduce all Camera and ADS values by 10–20% when switching from phone to tablet. AimSync calculates device-specific values when you enter your tablet model." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Tablet vs Phone: Screen Size Calibration
       </h1>
 
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 10, 2026</span>
         <span>•</span>
         <span>9 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Tablet vs phone sensitivity in PUBG Mobile</strong>: Tablets need{' '}
+          <strong className="text-[#ffd700]">10–20% lower Camera and ADS values</strong> than phones because the larger screen makes the same percentage cover more physical movement.
+          Community codes are calibrated for phones and will feel too fast on tablets.
+          Use <a href="/" className="underline text-[#ffd700]">AimSync</a> to enter your tablet model and get a screen-size-calibrated profile.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">

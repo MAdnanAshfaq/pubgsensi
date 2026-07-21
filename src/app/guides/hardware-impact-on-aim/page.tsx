@@ -33,7 +33,10 @@ export default function HardwareImpactGuide() {
         "url": "https://www.gamingsensi.site/icon.svg"
       }
     },
-    "datePublished": "2026-07-09"
+    "datePublished": "2026-07-09",
+    "dateModified": "2026-07-21",
+    "url": "https://www.gamingsensi.site/guides/hardware-impact-on-aim",
+    "keywords": "phone hardware PUBG aim, touch latency PUBG Mobile, refresh rate sensitivity PUBG, BGMI phone specs, best phone for PUBG zero recoil"
   };
 
   return (
@@ -42,15 +45,57 @@ export default function HardwareImpactGuide() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Does refresh rate affect PUBG Mobile sensitivity?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Higher refresh rates (90Hz, 120Hz) update the display faster, making your crosshair movement feel more responsive and precise. Players on 90–120Hz screens can typically run 5–10% lower sensitivity values than 60Hz players and still feel equally responsive. This is because faster visual feedback reduces the need for large compensation swipes." }
+              },
+              {
+                "@type": "Question",
+                "name": "Does phone processor affect aim in PUBG Mobile?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. CPU processing speed affects input latency — the delay between your touch and the in-game response. Flagship chipsets (Snapdragon 8 Gen 2, A16 Bionic) have touch-to-render latency under 30ms. Budget chipsets (Snapdragon 680, Helio G96) can reach 50–80ms latency. Higher latency requires higher sensitivity values to compensate for the slower response feeling." }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the best phone for PUBG Mobile zero recoil?",
+                "acceptedAnswer": { "@type": "Answer", "text": "The best phones for zero recoil in PUBG Mobile are flagship devices with high-quality gyroscope sensors: iPhone 14 Pro, ASUS ROG Phone 7, Black Shark 5 Pro, and Samsung Galaxy S23. These have touch sampling rates of 240–480Hz and gyro latency under 5ms, enabling very fine recoil control. Mid-range options include Poco X5 Pro and OnePlus Nord 3." }
+              },
+              {
+                "@type": "Question",
+                "name": "How does touch sampling rate affect PUBG sensitivity?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Touch sampling rate determines how many times per second the screen detects your finger position. Higher sampling (240Hz+) means more precise tracking of drag motions, which helps ADS recoil control. Budget phones with 120Hz touch sampling feel less responsive during fast sprays. AimSync compensates for lower sampling by adjusting ADS multipliers upward." }
+              }
+            ]
+          })
+        }}
+      />
       <h1 className="text-3xl md:text-5xl font-headline font-black text-primary-yellow mb-6 uppercase tracking-wider leading-tight">
         Touch Latency & Refresh Rate: How Your Phone Hardware Affects Aim
       </h1>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-10 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
+      <div className="flex flex-wrap items-center gap-3 text-xs font-technical text-text-muted mb-6 uppercase tracking-widest border-b border-[#384b5c]/25 pb-4">
         <span>By <strong className="text-white">Adnan Ashfaq</strong> (Hardware Specialist)</span>
         <span>•</span>
         <span>Published: July 9, 2026</span>
         <span>•</span>
         <span>12 Min Read</span>
+      </div>
+
+      {/* AEO Quick Answer Block */}
+      <div className="bg-[#0d1a1f] border-l-4 border-[#ffd700] rounded-r-xl p-4 mb-8">
+        <p className="text-[10px] font-technical uppercase tracking-widest text-[#ffd700] mb-1">Quick Answer</p>
+        <p className="text-sm text-[#cbdbe6] leading-relaxed">
+          <strong className="text-white">Phone hardware affects PUBG Mobile aim</strong> through touch latency, gyroscope sensor quality, and display refresh rate.
+          Budget devices need <strong className="text-[#ffd700]">5–15% higher sensitivity</strong> to compensate for slower sensor response.
+          Flagship phones (ROG Phone, iPhone Pro) can run lower, more precise values.
+          Use <a href="/" className="underline text-[#ffd700]">AimSync</a> to enter your device model and get hardware-calibrated sensitivity.
+        </p>
       </div>
 
       <div className="space-y-6 text-[#cbdbe6] leading-relaxed text-lg font-body">
